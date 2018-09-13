@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">AmbiWidgetPrototype1</string>
+
+    <!-- Login / Authentication -->
+    <string name="action_authorize">Authorize</string>
+
+    <!-- defaultSharedPrefernces keys -->
+    <string name="saved_refresh_token_key">RefreshToken</string>
+    <string name="saved_access_token_key">AccessToken</string>
+</resources>

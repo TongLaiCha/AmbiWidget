@@ -1,0 +1,176 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="250dp"
+        android:layout_height="110dp"
+        android:background="@color/white"
+        android:padding="@dimen/widget_margin">
+
+        <!--Device name-->
+        <TextView
+            android:id="@+id/deviceName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="@dimen/text_padding"
+            tools:text="Device name"
+            android:textSize="12sp"/>
+
+        <ImageButton
+            android:id="@+id/refreshButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:background="@color/white"
+            app:srcCompat="@drawable/ic_icn_cloud_checking_grey" />
+
+        <!--AC stats row-->
+        <LinearLayout
+            android:id="@+id/stats_row"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_above="@+id/feedback_buttons"
+            android:layout_alignParentStart="true"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/temperature_svg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_icn_acmode_temperature" />
+
+            <TextView
+                android:id="@+id/temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="@dimen/text_padding"
+                tools:text="23.1"
+                android:textSize="12sp"/>
+
+            <ImageView
+                android:id="@+id/humidity_svg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/icon_margin"
+                android:src="@drawable/ic_icn_glossary_humidity" />
+
+            <TextView
+                android:id="@+id/humidity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="@dimen/text_padding"
+                tools:text="61.4"
+                android:textSize="12sp"/>
+
+        </LinearLayout>
+
+        <!--Location row-->
+        <LinearLayout
+            android:id="@+id/location_row"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_alignParentEnd="true"
+            android:layout_above="@+id/feedback_buttons"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/geolocation_svg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_icn_geolocation" />
+
+            <TextView
+                android:id="@+id/location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/icon_margin"
+                android:padding="@dimen/text_padding"
+                android:layout_gravity="center_vertical"
+                tools:text="Home"
+                android:textSize="12sp"/>
+
+        </LinearLayout>
+
+        <!--Feedback button's row-->
+        <LinearLayout
+            android:id="@+id/feedback_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:orientation="horizontal">
+            <!--style="@style/feedback_buttons_section">-->
+
+            <Button
+                android:id="@+id/button_too_warm"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/warm_red_4"
+                android:fontFamily="@font/avenir_next_medium"
+                android:text="@string/too_warm"
+                android:textSize="11sp" />
+
+            <Button
+                android:id="@+id/button_little_warm"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/warm_red_3"
+                android:fontFamily="@font/avenir"
+                android:text="@string/little_warm"
+                android:textSize="11sp" />
+
+            <Button
+                android:id="@+id/button_comfy"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/ambi_teal_4"
+                android:fontFamily="@font/avenir"
+                android:text="@string/comfy"
+                android:textSize="11sp" />
+
+            <Button
+                android:id="@+id/button_little_cold"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/cool_blue_3"
+                android:fontFamily="@font/avenir"
+                android:text="@string/little_cold"
+                android:textSize="11sp" />
+
+            <Button
+                android:id="@+id/button_too_cold"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/cool_blue_5"
+                android:fontFamily="@font/avenir"
+                android:text="@string/too_cold"
+                android:textSize="11sp" />
+
+            <Button
+                android:id="@+id/button_mode"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/ambi_grey_5"
+                android:fontFamily="@font/avenir"
+                android:text="@string/mode"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</layout>

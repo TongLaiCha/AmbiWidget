@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">AmbiWidgetPrototype1</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="configure">Configure</string>
+    <string name="add_widget">Add widget</string>
+
+    <!--Comfort feedback-->
+    <string name="too_warm">Too warm</string>
+    <string name="little_warm">Little warm</string>
+    <string name="comfy">Comfy</string>
+    <string name="little_cold">Little cold</string>
+    <string name="too_cold">Too cold</string>
+    <string name="mode">Mode</string>
+
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ambi_teal_5">#4FBBB2</color>
+    <color name="ambi_grey_5">#757575</color>
+    <color name="white">#FFFFFF</color>
+    <color name="warm_red_5">#F27573</color>
+    <color name="warm_red_4">#F4918E</color>
+    <color name="warm_red_3">#F7AAAA</color>
+    <color name="cool_blue_7">#4F607F</color>
+    <color name="cool_blue_6">#728EBF</color>
+    <color name="cool_blue_5">#A1BDE3</color>
+    <color name="cool_blue_3">#C1D8FF</color>
+    <color name="ambi_teal_4">#72C9C1</color>
+    <color name="alert_red">#FF3B30</color>
+    <color name="ok_green">#87BE3D</color>
+
+</resources>

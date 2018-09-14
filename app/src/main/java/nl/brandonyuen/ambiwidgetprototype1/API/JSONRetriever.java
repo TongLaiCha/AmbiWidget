@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import nl.brandonyuen.ambiwidgetprototype1.Utils;
 
+// TODO: Delete class / file (use new TokenManager)
 public class JSONRetriever extends AsyncTask<String, Void, JSONObject> {
 
 	private static final String TAG = JSONRetriever.class.getSimpleName();

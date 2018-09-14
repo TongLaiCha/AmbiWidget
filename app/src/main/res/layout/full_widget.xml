@@ -20,13 +20,13 @@
             android:textSize="12sp"/>
 
         <ImageButton
-            android:id="@+id/refreshButton"
+            android:id="@+id/button_refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:background="@color/white"
-            app:srcCompat="@drawable/ic_icn_cloud_checking_grey" />
+            android:src="@drawable/ic_icn_glossary_history" />
 
         <!--AC stats row-->
         <LinearLayout

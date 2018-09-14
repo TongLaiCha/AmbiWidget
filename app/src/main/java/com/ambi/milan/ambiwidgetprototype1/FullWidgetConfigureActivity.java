@@ -6,15 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 /**
- * The configuration screen for the {@link FullWidget FullWidget} AppWidget.
+ * The configuration screen for the {@link FullWidgetProvider FullWidgetProvider} AppWidget.
  */
 public class FullWidgetConfigureActivity extends Activity {
+    private static final String TAG = "WidgetConfigureActivity";
 
-    private static final String PREFS_NAME = "com.ambi.milan.ambiwidgetprototype1.FullWidget";
+    private static final String PREFS_NAME = "com.ambi.milan.ambiwidgetprototype1.FullWidgetProvider";
     private static final String PREF_PREFIX_KEY = "appwidget_";
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     EditText mAppWidgetText;
@@ -27,13 +29,14 @@ public class FullWidgetConfigureActivity extends Activity {
             saveTitlePref(context, mAppWidgetId, widgetText);
 
             // It is the responsibility of the configuration activity to update the app widget
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            FullWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
+            AiFeedbackService.startActionUpdateWidget(context);
 
             // Make sure we pass back the original appWidgetId
             Intent resultValue = new Intent();
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
             setResult(RESULT_OK, resultValue);
+
+            //Close the activity
             finish();
         }
     };
@@ -70,6 +73,8 @@ public class FullWidgetConfigureActivity extends Activity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+
+        Log.d(TAG, "onCreate: Executed.");
 
         // Set the result to CANCELED.  This will cause the widget host to cancel
         // out of the widget placement if the user presses the back button.

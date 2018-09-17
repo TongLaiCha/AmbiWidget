@@ -37,8 +37,8 @@ public class FullWidgetProvider extends AppWidgetProvider {
         //Display the name and location of the device
         views.setTextViewText(R.id.deviceName, widgetData.getDeviceName());
         views.setTextViewText(R.id.location, widgetData.getLocation());
-
-        //Update the temperature and humidity
+//
+//        //Update the temperature and humidity
         views.setTextViewText(R.id.temperature, String.format("%.1f", widgetData.getTemperature()));
         views.setTextViewText(R.id.humidity, String.format("%.1f", widgetData.getHumidity()) + "%");
 
@@ -50,7 +50,7 @@ public class FullWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.button_too_warm, getPendingIntent(context, ActionFeedback, TooWarmTag));
 
         //Set onClickPendingIntent for the refresh button.
-        views.setOnClickPendingIntent(R.id.button_refresh, getPendingIntent(context, AiFeedbackService.ACTION_UPDATE_WIDGET, "Update") );
+//        views.setOnClickPendingIntent(R.id.button_refresh, getPendingIntent(context, AiFeedbackService.ACTION_UPDATE_WIDGET, "Update") );
         
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -73,6 +73,7 @@ public class FullWidgetProvider extends AppWidgetProvider {
 
     public static void updateWidgetsData(Context context, AppWidgetManager appWidgetManager,
                                          WidgetData widgetData, int[] appWidgetIds) {
+        Log.d(TAG, "updateWidgetsData: Executed..");
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, widgetData, appWidgetId);
@@ -84,6 +85,7 @@ public class FullWidgetProvider extends AppWidgetProvider {
     {
         // Chain up to the super class so the onEnabled, etc callbacks get dispatched
         super.onReceive(context, intent);
+
         // Handle a different Intent
         Log.d(TAG, "onReceive()" + intent.getAction());
 
@@ -123,7 +125,7 @@ public class FullWidgetProvider extends AppWidgetProvider {
             intent.addCategory(tag);
             intent.putExtra(AiFeedbackService.EXTRA_FEEDBACK_TAG, tag);
 //        }
-
+        Log.d(TAG, "getPendingIntent: Creating pendingintent");
         return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

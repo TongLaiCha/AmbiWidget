@@ -26,7 +26,9 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:background="@color/white"
-            android:src="@drawable/ic_icn_glossary_history" />
+            android:src="@drawable/ic_android_black_24dp" />
+            <!--android:src="@drawable/ic_icn_glossary_history" /> -->
+
 
         <!--AC stats row-->
         <LinearLayout
@@ -42,7 +44,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_icn_acmode_temperature" />
+                android:src="@drawable/ic_android_black_24dp" />
+                <!--android:src="@drawable/ic_icn_acmode_temperature" /> -->
 
             <TextView
                 android:id="@+id/temperature"
@@ -59,7 +62,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/icon_margin"
-                android:src="@drawable/ic_icn_glossary_humidity" />
+                android:src="@drawable/ic_android_black_24dp" />
+                <!--android:src="@drawable/ic_icn_glossary_humidity" /> -->
+
 
             <TextView
                 android:id="@+id/humidity"
@@ -86,7 +91,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_icn_geolocation" />
+                android:src="@drawable/ic_android_black_24dp" />
+                <!--android:src="@drawable/ic_icn_geolocation" /> -->
+
 
             <TextView
                 android:id="@+id/location"

@@ -33,6 +33,7 @@ public class AiFeedbackService extends IntentService {
      * @see IntentService
      */
     public static void startActionGiveFeedback(Context context, String feedbackTag) {
+        Log.d(TAG, "startActionGiveFeedback: Executed..");
         Intent intent = new Intent(context, AiFeedbackService.class);
         intent.setAction(ACTION_GIVE_FEEDBACK);
         intent.putExtra(EXTRA_FEEDBACK_TAG, feedbackTag);
@@ -79,6 +80,7 @@ public class AiFeedbackService extends IntentService {
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, FullWidgetProvider.class));
 
         FullWidgetProvider.updateWidgetsData(this, appWidgetManager, data, appWidgetIds);
+
     }
 
     /**
@@ -89,5 +91,7 @@ public class AiFeedbackService extends IntentService {
     private void handleActionGiveFeedback(String feedbackTag) {
         //Call class for API handling and giving feedback to the Ai.
         Log.d(TAG, "handleActionGiveFeedback: Giving feedback: It is " + feedbackTag + " to the Ai.");
+
+//        handleActionUpdateWidget();
     }
 }

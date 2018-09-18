@@ -1,4 +1,4 @@
-package com.ambi.milan.ambiwidgetprototype1;
+package com.ambi.milan.ambiwidgetprototype1.data;
 
 public class WidgetData {
     private String deviceName;
@@ -6,7 +6,7 @@ public class WidgetData {
     private double humidity;
     private String location;
 
-    WidgetData(String deviceName, double temperature, double humidity, String location) {
+    public WidgetData(String deviceName, double temperature, double humidity, String location) {
         this.deviceName = deviceName;
         this.temperature = temperature;
         this.humidity = humidity;

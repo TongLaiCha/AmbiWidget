@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ambi.milan.ambiwidgetprototype1">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,9 +29,11 @@
                 android:resource="@xml/full_widget_info" />
         </receiver>
 
-        <service android:name=".AiFeedbackService" />
+        <service android:name=".services.AiFeedbackService"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+        </service>
 
-        <activity android:name=".FullWidgetConfigureActivity">
+        <activity android:name=".activities.FullWidgetConfigureActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="com.ambi.milan.ambiwidgetprototype1.FullWidgetConfigureActivity"
+    android:configure="com.ambi.milan.ambiwidgetprototype1.activities.FullWidgetConfigureActivity"
     android:initialKeyguardLayout="@layout/full_widget"
     android:initialLayout="@layout/full_widget"
     android:minHeight="110dp"

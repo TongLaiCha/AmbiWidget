@@ -1,18 +1,17 @@
 package com.ambi.milan.ambiwidgetprototype1;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.RemoteViews;
 
-import com.ambi.milan.ambiwidgetprototype1.databinding.FullWidgetBinding;
+import com.ambi.milan.ambiwidgetprototype1.activities.FullWidgetConfigureActivity;
+import com.ambi.milan.ambiwidgetprototype1.services.AiFeedbackService;
+import com.ambi.milan.ambiwidgetprototype1.utils.WidgetUtils;
+import com.ambi.milan.ambiwidgetprototype1.data.WidgetData;
 
 /**
  * Implementation of App Widget functionality.
@@ -26,6 +25,8 @@ public class FullWidgetProvider extends AppWidgetProvider {
     private static final String LittleWarmTag = "little_warm";
     private static final String TooWarmTag = "too_warm";
     private static final String ActionFeedback = AiFeedbackService.ACTION_GIVE_FEEDBACK;
+    private static final String ActionUpdate = AiFeedbackService.ACTION_UPDATE_WIDGET;
+    private static final Integer JOB_ID = 10;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 WidgetData widgetData, int appWidgetId) {
@@ -37,20 +38,21 @@ public class FullWidgetProvider extends AppWidgetProvider {
         //Display the name and location of the device
         views.setTextViewText(R.id.deviceName, widgetData.getDeviceName());
         views.setTextViewText(R.id.location, widgetData.getLocation());
-//
-//        //Update the temperature and humidity
+
+        //Update the temperature and humidity
         views.setTextViewText(R.id.temperature, String.format("%.1f", widgetData.getTemperature()));
         views.setTextViewText(R.id.humidity, String.format("%.1f", widgetData.getHumidity()) + "%");
 
         //Set onClickPendingIntents for all the buttons.
-        views.setOnClickPendingIntent(R.id.button_too_cold, getPendingIntent(context, ActionFeedback, TooColdTag));
-        views.setOnClickPendingIntent(R.id.button_little_cold, getPendingIntent(context, ActionFeedback, LittleColdTag));
-        views.setOnClickPendingIntent(R.id.button_comfy, getPendingIntent(context, ActionFeedback, ComfyTag));
-        views.setOnClickPendingIntent(R.id.button_little_warm, getPendingIntent(context, ActionFeedback, LittleWarmTag));
-        views.setOnClickPendingIntent(R.id.button_too_warm, getPendingIntent(context, ActionFeedback, TooWarmTag));
+        views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getPendingIntent(context, ActionFeedback, TooColdTag));
+        views.setOnClickPendingIntent(R.id.button_little_cold, WidgetUtils.getPendingIntent(context, ActionFeedback, LittleColdTag));
+        views.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getPendingIntent(context, ActionFeedback, ComfyTag));
+        views.setOnClickPendingIntent(R.id.button_little_warm, WidgetUtils.getPendingIntent(context, ActionFeedback, LittleWarmTag));
+        views.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getPendingIntent(context, ActionFeedback, TooWarmTag));
 
         //Set onClickPendingIntent for the refresh button.
-//        views.setOnClickPendingIntent(R.id.button_refresh, getPendingIntent(context, AiFeedbackService.ACTION_UPDATE_WIDGET, "Update") );
+        views.setOnClickPendingIntent(R.id.button_refresh,
+                WidgetUtils.getPendingIntent(context, ActionUpdate, "Update"));
         
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -60,15 +62,16 @@ public class FullWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        // There may be multiple widgets active, so update all of them
-//        for (int appWidgetId : appWidgetIds) {
-//            updateAppWidget(context, appWidgetManager, appWidgetId);
-//
-//        }
-
         Log.d(TAG, "onUpdate: Executed...");
+
         //Start the intent service update widget action, the service takes care of updating the widgets UI.
-        AiFeedbackService.startActionUpdateWidget(context);
+        PendingIntent pendingIntent = WidgetUtils.getPendingIntent(context, ActionUpdate, "Update");
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void updateWidgetsData(Context context, AppWidgetManager appWidgetManager,
@@ -89,6 +92,7 @@ public class FullWidgetProvider extends AppWidgetProvider {
         // Handle a different Intent
         Log.d(TAG, "onReceive()" + intent.getAction());
 
+        AiFeedbackService.enqueueWork(context, AiFeedbackService.class, JOB_ID, intent);
     }
 
     @Override
@@ -110,23 +114,5 @@ public class FullWidgetProvider extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
-    /**
-     * Helper function for creating a pendingIntent.
-     *
-     * @return PendingIntent
-     */
-    private static PendingIntent getPendingIntent(Context context, String action, String tag) {
-        Intent intent = new Intent(context, AiFeedbackService.class);
-        intent.setAction(action);
-
-        //Give the pendingIntent a category
-        //If pendingIntents only vary by their "extra" contents, they will be seen as the same and get overwritten.
-//        if(tag != null){
-            intent.addCategory(tag);
-            intent.putExtra(AiFeedbackService.EXTRA_FEEDBACK_TAG, tag);
-//        }
-        Log.d(TAG, "getPendingIntent: Creating pendingintent");
-        return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-    }
 }
 

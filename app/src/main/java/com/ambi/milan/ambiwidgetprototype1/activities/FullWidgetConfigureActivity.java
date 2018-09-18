@@ -1,6 +1,7 @@
-package com.ambi.milan.ambiwidgetprototype1;
+package com.ambi.milan.ambiwidgetprototype1.activities;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.ambi.milan.ambiwidgetprototype1.services.AiFeedbackService;
+import com.ambi.milan.ambiwidgetprototype1.FullWidgetProvider;
+import com.ambi.milan.ambiwidgetprototype1.R;
+import com.ambi.milan.ambiwidgetprototype1.utils.WidgetUtils;
+
 /**
  * The configuration screen for the {@link FullWidgetProvider FullWidgetProvider} AppWidget.
  */
@@ -18,6 +24,7 @@ public class FullWidgetConfigureActivity extends Activity {
 
     private static final String PREFS_NAME = "com.ambi.milan.ambiwidgetprototype1.FullWidgetProvider";
     private static final String PREF_PREFIX_KEY = "appwidget_";
+    private static final String ActionUpdate = AiFeedbackService.ACTION_UPDATE_WIDGET;
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     EditText mAppWidgetText;
     View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -29,7 +36,12 @@ public class FullWidgetConfigureActivity extends Activity {
             saveTitlePref(context, mAppWidgetId, widgetText);
 
             // It is the responsibility of the configuration activity to update the app widget
-            AiFeedbackService.startActionUpdateWidget(context);
+            PendingIntent pendingIntent = WidgetUtils.getPendingIntent(context, ActionUpdate, "Update");
+            try {
+                pendingIntent.send();
+            } catch (PendingIntent.CanceledException e) {
+                e.printStackTrace();
+            }
 
             // Make sure we pass back the original appWidgetId
             Intent resultValue = new Intent();
@@ -64,7 +76,7 @@ public class FullWidgetConfigureActivity extends Activity {
         }
     }
 
-    static void deleteTitlePref(Context context, int appWidgetId) {
+    public static void deleteTitlePref(Context context, int appWidgetId) {
         SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
         prefs.remove(PREF_PREFIX_KEY + appWidgetId);
         prefs.apply();

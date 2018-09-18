@@ -1,16 +1,15 @@
-package com.ambi.milan.ambiwidgetprototype1;
+package com.ambi.milan.ambiwidgetprototype1.services;
 
-import android.app.IntentService;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.ambi.milan.ambiwidgetprototype1.FullWidgetProvider;
+import com.ambi.milan.ambiwidgetprototype1.data.WidgetData;
 
-public class AiFeedbackService extends IntentService {
+public class AiFeedbackService extends JobIntentService {
     private static final String TAG = "AiFeedbackService";
 
     public static final String ACTION_GIVE_FEEDBACK =
@@ -21,42 +20,10 @@ public class AiFeedbackService extends IntentService {
             "com.ambi.milan.ambiwidgetprototype1.action.update_widget";
 
     /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     */
-    public AiFeedbackService() {
-        super("AiFeedbackService");
-    }
-
-    /**
-     * Starts this service to perform GiveFeedback action with the given parameters.
-     *
-     * @see IntentService
-     */
-    public static void startActionGiveFeedback(Context context, String feedbackTag) {
-        Log.d(TAG, "startActionGiveFeedback: Executed..");
-        Intent intent = new Intent(context, AiFeedbackService.class);
-        intent.setAction(ACTION_GIVE_FEEDBACK);
-        intent.putExtra(EXTRA_FEEDBACK_TAG, feedbackTag);
-        context.startService(intent);
-    }
-
-    /**
-     * Starts this service to perform UpdateWidget with the given parameters.
-     *
-     * @see IntentService
-     */
-    public static void startActionUpdateWidget(Context context) {
-        Intent intent = new Intent(context, AiFeedbackService.class);
-        intent.setAction(ACTION_UPDATE_WIDGET);
-        context.startService(intent);
-        Log.d(TAG, "startActionUpdateWidget: Starting intent..");
-    }
-
-    /**
      * @param intent
      */
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleWork(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_GIVE_FEEDBACK.equals(action)) {
@@ -92,6 +59,5 @@ public class AiFeedbackService extends IntentService {
         //Call class for API handling and giving feedback to the Ai.
         Log.d(TAG, "handleActionGiveFeedback: Giving feedback: It is " + feedbackTag + " to the Ai.");
 
-//        handleActionUpdateWidget();
     }
 }

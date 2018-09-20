@@ -8,6 +8,17 @@
         android:background="@color/white"
         android:padding="@dimen/widget_margin">
 
+        <!--Settings button-->
+        <ImageButton
+            android:id="@+id/button_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@color/white"
+            android:padding="1dp"
+            android:src="@drawable/ic_icn_settings_android" />
+
         <!--Device name-->
         <TextView
             android:id="@+id/deviceName"
@@ -19,6 +30,7 @@
             tools:text="Device name"
             android:textSize="12sp"/>
 
+        <!--Refresh button-->
         <ImageButton
             android:id="@+id/button_refresh"
             android:layout_width="wrap_content"
@@ -26,8 +38,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:background="@color/white"
-            android:src="@drawable/ic_android_black_24dp" />
-            <!--android:src="@drawable/ic_icn_glossary_history" /> -->
+            android:padding="4dp"
+            android:src="@drawable/ic_icn_cloud_checking_grey" />
 
 
         <!--AC stats row-->
@@ -44,8 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_android_black_24dp" />
-                <!--android:src="@drawable/ic_icn_acmode_temperature" /> -->
+                android:src="@drawable/ic_icn_acmode_temperature" />
 
             <TextView
                 android:id="@+id/temperature"
@@ -62,8 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/icon_margin"
-                android:src="@drawable/ic_android_black_24dp" />
-                <!--android:src="@drawable/ic_icn_glossary_humidity" /> -->
+                android:src="@drawable/ic_icn_glossary_humidity" />
 
 
             <TextView
@@ -91,8 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_android_black_24dp" />
-                <!--android:src="@drawable/ic_icn_geolocation" /> -->
+                android:src="@drawable/ic_icn_geolocation" />
 
 
             <TextView

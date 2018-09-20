@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".activities.MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,7 +20,14 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".FullWidgetProvider">
+        <activity android:name=".activities.WidgetConfigureActivity">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.SettingsActivity" />
+
+        <receiver android:name=".WidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -29,15 +37,10 @@
                 android:resource="@xml/full_widget_info" />
         </receiver>
 
-        <service android:name=".services.AiFeedbackService"
+        <service android:name=".services.WidgetService"
             android:permission="android.permission.BIND_JOB_SERVICE">
         </service>
 
-        <activity android:name=".activities.FullWidgetConfigureActivity">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

@@ -1,7 +1,6 @@
 package com.ambi.milan.ambiwidgetprototype1.activities;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
@@ -11,37 +10,37 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import com.ambi.milan.ambiwidgetprototype1.services.AiFeedbackService;
-import com.ambi.milan.ambiwidgetprototype1.FullWidgetProvider;
+import com.ambi.milan.ambiwidgetprototype1.services.WidgetService;
+import com.ambi.milan.ambiwidgetprototype1.WidgetProvider;
 import com.ambi.milan.ambiwidgetprototype1.R;
-import com.ambi.milan.ambiwidgetprototype1.utils.WidgetUtils;
 
 /**
- * The configuration screen for the {@link FullWidgetProvider FullWidgetProvider} AppWidget.
+ * The configuration screen for the {@link WidgetProvider WidgetProvider} AppWidget.
  */
-public class FullWidgetConfigureActivity extends Activity {
+public class WidgetConfigureActivity extends Activity {
     private static final String TAG = "WidgetConfigureActivity";
 
-    private static final String PREFS_NAME = "com.ambi.milan.ambiwidgetprototype1.FullWidgetProvider";
+    private static final String PREFS_NAME = "com.ambi.milan.ambiwidgetprototype1.WidgetProvider";
     private static final String PREF_PREFIX_KEY = "appwidget_";
-    private static final String ActionUpdate = AiFeedbackService.ACTION_UPDATE_WIDGET;
+    private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     EditText mAppWidgetText;
     View.OnClickListener mOnClickListener = new View.OnClickListener() {
         public void onClick(View v) {
-            final Context context = FullWidgetConfigureActivity.this;
+            final Context context = WidgetConfigureActivity.this;
 
             // When the button is clicked, store the string locally
             String widgetText = mAppWidgetText.getText().toString();
             saveTitlePref(context, mAppWidgetId, widgetText);
 
+            // The widget is accually updated automatically on creation. Statement below is not true.
             // It is the responsibility of the configuration activity to update the app widget
-            PendingIntent pendingIntent = WidgetUtils.getPendingIntent(context, ActionUpdate, "Update");
-            try {
-                pendingIntent.send();
-            } catch (PendingIntent.CanceledException e) {
-                e.printStackTrace();
-            }
+//            PendingIntent pendingIntent = WidgetUtils.getPendingIntent(context, ActionUpdate, "Update");
+//            try {
+//                pendingIntent.send();
+//            } catch (PendingIntent.CanceledException e) {
+//                e.printStackTrace();
+//            }
 
             // Make sure we pass back the original appWidgetId
             Intent resultValue = new Intent();
@@ -53,7 +52,7 @@ public class FullWidgetConfigureActivity extends Activity {
         }
     };
 
-    public FullWidgetConfigureActivity() {
+    public WidgetConfigureActivity() {
         super();
     }
 
@@ -92,7 +91,7 @@ public class FullWidgetConfigureActivity extends Activity {
         // out of the widget placement if the user presses the back button.
         setResult(RESULT_CANCELED);
 
-        setContentView(R.layout.full_widget_configure);
+        setContentView(R.layout.widget_configure_activity);
         mAppWidgetText = (EditText) findViewById(R.id.appwidget_text);
         findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
 
@@ -110,7 +109,7 @@ public class FullWidgetConfigureActivity extends Activity {
             return;
         }
 
-        mAppWidgetText.setText(loadTitlePref(FullWidgetConfigureActivity.this, mAppWidgetId));
+        mAppWidgetText.setText(loadTitlePref(WidgetConfigureActivity.this, mAppWidgetId));
     }
 }
 

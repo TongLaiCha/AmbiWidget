@@ -4,12 +4,26 @@
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
 
-    <!--Comfort feedback-->
+    <!--Comfort feedback buttons-->
     <string name="too_warm">Too warm</string>
     <string name="little_warm">Little warm</string>
     <string name="comfy">Comfy</string>
     <string name="little_cold">Little cold</string>
     <string name="too_cold">Too cold</string>
     <string name="mode">Mode</string>
+
+    <!--Preferences-->
+
+    <!--Temperature scale list-->
+    <string name="pref_tempScale_label">Temperature scale</string>
+    <string name="pref_tempScale_key" translatable="false">temperature_scale</string>
+
+    <!--Option labels-->
+    <string name="pref_tempScale_label_celsius">Celsius</string>
+    <string name="pref_tempScale_label_fahrenheit">Fahrenheit</string>
+
+    <!--Option values-->
+    <string name="pref_tempScale_value_celsius" translatable="false">celsius</string>
+    <string name="pref_tempScale_value_fahrenheit" translatable="false">fahrenheit</string>
 
 </resources>

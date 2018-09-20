@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
-import com.ambi.milan.ambiwidgetprototype1.FullWidgetProvider;
-import com.ambi.milan.ambiwidgetprototype1.data.WidgetData;
+import com.ambi.milan.ambiwidgetprototype1.WidgetProvider;
+import com.ambi.milan.ambiwidgetprototype1.data.WidgetDataObject;
 
-public class AiFeedbackService extends JobIntentService {
-    private static final String TAG = "AiFeedbackService";
+public class WidgetService extends JobIntentService {
+    private static final String TAG = "WidgetService";
 
     public static final String ACTION_GIVE_FEEDBACK =
             "com.ambi.milan.ambiwidgetprototype1.action.give_feedback";
@@ -18,8 +18,12 @@ public class AiFeedbackService extends JobIntentService {
             "com.ambi.milan.ambiwidgetprototype1.extra.FEEDBACK_TAG";
     public static final String ACTION_UPDATE_WIDGET =
             "com.ambi.milan.ambiwidgetprototype1.action.update_widget";
+    public static final String ACTION_OPEN_SETTINGS =
+            "com.ambi.milan.ambiwidgetprototype1.action.open_settings";
 
     /**
+     * Handle the incoming jobIntent in a background thread.
+     *
      * @param intent
      */
     @Override
@@ -41,13 +45,12 @@ public class AiFeedbackService extends JobIntentService {
     private void handleActionUpdateWidget() {
         Log.d(TAG, "handleActionUpdateWidget: Updating widget!");
 
-        WidgetData data = new WidgetData("Interns desk", 25.6, 58.2, "Work");
+        WidgetDataObject data = new WidgetDataObject("Interns desk", 25.6, 58.2, "Work");
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, FullWidgetProvider.class));
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
 
-        FullWidgetProvider.updateWidgetsData(this, appWidgetManager, data, appWidgetIds);
-
+        WidgetProvider.updateWidgetsData(this, appWidgetManager, data, appWidgetIds);
     }
 
     /**

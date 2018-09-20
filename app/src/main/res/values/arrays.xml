@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pref_tempScale_option_labels">
+        <item>@string/pref_tempScale_label_celsius</item>
+        <item>@string/pref_tempScale_label_fahrenheit</item>
+    </array>
+
+    <array name="pref_tempScale_option_values">
+        <item>@string/pref_tempScale_value_celsius</item>
+        <item>@string/pref_tempScale_value_fahrenheit</item>
+    </array>
+
+</resources>

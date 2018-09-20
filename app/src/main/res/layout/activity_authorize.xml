@@ -13,12 +13,28 @@
 
     <!-- Login progress -->
 
+    <TextView
+        android:id="@+id/authorize_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/label_authorize"
+        style="@style/H3"/>
+
+    <TextView
+        android:id="@+id/authorize_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_authorize"/>
+
+
     <Button
         android:id="@+id/authorize_redirect_button"
         style="?android:textAppearanceSmall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/action_authorize"
-        android:textStyle="bold" />
+        android:text="@string/button_authorize"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold"
+        android:backgroundTint="@color/colorPrimary"/>
 </LinearLayout>

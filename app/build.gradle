@@ -29,4 +29,5 @@ dependencies {
     implementation files('libs/oauth2-client.jar')
     implementation files('libs/oauth2-common-0.1.jar')
     implementation files('libs/slf4j-api-1.6.1.jar')
+    implementation 'com.google.code.gson:gson:2.8.0'
 }

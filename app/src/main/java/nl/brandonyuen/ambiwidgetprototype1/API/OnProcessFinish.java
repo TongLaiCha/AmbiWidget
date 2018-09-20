@@ -2,5 +2,5 @@ package nl.brandonyuen.ambiwidgetprototype1.API;
 
 public interface OnProcessFinish<T> {
 	void onSuccess(T object);
-	void onFailure(Exception e);
+	void onFailure(T object);
 }

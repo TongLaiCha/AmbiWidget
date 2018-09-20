@@ -1,10 +1,14 @@
 <resources>
-    <string name="app_name">AmbiWidgetPrototype1</string>
+    <string name="app_name">Ambi Widget</string>
 
     <!-- Login / Authentication -->
-    <string name="action_authorize">Authorize</string>
+    <string name="label_authorize">Authentication required</string>
+    <string name="text_authorize">This app needs permission from the Ambi Climate Cloud to control and read your Ambi devices.</string>
+    <string name="button_authorize">Authorize</string>
+    <string name="label_authorize_progress">Authenticating…</string>
 
-    <!-- defaultSharedPrefernces keys -->
+    <!-- defaultSharedPreferences keys -->
     <string name="saved_refresh_token_key">RefreshToken</string>
     <string name="saved_access_token_key">AccessToken</string>
+    <string name="saved_current_device_key">CurrentDeviceId</string>
 </resources>

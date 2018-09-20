@@ -1,5 +1,6 @@
 package nl.brandonyuen.ambiwidgetprototype1;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,7 +12,7 @@ import java.net.URL;
 
 public class Utils {
 
-	public static JSONObject getJSONObjectFromURL(String urlString) throws IOException, JSONException {
+	private static String getJSONStringFromUrl(String urlString) throws IOException, JSONException {
 		HttpURLConnection urlConnection = null;
 		URL url = new URL(urlString);
 		urlConnection = (HttpURLConnection) url.openConnection();
@@ -29,11 +30,20 @@ public class Utils {
 			sb.append(line + "\n");
 		}
 		br.close();
+		urlConnection.disconnect();
 
 		String jsonString = sb.toString();
 		System.out.println("JSON: " + jsonString);
 
-		return new JSONObject(jsonString);
+		return jsonString;
+	}
+
+	public static JSONObject getJSONObjectFromURL(String urlString) throws IOException, JSONException {
+		return new JSONObject(getJSONStringFromUrl(urlString));
+	}
+
+	public static JSONArray getJSONArrayFromURL(String urlString) throws IOException, JSONException {
+		return new JSONArray(getJSONStringFromUrl(urlString));
 	}
 }
 

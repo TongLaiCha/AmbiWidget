@@ -4,8 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import org.json.JSONObject;
+
 import java.lang.ref.WeakReference;
+
+import nl.brandonyuen.ambiwidgetprototype1.API.Objects.ReturnObject;
 
 /**
  * Custom version of class AsyncTask.
@@ -14,13 +16,13 @@ import java.lang.ref.WeakReference;
  * - onFailure(Exception)
  *
  * Extend it like a normal AsyncTask and add doInBackground() method.
- * Example see: API.TokenManager.RequestNewRefreshToken
+ * Example see: API.TokenManager.RenewRefreshTokenTask()
  *
  * Then can be used anywhere like this:
  *
  * (i.e inside an Activity):
  *
- 	new TokenManager.RequestNewRefreshToken(authCode, false, getApplicationContext(), new OnProcessFinish<JSONObject>() {
+ 	new TokenManager.RenewRefreshTokenTask(authCode, false, getApplicationContext(), new OnProcessFinish<JSONObject>() {
 
 		@Override
 		public void onSuccess(JSONObject result) {
@@ -35,9 +37,11 @@ import java.lang.ref.WeakReference;
 		}
 	})
  	.execute();
+
+ * @author Brandon Yuen
  */
 
-public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Void> {
+public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, ReturnObject> {
 
 	private static final String TAG = AsyncTaskWithCallback.class.getSimpleName();
 
@@ -46,6 +50,7 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Void> 
 	Boolean showProgressDialog;
 	private ProgressDialog pDialog;
 	Exception mException;
+	ReturnObject returnObject;
 
 	AsyncTaskWithCallback(Boolean showProgressDialog, Context context, OnProcessFinish callback){
 		this.mCallBack = callback;
@@ -64,9 +69,7 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Void> 
 		}
 	}
 
-	// TODO: Add support for different return types (i.e Object)?
-	protected void onPostExecute(JSONObject result) {
-
+	protected void onPostExecute(ReturnObject result) {
 		if (showProgressDialog) {
 			// Dismiss the progress dialog
 			if (pDialog.isShowing())
@@ -74,10 +77,11 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Void> 
 		}
 
 		if (mCallBack != null) {
-			if (mException == null) {
+			if (result.exception == null) {
 				mCallBack.onSuccess(result);
 			} else {
-				mCallBack.onFailure(mException);
+				Log.e(TAG, result.errorMessage + ": " + result.exception);
+				mCallBack.onFailure(result);
 			}
 		}
 	}

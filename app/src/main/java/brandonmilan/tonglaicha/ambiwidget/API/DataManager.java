@@ -20,7 +20,7 @@ public class DataManager {
 
 	/**
 	 * Returns a list of devices from the user
-	 * Can ONLY be used inside async tasks. Use TokenManager.GetDeviceListTask() for a custom AsyncTask with callbacks for sync-code.
+	 * Can ONLY be used inside async tasks. Use DataManager.GetDeviceListTask() for a custom AsyncTask with callbacks for sync-code.
 	 * @return deviceList
 	 */
 	public static List<DeviceObject> getDeviceList(Context context) {
@@ -47,7 +47,7 @@ public class DataManager {
 
 	/**
 	 * Returns the temperature reading of a device.
-	 * Can ONLY be used inside async tasks. Use TokenManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
+	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
 	 * @return temperature
 	 */
 	public static String getTemperature(Context context, DeviceObject deviceObject) {
@@ -76,7 +76,7 @@ public class DataManager {
 
 	/**
 	 * Returns the temperature reading of a device.
-	 * Can ONLY be used inside async tasks. Use TokenManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
+	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
 	 * @return temperature
 	 */
 	public static String getHumidity(Context context, DeviceObject deviceObject) {
@@ -104,7 +104,7 @@ public class DataManager {
 
 	/**
 	 * Returns the temperature reading of a device.
-	 * Can ONLY be used inside async tasks. Use TokenManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
+	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
 	 * @return temperature
 	 */
 	public static ReturnObject updateComfort(Context context, DeviceObject deviceObject, String feedback) {

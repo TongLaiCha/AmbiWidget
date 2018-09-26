@@ -21,13 +21,14 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 /**
  * Implementation of App Widget functionality.
  * App Widget Configuration implemented in {@link WidgetConfigureActivity WidgetConfigureActivity}
+ * @author Milan Sosef
  */
 public class WidgetProvider extends AppWidgetProvider implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "WidgetProvider";
     private static final String TooColdTag = "too_cold";
-    private static final String LittleColdTag = "little_cold";
-    private static final String ComfyTag = "comfy";
-    private static final String LittleWarmTag = "little_warm";
+    private static final String LittleColdTag = "bit_cold";
+    private static final String ComfyTag = "comfortable";
+    private static final String LittleWarmTag = "bit_warm";
     private static final String TooWarmTag = "too_warm";
     private static final String ActionFeedback = WidgetService.ACTION_GIVE_FEEDBACK;
     private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
@@ -42,13 +43,8 @@ public class WidgetProvider extends AppWidgetProvider implements SharedPreferenc
         Log.i(TAG, "RemoteView: "+gson.toJson(views));
         Log.d(TAG, "updateAppWidget: RemoteViews object created.");
 
-        //Display the name and location of the device
-        views.setTextViewText(R.id.deviceName, widgetData.getDeviceName());
-        views.setTextViewText(R.id.location, widgetData.getLocation());
-
-        //Update the temperature and humidity
-        views.setTextViewText(R.id.temperature, String.format("%.1f", widgetData.getTemperature()));
-        views.setTextViewText(R.id.humidity, String.format("%.1f", widgetData.getHumidity()) + "%");
+        //Update the temperature, humidity, room name and location name.
+        WidgetContentManager.getInstance(appWidgetManager, views, appWidgetId).updateView(context);
 
         //Set onClickPendingIntents for all the buttons.
         views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getPendingIntent(context, ActionFeedback, TooColdTag));
@@ -73,6 +69,7 @@ public class WidgetProvider extends AppWidgetProvider implements SharedPreferenc
         Log.d(TAG, "updateAppWidget: Success!");
     }
 
+    //TODO: Make onUpdate only execute after the configuration is done.
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "onUpdate: Executed...");
@@ -90,9 +87,9 @@ public class WidgetProvider extends AppWidgetProvider implements SharedPreferenc
     /**
      * Update all widgets currently active on the screen.
      */
-    public static void updateWidgetsData(Context context, AppWidgetManager appWidgetManager,
-                                         WidgetDataObject widgetDataObject, int[] appWidgetIds) {
-        Log.d(TAG, "updateWidgetsData: Executed..");
+    public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager,
+                                        WidgetDataObject widgetDataObject, int[] appWidgetIds) {
+        Log.d(TAG, "updateAllWidgets: Executed..");
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, widgetDataObject, appWidgetId);

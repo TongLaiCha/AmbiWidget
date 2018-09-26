@@ -3,9 +3,14 @@ package brandonmilan.tonglaicha.ambiwidget.utils;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
+import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
+import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
 
 public final class WidgetUtils {
@@ -29,5 +34,15 @@ public final class WidgetUtils {
         }
         Log.d(TAG, "getPendingIntent: Creating pendingIntent");
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    public static DeviceObject getDefaultDevice(Context context){
+        // Get device object from preferences
+        SharedPreferences sharedPref = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
+        Gson gson = new Gson();
+        String jsonString = sharedPref.getString(context.getResources().getString((R.string.saved_current_device_key)), "");
+        DeviceObject deviceObject = gson.fromJson(jsonString, DeviceObject.class);
+
+        return deviceObject;
     }
 }

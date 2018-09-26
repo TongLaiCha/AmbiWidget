@@ -27,32 +27,6 @@ public class WidgetConfigureActivity extends Activity {
     private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     EditText mAppWidgetText;
-    View.OnClickListener mOnClickListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            final Context context = WidgetConfigureActivity.this;
-
-            // When the button is clicked, store the string locally
-            String widgetText = mAppWidgetText.getText().toString();
-            saveTitlePref(context, mAppWidgetId, widgetText);
-
-            // The widget is accually updated automatically on creation. Statement below is not true.
-            // It is the responsibility of the configuration activity to update the app widget
-            PendingIntent pendingIntent = WidgetUtils.getPendingIntent(context, ActionUpdate, "Update");
-            try {
-                pendingIntent.send();
-            } catch (PendingIntent.CanceledException e) {
-                e.printStackTrace();
-            }
-
-            // Make sure we pass back the original appWidgetId
-            Intent resultValue = new Intent();
-            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
-            setResult(RESULT_OK, resultValue);
-
-            //Close the activity
-            finish();
-        }
-    };
 
     public WidgetConfigureActivity() {
         super();
@@ -89,14 +63,6 @@ public class WidgetConfigureActivity extends Activity {
 
         Log.d(TAG, "onCreate: Executed.");
 
-        // Set the result to CANCELED.  This will cause the widget host to cancel
-        // out of the widget placement if the user presses the back button.
-        setResult(RESULT_CANCELED);
-
-        setContentView(R.layout.widget_configure_activity);
-        mAppWidgetText = (EditText) findViewById(R.id.appwidget_text);
-        findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
-
         // Find the widget id from the intent.
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -111,7 +77,15 @@ public class WidgetConfigureActivity extends Activity {
             return;
         }
 
-        mAppWidgetText.setText(loadTitlePref(WidgetConfigureActivity.this, mAppWidgetId));
+		// Make sure we pass back the original appWidgetId
+		Intent resultValue = new Intent();
+		resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+		setResult(RESULT_OK, resultValue);
+
+        //Open auth activity
+		Intent openAuthActivity = new Intent(WidgetConfigureActivity.this, AuthActivity.class);
+		WidgetConfigureActivity.this.startActivity(openAuthActivity);
+		finish();
     }
 }
 

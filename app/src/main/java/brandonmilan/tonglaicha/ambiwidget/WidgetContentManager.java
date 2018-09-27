@@ -2,6 +2,8 @@ package brandonmilan.tonglaicha.ambiwidget;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -33,7 +35,19 @@ public class WidgetContentManager {
     }
 
     public void updateView(Context context) {
-        final DeviceObject deviceObject = WidgetUtils.getDefaultDevice(context);
+        DeviceObject deviceObject;
+        final DeviceObject defaultDeviceObject = WidgetUtils.getDefaultDevice(context);
+        final DeviceObject preferredDeviceObject = WidgetUtils.getPreferredDevice(context);
+
+        //Use default device if no preferred device is selected.
+        if (preferredDeviceObject == null){
+            deviceObject = defaultDeviceObject;
+        } else {
+            deviceObject = preferredDeviceObject;
+        }
+
+//        Log.d(TAG, "updateView: Preferred device = " + deviceObject.roomName());
+
 
         new DataManager.GetTemperatureTask(deviceObject, false, context, new OnProcessFinish<ReturnObject>() {
 
@@ -65,7 +79,6 @@ public class WidgetContentManager {
 
         fillView(new ReturnObject(deviceObject), "ROOM");
         fillView(new ReturnObject(deviceObject), "LOCATION");
-
     }
 
     private void fillView(ReturnObject result, String TAG) {

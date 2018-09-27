@@ -26,6 +26,12 @@
     <string name="pref_tempScale_value_celsius" translatable="false">celsius</string>
     <string name="pref_tempScale_value_fahrenheit" translatable="false">fahrenheit</string>
 
+    <!--Preferred device list-->
+    <string name="pref_preferredDevice_label">Preferred device</string>
+    <string name="pref_preferredDevice_key" translatable="false">preferred_device</string>
+
+
+
     <!-- Login / Authentication -->
     <string name="label_authorize">Authentication required</string>
     <string name="text_authorize">This app needs permission from the Ambi Climate Cloud to control and read your Ambi devices.</string>

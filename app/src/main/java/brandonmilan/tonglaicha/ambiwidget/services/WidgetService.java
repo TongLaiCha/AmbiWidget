@@ -72,7 +72,18 @@ public class WidgetService extends JobIntentService {
         //Call class for API handling and giving feedback to the Ai.
         Log.d(TAG, "handleActionGiveFeedback: Giving feedback: It is " + feedbackTag + " to the Ai.");
 
-        final DeviceObject deviceObject = WidgetUtils.getDefaultDevice(getApplicationContext());
+       DeviceObject deviceObject;
+        final DeviceObject defaultDeviceObject = WidgetUtils.getDefaultDevice(getApplicationContext());
+        final DeviceObject preferredDeviceObject = WidgetUtils.getPreferredDevice(getApplicationContext());
+
+        //Use default device if no preferred device is selected.
+        if (preferredDeviceObject == null){
+            deviceObject = defaultDeviceObject;
+            Log.d(TAG, "handleActionGiveFeedback: No preferred device selected! Using default.");
+        } else {
+            deviceObject = preferredDeviceObject;
+            Log.d(TAG, "handleActionGiveFeedback: Using prefered device!");
+        }
 
         new DataManager.UpdateComfortTask(feedbackTag, deviceObject, false, getApplicationContext(), new OnProcessFinish<ReturnObject>() {
 

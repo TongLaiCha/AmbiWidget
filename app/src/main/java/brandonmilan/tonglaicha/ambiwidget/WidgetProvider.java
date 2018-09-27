@@ -46,7 +46,7 @@ public class WidgetProvider extends AppWidgetProvider implements SharedPreferenc
         //Update the temperature, humidity, room name and location name.
         WidgetContentManager.getInstance(appWidgetManager, views, appWidgetId).updateView(context);
 
-        //Set onClickPendingIntents for all the buttons.
+        //Set onClickPendingIntents for all the feedback buttons.
         views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getPendingIntent(context, ActionFeedback, TooColdTag));
         views.setOnClickPendingIntent(R.id.button_little_cold, WidgetUtils.getPendingIntent(context, ActionFeedback, LittleColdTag));
         views.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getPendingIntent(context, ActionFeedback, ComfyTag));
@@ -62,7 +62,7 @@ public class WidgetProvider extends AppWidgetProvider implements SharedPreferenc
 
         //Set onClickPendingIntent for the refresh button.
         views.setOnClickPendingIntent(R.id.button_refresh,
-                WidgetUtils.getPendingIntent(context, ActionUpdate, "Update")); //TODO: try null for the tag
+                WidgetUtils.getPendingIntent(context, ActionUpdate, null)); //TODO: try null for the tag
         
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -75,7 +75,7 @@ public class WidgetProvider extends AppWidgetProvider implements SharedPreferenc
         Log.d(TAG, "onUpdate: Executed...");
 
         //Send the pendingIntent with the update widget action, a background service takes care of updating the widgets UI.
-        PendingIntent pendingIntent = WidgetUtils.getPendingIntent(context, ActionUpdate, "Update"); //TODO: try null for the tag
+        PendingIntent pendingIntent = WidgetUtils.getPendingIntent(context, ActionUpdate, null); //TODO: try null for the tag
         try {
             pendingIntent.send();
         } catch (PendingIntent.CanceledException e) {

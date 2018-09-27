@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -41,6 +42,15 @@ public final class WidgetUtils {
         SharedPreferences sharedPref = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
         Gson gson = new Gson();
         String jsonString = sharedPref.getString(context.getResources().getString((R.string.saved_current_device_key)), "");
+        DeviceObject deviceObject = gson.fromJson(jsonString, DeviceObject.class);
+
+        return deviceObject;
+    }
+
+    public static DeviceObject getPreferredDevice(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        Gson gson = new Gson();
+        String jsonString = sharedPreferences.getString(String.valueOf(R.string.pref_preferredDevice_key), "");
         DeviceObject deviceObject = gson.fromJson(jsonString, DeviceObject.class);
 
         return deviceObject;

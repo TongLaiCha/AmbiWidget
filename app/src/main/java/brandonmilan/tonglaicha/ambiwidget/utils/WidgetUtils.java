@@ -16,6 +16,7 @@ import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
 
 public final class WidgetUtils {
     private static final String TAG = "WidgetUtils";
+    private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
 
     /**
      * Helper function for creating a pendingIntent.
@@ -37,8 +38,20 @@ public final class WidgetUtils {
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    /**
+     * Send a pendingIntent with the updateWidgetAction.
+     * A background service takes care of updating the widgets UI.
+     */
+    public static void remoteUpdateWidget(Context context) {
+        PendingIntent pendingIntent = WidgetUtils.getPendingIntent(context, ActionUpdate, null);
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static DeviceObject getDefaultDevice(Context context){
-        // Get device object from preferences
         SharedPreferences sharedPref = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
         Gson gson = new Gson();
         String jsonString = sharedPref.getString(context.getResources().getString((R.string.saved_current_device_key)), "");
@@ -54,5 +67,22 @@ public final class WidgetUtils {
         DeviceObject deviceObject = gson.fromJson(jsonString, DeviceObject.class);
 
         return deviceObject;
+    }
+
+    public static String getTempScalePreference(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sharedPreferences.getString(
+                String.valueOf(R.string.pref_tempScale_key),
+                String.valueOf(R.string.pref_tempScale_value_celsius)
+        );
+    }
+
+    public static double convertToFahrenheit(double temperatureCelsius) {
+        return (temperatureCelsius * 1.8) + 32;
+    }
+
+    public static double roundOneDecimal(double number) {
+        return Math.round(number * 10.0) / 10.0;
     }
 }

@@ -1,7 +1,10 @@
 package brandonmilan.tonglaicha.ambiwidget.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.util.Log;
@@ -18,7 +21,8 @@ import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class SettingsFragment extends PreferenceFragmentCompat
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
     private final static String TAG = "SettingsFragment";
 
     @Override
@@ -26,11 +30,47 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         //WARINING: This must be the first line or settings activity will crash.
         addPreferencesFromResource(R.xml.pref_visualizer);
 
-        final PreferenceScreen screen = this.getPreferenceScreen();
+        SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
+        final PreferenceScreen prefscreen = this.getPreferenceScreen();
+        int count = prefscreen.getPreferenceCount();
 
+        for(int i = 0; i < count; i++) {
+            Preference p = prefscreen.getPreference(i);
+            if (!(p instanceof CheckBoxPreference)) {
+                String value = sharedPreferences.getString(p.getKey(), "");
+                setPreferenceSummary(p, value);
+            }
+        }
         //TODO: Add divider between preferences.
 //        setDivider();
 
+        createDeviceListPreference(prefscreen);
+    }
+
+    private void setPreferenceSummary(Preference preference, String value) {
+        if (preference instanceof ListPreference) {
+            ListPreference listPreference = (ListPreference) preference;
+            int prefIndex = listPreference.findIndexOfValue(value);
+            if (prefIndex >= 0) {
+                listPreference.setSummary(listPreference.getEntries()[prefIndex]);
+            }
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Preference preference = findPreference(key);
+        if (null != preference) {
+            if (!(preference instanceof CheckBoxPreference)){
+                String value = sharedPreferences.getString(preference.getKey(), "");
+                setPreferenceSummary(preference, value);
+            }
+        }
+
+        WidgetUtils.remoteUpdateWidget(this.getContext());
+    }
+
+    private void createDeviceListPreference(final PreferenceScreen screen) {
         new DataManager.GetDeviceListTask(false, screen.getContext(), new OnProcessFinish<ReturnObject>() {
 
             @Override
@@ -73,5 +113,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 Log.d(TAG, result.errorMessage + ": " + result.exception);
             }
         }).execute();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getPreferenceScreen().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 }

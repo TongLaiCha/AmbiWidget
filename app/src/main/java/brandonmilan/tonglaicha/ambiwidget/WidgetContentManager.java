@@ -2,8 +2,6 @@ package brandonmilan.tonglaicha.ambiwidget;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -19,6 +17,7 @@ public class WidgetContentManager {
     private static AppWidgetManager appWidgetManager;
     private static RemoteViews view;
     private static int appWidgetId;
+    private String prefTempScale;
 
     private WidgetContentManager(){
     }
@@ -38,6 +37,9 @@ public class WidgetContentManager {
         DeviceObject deviceObject;
         final DeviceObject defaultDeviceObject = WidgetUtils.getDefaultDevice(context);
         final DeviceObject preferredDeviceObject = WidgetUtils.getPreferredDevice(context);
+        prefTempScale = WidgetUtils.getTempScalePreference(context);
+        Log.d(TAG, "updateView: PrefTempScale = " + prefTempScale);
+
 
         //Use default device if no preferred device is selected.
         if (preferredDeviceObject == null){
@@ -45,9 +47,6 @@ public class WidgetContentManager {
         } else {
             deviceObject = preferredDeviceObject;
         }
-
-//        Log.d(TAG, "updateView: Preferred device = " + deviceObject.roomName());
-
 
         new DataManager.GetTemperatureTask(deviceObject, false, context, new OnProcessFinish<ReturnObject>() {
 
@@ -84,13 +83,24 @@ public class WidgetContentManager {
     private void fillView(ReturnObject result, String TAG) {
         switch (TAG){
             case "TEMP":
-                String temperature = result.value;
-                view.setTextViewText(R.id.temperature, temperature);
-                Log.d(TAG, "fillView: Filling with " + temperature + view);
-                appWidgetManager.updateAppWidget(appWidgetId, view);
+                //TODO: needs to be 2 decimals always.
+                Double temperature = WidgetUtils.roundOneDecimal(Double.parseDouble(result.value));
+
+                Log.d(TAG, "fillView: " + prefTempScale);
+//                String tempScalePref = WidgetUtils.getTempScalePreference();
+                if(prefTempScale.equals(String.valueOf(R.string.pref_tempScale_value_celsius))){
+                    view.setTextViewText(R.id.temperature, temperature + "C");
+                    Log.d(TAG, "fillView: Filling with " + temperature + "C " + view);
+                    appWidgetManager.updateAppWidget(appWidgetId, view);
+                } else {
+                    double tempFahrenheit = WidgetUtils.convertToFahrenheit(temperature);
+                    view.setTextViewText(R.id.temperature, temperature + "F");
+                    Log.d(TAG, "fillView: Filling with " + temperature + "F " + view);
+                    appWidgetManager.updateAppWidget(appWidgetId, view);
+                }
                 break;
             case "HUMID":
-                String humidity = result.value;
+                Double humidity = WidgetUtils.roundOneDecimal(Double.parseDouble(result.value));
                 WidgetContentManager.view.setTextViewText(R.id.humidity, humidity + "%");
                 appWidgetManager.updateAppWidget(appWidgetId, view);
                 break;

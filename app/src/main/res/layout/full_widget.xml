@@ -17,7 +17,7 @@
             android:layout_alignParentTop="true"
             android:background="@color/white"
             android:padding="1dp"
-            android:src="@drawable/ic_icn_settings_android" />
+            android:src="@drawable/ic_icn_settings_24px" />
 
         <!--Device name-->
         <TextView
@@ -26,7 +26,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:paddingTop="@dimen/text_padding"
             tools:text="Device name"
             android:textSize="12sp"/>
 
@@ -35,10 +34,10 @@
             android:id="@+id/button_refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
             android:background="@color/white"
-            android:padding="4dp"
+            android:padding="6dp"
             android:src="@drawable/ic_icn_cloud_checking_grey" />
 
 
@@ -143,7 +142,7 @@
                 android:layout_weight="1"
                 android:background="@color/warm_red_3"
                 android:fontFamily="@font/avenir"
-                android:text="@string/little_warm"
+                android:text="@string/bit_warm"
                 android:textSize="11sp" />
 
             <Button
@@ -163,7 +162,7 @@
                 android:layout_weight="1"
                 android:background="@color/cool_blue_3"
                 android:fontFamily="@font/avenir"
-                android:text="@string/little_cold"
+                android:text="@string/bit_cold"
                 android:textSize="11sp" />
 
             <Button

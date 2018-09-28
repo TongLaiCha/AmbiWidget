@@ -6,9 +6,9 @@
 
     <!--Comfort feedback buttons-->
     <string name="too_warm">Too warm</string>
-    <string name="little_warm">Little warm</string>
+    <string name="bit_warm">Bit warm</string>
     <string name="comfy">Comfy</string>
-    <string name="little_cold">Little cold</string>
+    <string name="bit_cold">Bit cold</string>
     <string name="too_cold">Too cold</string>
     <string name="mode">Mode</string>
 
@@ -29,7 +29,6 @@
     <!--Preferred device list-->
     <string name="pref_preferredDevice_label">Preferred device</string>
     <string name="pref_preferredDevice_key" translatable="false">preferred_device</string>
-
 
 
     <!-- Login / Authentication -->

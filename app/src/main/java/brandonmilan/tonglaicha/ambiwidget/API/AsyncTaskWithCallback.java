@@ -7,7 +7,9 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
+import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
+import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
  * Custom version of class AsyncTask.
@@ -95,6 +97,8 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Return
 						TokenManager.deleteToken(mContext.get(), "REFRESH_TOKEN");
 
 						//TODO: Update widget state with auth button
+						WidgetProvider.authorized = false;
+						WidgetUtils.remoteUpdateWidget(mContext.get());
 						break;
 				}
 

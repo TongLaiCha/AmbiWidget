@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import brandonmilan.tonglaicha.ambiwidget.activities.AuthActivity;
 import brandonmilan.tonglaicha.ambiwidget.activities.SettingsActivity;
 import brandonmilan.tonglaicha.ambiwidget.activities.WidgetConfigureActivity;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
@@ -29,18 +30,42 @@ public class WidgetProvider extends AppWidgetProvider {
     private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
     private static final String ActionSwitchOnOff = WidgetService.ACTION_SWITCH_ON_OFF;
     private static final Integer JOB_ID = 10;
+    public static Boolean authorized = true;
 
+    /**
+     * Instruct the appWidgetManager to load the widgets view and its components.
+     */
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
-        setButtonClickHandlers(context, appWidgetId, views);
+        //Check if the user has authorized the widget to access his Ambi account.
+        if(!authorized){
+            // Construct the RemoteViews object
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_auth_overlay);
 
-        //Update the temperature, humidity, room name and location name.
-        WidgetContentManager.getInstance(appWidgetManager, views, appWidgetId).updateView(context);
+            Intent authIntent = new Intent(context, AuthActivity.class);
+            authIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            PendingIntent configPendingIntent = PendingIntent.getActivity(context, appWidgetId, authIntent, 0);
+            views.setOnClickPendingIntent(R.id.button_authorize, configPendingIntent);
 
-        // Instruct the widget manager to update the widget
-        appWidgetManager.updateAppWidget(appWidgetId, views);
-        Log.d(TAG, "updateAppWidget: Success!");
+            // Instruct the widget manager to update the widget
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+        } else {
+            // Construct the RemoteViews object
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
+
+            setButtonClickHandlers(context, appWidgetId, views);
+
+            //Update the temperature, humidity, room name and location name.
+            WidgetContentManager.getInstance(appWidgetManager, views, appWidgetId).updateView(context);
+
+            // Instruct the widget manager to update the widget
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+
+            Log.d(TAG, "updateAppWidget: Success!");
+        }
+    }
+
+    static void showAuthOverlay(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+
     }
 
     /**

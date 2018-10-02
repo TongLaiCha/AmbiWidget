@@ -81,6 +81,6 @@ public final class WidgetUtils {
     }
 
     public static double roundOneDecimal(double number) {
-        return Math.round(number * 10.0) / 10.0;
+        return Math.round(number * 10) / 10.0;
     }
 }

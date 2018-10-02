@@ -42,4 +42,5 @@
     <string name="saved_refresh_token_key">RefreshToken</string>
     <string name="saved_access_token_key">AccessToken</string>
     <string name="saved_current_device_key">CurrentDeviceId</string>
+    <string name="user_has_configured">UserHasConfigured</string>
 </resources>

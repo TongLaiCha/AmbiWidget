@@ -1,9 +1,11 @@
 package brandonmilan.tonglaicha.ambiwidget.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -118,8 +120,10 @@ public class AuthActivity extends AppCompatActivity {
 			@Override
 			public void onSuccess(ReturnObject result) {
 				Toast.makeText(getApplicationContext(), "Authentication successful!", Toast.LENGTH_LONG).show();
+
 				WidgetProvider.authorized = true;
                 WidgetUtils.remoteUpdateWidget(getApplicationContext());
+
 				// Go to settings activity
 				Intent i = new Intent(AuthActivity.this, SettingsActivity.class);
 				AuthActivity.this.startActivity(i);

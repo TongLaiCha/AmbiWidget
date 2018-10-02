@@ -30,7 +30,7 @@ public class WidgetProvider extends AppWidgetProvider {
     private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
     private static final String ActionSwitchOnOff = WidgetService.ACTION_SWITCH_ON_OFF;
     private static final Integer JOB_ID = 10;
-    public static Boolean authorized = true;
+    public static Boolean authorized = false;
 
     /**
      * Instruct the appWidgetManager to load the widgets view and its components.

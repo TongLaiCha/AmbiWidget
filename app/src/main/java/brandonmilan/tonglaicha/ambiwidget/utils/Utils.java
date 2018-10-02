@@ -1,5 +1,7 @@
 package brandonmilan.tonglaicha.ambiwidget.utils;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,17 +14,24 @@ import java.net.URL;
 
 public class Utils {
 
-	private static String getJSONStringFromUrl(String urlString) throws IOException, JSONException {
-		HttpURLConnection urlConnection = null;
-		URL url = new URL(urlString);
-		urlConnection = (HttpURLConnection) url.openConnection();
-		urlConnection.setRequestMethod("GET");
-		urlConnection.setReadTimeout(10000 /* milliseconds */ );
-		urlConnection.setConnectTimeout(15000 /* milliseconds */ );
-		urlConnection.setDoOutput(true);
-		urlConnection.connect();
+	public static String getJSONStringFromUrl(String urlString) throws IOException, JSONException {
+		Log.d("HTTP", "getJSONStringFromUrl: "+urlString);
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+		HttpURLConnection conn = (HttpURLConnection) new URL(urlString).openConnection();
+		conn.setRequestMethod("GET");
+		conn.setReadTimeout(10000 /* milliseconds */ );
+		conn.setConnectTimeout(15000 /* milliseconds */ );
+		conn.setRequestProperty("Content-Type", "application/json");
+		conn.setRequestProperty("Accept", "application/json");
+		conn.connect();
+
+		BufferedReader br;
+		if (200 <= conn.getResponseCode() && conn.getResponseCode() <= 299) {
+			br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		} else {
+			br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+		}
+
 		StringBuilder sb = new StringBuilder();
 
 		String line;
@@ -30,7 +39,7 @@ public class Utils {
 			sb.append(line + "\n");
 		}
 		br.close();
-		urlConnection.disconnect();
+		conn.disconnect();
 
 		String jsonString = sb.toString();
 		System.out.println("JSON: " + jsonString);
@@ -38,12 +47,18 @@ public class Utils {
 		return jsonString;
 	}
 
-	public static JSONObject getJSONObjectFromURL(String urlString) throws IOException, JSONException {
-		return new JSONObject(getJSONStringFromUrl(urlString));
-	}
-
-	public static JSONArray getJSONArrayFromURL(String urlString) throws IOException, JSONException {
-		return new JSONArray(getJSONStringFromUrl(urlString));
+	public static Boolean isJson(String Json) {
+		if (Json == null) return false;
+		try {
+			new JSONObject(Json);
+		} catch (JSONException ex) {
+			try {
+				new JSONArray(Json);
+			} catch (JSONException ex1) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 

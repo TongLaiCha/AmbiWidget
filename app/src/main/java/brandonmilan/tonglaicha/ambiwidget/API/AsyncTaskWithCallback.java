@@ -76,11 +76,26 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Return
 				pDialog.dismiss();
 		}
 
+		// If a callback object is given, execute callback code.
 		if (mCallBack != null) {
+			// If no error / exception
 			if (result.exception == null) {
 				mCallBack.onSuccess(result);
-			} else {
-				Log.e(TAG, result.errorMessage + ": " + result.exception);
+			}
+			// If error / exception
+			else {
+				Log.e(TAG, result.errorMessage, result.exception);
+
+				// Error / Exception handling for different scenarios
+				switch (result.exception.getMessage()) {
+					case "ERROR_INVALID_ACCESS_TOKEN":
+						TokenManager.deleteToken(mContext.get(), "ACCESS_TOKEN");
+						break;
+					case "ERROR_INVALID_REFRESH_TOKEN":
+						TokenManager.deleteToken(mContext.get(), "REFRESH_TOKEN");
+						break;
+				}
+
 				mCallBack.onFailure(result);
 			}
 		}

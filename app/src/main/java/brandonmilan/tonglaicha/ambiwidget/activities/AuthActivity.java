@@ -44,6 +44,14 @@ public class AuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+		// Redirect to settings activity if refresh token is already set. (No authentication needed)
+		if (TokenManager.getRefreshToken(AuthActivity.this).value() != null) {
+			Intent i = new Intent(AuthActivity.this, SettingsActivity.class);
+			AuthActivity.this.startActivity(i);
+			finish();
+			return;
+		}
+
 		// Read intent data if set (User returning from the browser with params)
 		String authCode = null;
 

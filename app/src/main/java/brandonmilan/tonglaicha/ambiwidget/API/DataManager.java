@@ -12,20 +12,27 @@ import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
  * Manager for all user data related communication with the Ambi Climate Open API.
  * @author Brandon Yuen
  */
-public class DataManager {
+public class DataManager { // TODO: Add check to every TokenManager.getAccessToken() -> can not be null.
 	private DataManager() {} // Deny instantiation
 
 	private static final String TAG = DataManager.class.getSimpleName();
-
 
 	/**
 	 * Returns a list of devices from the user
 	 * Can ONLY be used inside async tasks. Use DataManager.GetDeviceListTask() for a custom AsyncTask with callbacks for sync-code.
 	 * @return deviceList
 	 */
-	public static List<DeviceObject> getDeviceList(Context context) {
+	public static ReturnObject getDeviceList(Context context) {
 
-		return Requests.getDeviceList(TokenManager.getAccessToken(context)).deviceList;
+		// Get access token
+		ReturnObject getAccessTokenResult = TokenManager.getAccessToken(context);
+
+		// If result has an error (exception)
+		if (getAccessTokenResult.exception != null) {
+			return getAccessTokenResult;
+		}
+
+		return Requests.getDeviceList(getAccessTokenResult.value);
 	}
 
 	/**
@@ -40,7 +47,7 @@ public class DataManager {
 
 		@Override
 		public ReturnObject doInBackground(Void... voids) {
-			return new ReturnObject(getDeviceList(mContext.get()));
+			return getDeviceList(mContext.get());
 		}
 	}
 
@@ -50,9 +57,17 @@ public class DataManager {
 	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
 	 * @return temperature
 	 */
-	public static String getTemperature(Context context, DeviceObject deviceObject) {
+	public static ReturnObject getTemperature(Context context, DeviceObject deviceObject) {
 
-		return Requests.getTemperature(TokenManager.getAccessToken(context), deviceObject).value;
+		// Get access token
+		ReturnObject getAccessTokenResult = TokenManager.getAccessToken(context);
+
+		// If result has an error (exception)
+		if (getAccessTokenResult.exception != null) {
+			return getAccessTokenResult;
+		}
+
+		return Requests.getTemperature(getAccessTokenResult.value, deviceObject);
 	}
 
 	/**
@@ -69,7 +84,7 @@ public class DataManager {
 
 		@Override
 		public ReturnObject doInBackground(Void... voids) {
-			return new ReturnObject(getTemperature(mContext.get(), deviceObject));
+			return getTemperature(mContext.get(), deviceObject);
 		}
 	}
 
@@ -79,9 +94,17 @@ public class DataManager {
 	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
 	 * @return temperature
 	 */
-	public static String getHumidity(Context context, DeviceObject deviceObject) {
+	public static ReturnObject getHumidity(Context context, DeviceObject deviceObject) {
 
-		return Requests.getHumidity(TokenManager.getAccessToken(context), deviceObject).value;
+		// Get access token
+		ReturnObject getAccessTokenResult = TokenManager.getAccessToken(context);
+
+		// If result has an error (exception)
+		if (getAccessTokenResult.exception != null) {
+			return getAccessTokenResult;
+		}
+
+		return Requests.getHumidity(getAccessTokenResult.value, deviceObject);
 	}
 
 	/**
@@ -98,7 +121,7 @@ public class DataManager {
 
 		@Override
 		public ReturnObject doInBackground(Void... voids) {
-			return new ReturnObject(getHumidity(mContext.get(), deviceObject));
+			return getHumidity(mContext.get(), deviceObject);
 		}
 	}
 
@@ -120,7 +143,15 @@ public class DataManager {
 			return new ReturnObject(new Exception("ERROR_INVALID_FEEDBACK_STRING"), "Invalid feedback value.");
 		}
 
-		return Requests.updateComfort(TokenManager.getAccessToken(context), deviceObject, feedback);
+		// Get access token
+		ReturnObject getAccessTokenResult = TokenManager.getAccessToken(context);
+
+		// If result has an error (exception)
+		if (getAccessTokenResult.exception != null) {
+			return getAccessTokenResult;
+		}
+
+		return Requests.updateComfort(getAccessTokenResult.value, deviceObject, feedback);
 	}
 
 	/**

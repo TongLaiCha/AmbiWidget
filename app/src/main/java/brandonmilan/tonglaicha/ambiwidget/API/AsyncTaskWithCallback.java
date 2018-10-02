@@ -47,35 +47,17 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Return
 
 	private OnProcessFinish<Object> mCallBack;
 	final WeakReference<Context> mContext;
-	Boolean showProgressDialog;
-	private ProgressDialog pDialog;
-	Exception mException;
-	ReturnObject returnObject;
 
-	AsyncTaskWithCallback(Boolean showProgressDialog, Context context, OnProcessFinish callback){
+	AsyncTaskWithCallback(Context context, OnProcessFinish callback){
 		this.mCallBack = callback;
 		this.mContext = new WeakReference<>(context);
-		this.showProgressDialog = showProgressDialog;
-		this.showProgressDialog = false; //TODO: (BROKEN) Fix progress dialog
 	}
 
 	@Override
 	protected void onPreExecute() {
-		if (showProgressDialog) {
-			// Show progress dialog
-			pDialog = ProgressDialog.show(mContext.get(), "Loading...", "Please wait a moment...", true);
-			pDialog.setCancelable(false);
-			super.onPreExecute();
-		}
 	}
 
 	protected void onPostExecute(ReturnObject result) {
-		if (showProgressDialog) {
-			// Dismiss the progress dialog
-			if (pDialog.isShowing())
-				pDialog.dismiss();
-		}
-
 		// If a callback object is given, execute callback code.
 		if (mCallBack != null) {
 			// If no error / exception

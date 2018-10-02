@@ -2,8 +2,6 @@ package brandonmilan.tonglaicha.ambiwidget.API;
 
 import android.content.Context;
 
-import java.util.List;
-
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 
@@ -41,8 +39,8 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 	 */
 	public static class GetDeviceListTask extends AsyncTaskWithCallback {
 
-		public GetDeviceListTask(Boolean showProgressDialog, Context context, OnProcessFinish callback){
-			super(showProgressDialog, context, callback);
+		public GetDeviceListTask(Context context, OnProcessFinish callback){
+			super(context, callback);
 		}
 
 		@Override
@@ -77,8 +75,8 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 	public static class GetTemperatureTask extends AsyncTaskWithCallback {
 		private DeviceObject deviceObject;
 
-		public GetTemperatureTask(DeviceObject deviceObject, Boolean showProgressDialog, Context context, OnProcessFinish callback){
-			super(showProgressDialog, context, callback);
+		public GetTemperatureTask(DeviceObject deviceObject, Context context, OnProcessFinish callback){
+			super(context, callback);
 			this.deviceObject = deviceObject;
 		}
 
@@ -114,8 +112,8 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 	public static class GetHumidityTask extends AsyncTaskWithCallback {
 		private DeviceObject deviceObject;
 
-		public GetHumidityTask(DeviceObject deviceObject, Boolean showProgressDialog, Context context, OnProcessFinish callback){
-			super(showProgressDialog, context, callback);
+		public GetHumidityTask(Context context, OnProcessFinish callback, DeviceObject deviceObject){
+			super(context, callback);
 			this.deviceObject = deviceObject;
 		}
 
@@ -162,8 +160,8 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 		private DeviceObject deviceObject;
 		private String feedback;
 
-		public UpdateComfortTask(String feedback, DeviceObject deviceObject, Boolean showProgressDialog, Context context, OnProcessFinish callback){
-			super(showProgressDialog, context, callback);
+		public UpdateComfortTask(DeviceObject deviceObject, OnProcessFinish callback, Context context, String feedback){
+			super(context, callback);
 			this.deviceObject = deviceObject;
 			this.feedback = feedback;
 		}
@@ -171,6 +169,131 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 		@Override
 		public ReturnObject doInBackground(Void... voids) {
 			return updateComfort(mContext.get(), deviceObject, feedback);
+		}
+	}
+
+	/**
+	 * Returns the temperature reading of a device.
+	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
+	 * @return temperature
+	 */
+	public static ReturnObject getMode(Context context, DeviceObject deviceObject) {
+
+		// Get access token
+		ReturnObject getAccessTokenResult = TokenManager.getAccessToken(context);
+
+		// If result has an error (exception)
+		if (getAccessTokenResult.exception != null) {
+			return getAccessTokenResult;
+		}
+
+		return Requests.getMode(getAccessTokenResult.value, deviceObject);
+	}
+
+	/**
+	 * Same as getAccessToken(), but as a custom AsyncTask with callbacks.
+	 * More info about AsyncTaskWithCallback -> API.AsyncTaskWithCallback.java
+	 */
+	public static class GetModeTask extends AsyncTaskWithCallback {
+		private DeviceObject deviceObject;
+
+		public GetModeTask(Context context, OnProcessFinish callback, DeviceObject deviceObject){
+			super(context, callback);
+			this.deviceObject = deviceObject;
+		}
+
+		@Override
+		public ReturnObject doInBackground(Void... voids) {
+			return getMode(mContext.get(), deviceObject);
+		}
+	}
+
+	/**
+	 * Returns the temperature reading of a device.
+	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
+	 * @return temperature
+	 */
+	public static ReturnObject powerOff(Context context, DeviceObject deviceObject) {
+
+		// Get access token
+		ReturnObject getAccessTokenResult = TokenManager.getAccessToken(context);
+
+		// If result has an error (exception)
+		if (getAccessTokenResult.exception != null) {
+			return getAccessTokenResult;
+		}
+
+		return Requests.powerOff(getAccessTokenResult.value, deviceObject);
+	}
+
+	/**
+	 * Same as getAccessToken(), but as a custom AsyncTask with callbacks.
+	 * More info about AsyncTaskWithCallback -> API.AsyncTaskWithCallback.java
+	 */
+	public static class PowerOffTask extends AsyncTaskWithCallback {
+		private DeviceObject deviceObject;
+		private String feedback;
+
+		public PowerOffTask(Context context, OnProcessFinish callback, DeviceObject deviceObject){
+			super(context, callback);
+			this.deviceObject = deviceObject;
+		}
+
+		@Override
+		public ReturnObject doInBackground(Void... voids) {
+			return powerOff(mContext.get(), deviceObject);
+		}
+	}
+
+	/**
+	 * Returns the temperature reading of a device.
+	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
+	 * @return temperature
+	 */
+	public static ReturnObject updateMode(Context context, DeviceObject deviceObject, String mode, String value, Boolean multiple) {
+
+		// Check if feedback string is allowed
+		if (!(mode.equals("comfort") ||
+				mode.equals("away_temperature_lower") ||
+				mode.equals("away_temperature_upper") ||
+				mode.equals("away_humidity_upper") ||
+				mode.equals("temperature"))) {
+			// Given feedback value is not allowed.
+			return new ReturnObject(new Exception("ERROR_INVALID_MODE_STRING"), "Invalid mode name.");
+		}
+
+		// Get access token
+		ReturnObject getAccessTokenResult = TokenManager.getAccessToken(context);
+
+		// If result has an error (exception)
+		if (getAccessTokenResult.exception != null) {
+			return getAccessTokenResult;
+		}
+
+		return Requests.updateMode(getAccessTokenResult.value, deviceObject, mode, value, multiple);
+	}
+
+	/**
+	 * Same as getAccessToken(), but as a custom AsyncTask with callbacks.
+	 * More info about AsyncTaskWithCallback -> API.AsyncTaskWithCallback.java
+	 */
+	public static class UpdateModeTask extends AsyncTaskWithCallback {
+		private DeviceObject deviceObject;
+		private String mode;
+		private String value;
+		private Boolean multiple;
+
+		public UpdateModeTask(Context context, OnProcessFinish callback, DeviceObject deviceObject, String mode, String value, Boolean multiple){
+			super(context, callback);
+			this.deviceObject = deviceObject;
+			this.mode = mode;
+			this.value = value;
+			this.multiple = multiple;
+		}
+
+		@Override
+		public ReturnObject doInBackground(Void... voids) {
+			return updateMode(mContext.get(), deviceObject, mode, value, multiple);
 		}
 	}
 }

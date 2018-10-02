@@ -1,9 +1,6 @@
 package brandonmilan.tonglaicha.ambiwidget.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import android.net.Uri;
@@ -13,19 +10,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
 
 import net.smartam.leeloo.client.request.OAuthClientRequest;
 import net.smartam.leeloo.common.exception.OAuthSystemException;
 
-import java.util.List;
-
-import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
-import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
@@ -124,7 +113,7 @@ public class AuthActivity extends AppCompatActivity {
 		// Change layout to loading screen
 		setContentView(R.layout.activity_authorize_loading);
 
-		new TokenManager.RenewRefreshTokenTask(authCode, false, getApplicationContext(), new OnProcessFinish<ReturnObject>() {
+		new TokenManager.RenewRefreshTokenTask(getApplicationContext(), new OnProcessFinish<ReturnObject>() {
 
 			@Override
 			public void onSuccess(ReturnObject result) {
@@ -141,7 +130,7 @@ public class AuthActivity extends AppCompatActivity {
 				Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, "Authenthication failed!");
 			}
-		}).execute();
+		}, authCode).execute();
 	}
 }
 

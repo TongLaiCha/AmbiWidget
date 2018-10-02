@@ -50,7 +50,7 @@ public class WidgetContentManager {
             deviceObject = preferredDeviceObject;
         }
 
-        new DataManager.GetTemperatureTask(deviceObject, false, context, new OnProcessFinish<ReturnObject>() {
+        new DataManager.GetTemperatureTask(deviceObject, context, new OnProcessFinish<ReturnObject>() {
 
             @Override
             public void onSuccess(ReturnObject result) {
@@ -64,7 +64,7 @@ public class WidgetContentManager {
             }
         }).execute();
 
-        new DataManager.GetHumidityTask(deviceObject, false, context, new OnProcessFinish<ReturnObject>() {
+        new DataManager.GetHumidityTask(context, new OnProcessFinish<ReturnObject>() {
 
             @Override
             public void onSuccess(ReturnObject result) {
@@ -76,7 +76,7 @@ public class WidgetContentManager {
             public void onFailure(ReturnObject result) {
                 Log.d(TAG, result.errorMessage + ": " + result.exception);
             }
-        }).execute();
+        }, deviceObject).execute();
 
         fillView(new ReturnObject(deviceObject), "ROOM", null, null);
         fillView(new ReturnObject(deviceObject), "LOCATION", null, null);

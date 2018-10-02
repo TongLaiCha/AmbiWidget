@@ -1,7 +1,6 @@
 package brandonmilan.tonglaicha.ambiwidget.API;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -10,8 +9,6 @@ import com.google.gson.Gson;
 
 import org.json.JSONException;
 
-import brandonmilan.tonglaicha.ambiwidget.activities.AuthActivity;
-import brandonmilan.tonglaicha.ambiwidget.activities.SettingsActivity;
 import brandonmilan.tonglaicha.ambiwidget.objects.TokenObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.LogUtil;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
@@ -76,8 +73,8 @@ public class TokenManager {
 		 * @param authCode An authentication code from the user, specifying rights for this app (client).
 		 */
 
-		public RenewRefreshTokenTask(String authCode, Boolean showProgressDialog, Context context, OnProcessFinish callback){
-			super(showProgressDialog, context, callback);
+		public RenewRefreshTokenTask(Context context, OnProcessFinish callback, String authCode){
+			super(context, callback);
 			this.authCode = authCode;
 		}
 
@@ -170,8 +167,8 @@ public class TokenManager {
 
 	public static class GetAccessTokenTask extends AsyncTaskWithCallback {
 
-		public GetAccessTokenTask(Boolean showProgressDialog, Context context, OnProcessFinish callback){
-			super(showProgressDialog, context, callback);
+		public GetAccessTokenTask(Context context, OnProcessFinish callback){
+			super(context, callback);
 		}
 
 		@Override

@@ -170,6 +170,58 @@ public class Requests {
 		return new ReturnObject(deviceList);
 	}
 
+	public static ReturnObject getMode(String accessToken, DeviceObject deviceObject) {
+
+		// Start a JSON Retrieving Request
+		JSONObject resultAsJsonObject = null;
+		String mode = null;
+
+		try {
+			// Create URL for Temperature request
+			String url = 	"https://api.ambiclimate.com/api/v1/device/mode";
+			String roomName = URLEncoder.encode(deviceObject.roomName(), "UTF-8");
+			String locationName = URLEncoder.encode(deviceObject.locationName(), "UTF-8");
+			String uri = url + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName;
+
+			// Get json from url
+			String json = Utils.getJSONStringFromUrl(uri);
+			Object result = new JSONTokener(json).nextValue();
+
+			// If json is an jsonObject, it's probably an error.
+			if (result instanceof JSONObject){
+				JSONObject jsonObject= new JSONObject(json);
+
+				// Retrieve humdity
+				mode = jsonObject.getString("mode");
+
+				// Get status code and handle specific cases if a status code is set
+				if (jsonObject.has("error_code")) {
+					Integer errorCode = jsonObject.getInt("error_code");
+					switch (errorCode) {
+						case 401:
+							return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
+					}
+				}
+
+				// If there is any error in the result
+				if (jsonObject.has("errors")) {
+					Log.d(TAG, "Errors: "+jsonObject.get("errors"));
+					return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending feedback failed.");
+				}
+			}
+			// If json is an jsonArray, it's probably a good response.
+			else if (result instanceof JSONArray) {
+				JSONArray jsonArray = new JSONArray(json);
+				resultAsJsonObject = jsonArray.getJSONObject(0);
+			}
+
+		} catch (Exception e) {
+			return new ReturnObject(e, "Could not get current mode info.");
+		}
+
+		return new ReturnObject(resultAsJsonObject, mode);
+	}
+
 	public static ReturnObject getTemperature(String accessToken, DeviceObject deviceObject) {
 
 		// Start a JSON Retrieving Request
@@ -178,10 +230,10 @@ public class Requests {
 
 		try {
 			// Create URL for Temperature request
-			String temperatureUrl = 	"https://api.ambiclimate.com/api/v1/device/sensor/temperature";
+			String url = 	"https://api.ambiclimate.com/api/v1/device/sensor/temperature";
 			String roomName = URLEncoder.encode(deviceObject.roomName(), "UTF-8");
 			String locationName = URLEncoder.encode(deviceObject.locationName(), "UTF-8");
-			String uri = temperatureUrl + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName;
+			String uri = url + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName;
 
 			// Get json from url
 			String json = Utils.getJSONStringFromUrl(uri);
@@ -230,10 +282,10 @@ public class Requests {
 
 		try {
 			// Create URL for Humidity request
-			String temperatureUrl = 	"https://api.ambiclimate.com/api/v1/device/sensor/humidity";
+			String url = 	"https://api.ambiclimate.com/api/v1/device/sensor/humidity";
 			String roomName = URLEncoder.encode(deviceObject.roomName(), "UTF-8");
 			String locationName = URLEncoder.encode(deviceObject.locationName(), "UTF-8");
-			String uri = temperatureUrl + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName;
+			String uri = url + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName;
 
 			// Get json from url
 			String json = Utils.getJSONStringFromUrl(uri);
@@ -280,11 +332,11 @@ public class Requests {
 
 		try {
 			// Create URL for Temperature request
-			String updateComfortUrl = 	"https://api.ambiclimate.com/api/v1/user/feedback";
+			String url = 	"https://api.ambiclimate.com/api/v1/user/feedback";
 			String roomName = URLEncoder.encode(deviceObject.roomName(), "UTF-8");
 			String locationName = URLEncoder.encode(deviceObject.locationName(), "UTF-8");
 
-			String uri = updateComfortUrl + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName+"&value="+feedback;
+			String uri = url + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName+"&value="+feedback;
 
 			// Retrieve temperature
 			String json = Utils.getJSONStringFromUrl(uri);
@@ -314,6 +366,94 @@ public class Requests {
 
 		} catch (Exception e) {
 			return new ReturnObject(e, "Could not send comfort feedback");
+		}
+	}
+
+	public static ReturnObject powerOff(String accessToken, DeviceObject deviceObject) {
+		JSONObject jsonObject = null;
+
+		try {
+			// Create URL for power off request
+			String url = 	"https://api.ambiclimate.com/api/v1/device/power/off";
+			String roomName = URLEncoder.encode(deviceObject.roomName(), "UTF-8");
+			String locationName = URLEncoder.encode(deviceObject.locationName(), "UTF-8");
+
+			String uri = url + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName;
+
+			// Retrieve result
+			String json = Utils.getJSONStringFromUrl(uri);
+			Object result = new JSONTokener(json).nextValue();
+
+			// If json is an jsonObject
+			if (result instanceof JSONObject){
+				jsonObject= new JSONObject(json);
+
+				// Get status code and handle specific cases if an status code is set
+				if (jsonObject.has("error_code")) {
+					Integer errorCode = jsonObject.getInt("error_code");
+					switch (errorCode) {
+						case 401:
+							return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
+					}
+				}
+
+				// If there is any error in the result
+				if (jsonObject.has("errors")) {
+					Log.d(TAG, "Errors: "+jsonObject.get("errors"));
+					return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending power off signal failed.");
+				}
+			}
+
+			return new ReturnObject(jsonObject, "OK");
+
+		} catch (Exception e) {
+			return new ReturnObject(e, "Could not send power off signal.");
+		}
+	}
+
+	public static ReturnObject updateMode(String accessToken, DeviceObject deviceObject, String mode, String value, Boolean multiple) {
+		JSONObject jsonObject = null;
+		if (multiple == null) multiple = false;
+
+		try {
+			// Create URL for update mode request
+			String url = 	"https://api.ambiclimate.com/api/v1/device/mode/"+mode;
+			String roomName = URLEncoder.encode(deviceObject.roomName(), "UTF-8");
+			String locationName = URLEncoder.encode(deviceObject.locationName(), "UTF-8");
+
+			String uri = url + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName+"&multiple="+multiple;
+
+			// If not comfort mode, add VALUE parameter to uri
+			if (mode != "comfort") uri += "&value="+value;
+
+			// Retrieve result
+			String json = Utils.getJSONStringFromUrl(uri);
+			Object result = new JSONTokener(json).nextValue();
+
+			// If json is an jsonObject
+			if (result instanceof JSONObject){
+				jsonObject= new JSONObject(json);
+
+				// Get status code and handle specific cases if an status code is set
+				if (jsonObject.has("error_code")) {
+					Integer errorCode = jsonObject.getInt("error_code");
+					switch (errorCode) {
+						case 401:
+							return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
+					}
+				}
+
+				// If there is any error in the result
+				if (jsonObject.has("errors")) {
+					Log.d(TAG, "Errors: "+jsonObject.get("errors"));
+					return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending mode update failed.");
+				}
+			}
+
+			return new ReturnObject(jsonObject, "OK");
+
+		} catch (Exception e) {
+			return new ReturnObject(e, "Could not update mode.");
 		}
 	}
 }

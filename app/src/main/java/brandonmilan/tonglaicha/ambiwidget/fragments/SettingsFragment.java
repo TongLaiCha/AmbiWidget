@@ -71,7 +71,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     }
 
     private void createDeviceListPreference(final PreferenceScreen screen) {
-        new DataManager.GetDeviceListTask(false, screen.getContext(), new OnProcessFinish<ReturnObject>() {
+        new DataManager.GetDeviceListTask(screen.getContext(), new OnProcessFinish<ReturnObject>() {
 
             @Override
             public void onSuccess(ReturnObject result) {

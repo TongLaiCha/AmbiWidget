@@ -55,8 +55,6 @@ public class AuthActivity extends AppCompatActivity {
 		// Read intent data if set (User returning from the browser with params)
 		String authCode = null;
 
-		Log.i(TAG, "Creating AuthActivity.");
-
 		Uri data = getIntent().getData();
 		if (data != null) {
 			// Get strings from intent data

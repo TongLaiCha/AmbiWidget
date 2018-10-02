@@ -121,11 +121,9 @@ public class TokenManager {
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 		String accessTokenJson = sharedPref.getString(context.getResources().getString(R.string.saved_access_token_key), null);
 		if (Utils.isJson(accessTokenJson)) {
-			Log.d(TAG, "accessTokenJson == JSON");
 			Gson gson = new Gson();
 			accessToken = gson.fromJson(accessTokenJson, TokenObject.class);
 		} else {
-			Log.d(TAG, "accessTokenJson != JSON");
 			TokenManager.deleteToken(context, "ACCESS_TOKEN");
 		}
 
@@ -134,7 +132,6 @@ public class TokenManager {
 			Log.i(TAG, "Access Token has expired.");
 		}
 
-		Log.d(TAG, "accessToken.value() = "+accessToken.value());
 		// If accesstoken is not in preferences
 		if (accessToken.value() == null) {
 			// Get refresh token
@@ -211,7 +208,7 @@ public class TokenManager {
 			editor.putString(prefName, tokenAsJson);
 			editor.apply();
 
-			Log.d(TAG, "SAVED ("+prefName+"): "+tokenAsJson);
+			Log.i(TAG, "SAVED TOKEN IN PREFERENCES ("+prefName+")");
 		}
 	}
 
@@ -235,14 +232,13 @@ public class TokenManager {
 		}
 
 		if (prefName != null) {
-
 			// Delete from preferences
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 			SharedPreferences.Editor editor = sharedPref.edit();
 			editor.remove(prefName);
 			editor.apply();
 
-			Log.d(TAG, "DELETED TOKEN ("+prefName+")");
+			Log.i(TAG, "DELETED TOKEN IN PREFERENCES ("+prefName+")");
 		}
 	}
 }

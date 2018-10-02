@@ -71,11 +71,9 @@ public final class WidgetUtils {
 
     public static String getTempScalePreference(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-
-        return sharedPreferences.getString(
-                String.valueOf(R.string.pref_tempScale_key),
-                String.valueOf(R.string.pref_tempScale_value_celsius)
-        );
+        String prefKey = context.getString(R.string.pref_tempScale_key);
+        String defaultValue = context.getString(R.string.pref_tempScale_value_celsius);
+        return sharedPreferences.getString(prefKey, defaultValue);
     }
 
     public static double convertToFahrenheit(double temperatureCelsius) {

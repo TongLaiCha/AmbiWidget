@@ -17,15 +17,23 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         String refreshToken = TokenManager.getRefreshToken(SettingsActivity.this).value();
-		Log.d("SETTINGS", "onCreate: RefreshToken: " + refreshToken);
-
-        // Redirect to auth activity if refresh token is not set. (Authentication needed)
-        if (refreshToken == null) {
-            Intent i = new Intent(SettingsActivity.this, AuthActivity.class);
-            SettingsActivity.this.startActivity(i);
-            finish();
-            return;
-        }
+		authPageCheck();
         setContentView(R.layout.settings_activity);
     }
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		authPageCheck();
+	}
+
+    private void authPageCheck() {
+		String refreshToken = TokenManager.getRefreshToken(SettingsActivity.this).value();
+		// Redirect to auth activity if refresh token is not set. (Authentication needed)
+		if (refreshToken == null) {
+			Intent i = new Intent(SettingsActivity.this, AuthActivity.class);
+			SettingsActivity.this.startActivity(i);
+			finish();
+		}
+	}
 }

@@ -176,13 +176,12 @@
                 android:textSize="11sp" />
 
             <Button
-                android:id="@+id/button_mode"
+                android:id="@+id/button_on_off"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/ambi_grey_5"
                 android:fontFamily="@font/avenir"
-                android:text="@string/mode"
                 android:textSize="11sp" />
 
         </LinearLayout>

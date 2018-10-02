@@ -121,7 +121,7 @@ public class AuthActivity extends AppCompatActivity {
 			public void onSuccess(ReturnObject result) {
 				Toast.makeText(getApplicationContext(), "Authentication successful!", Toast.LENGTH_LONG).show();
 
-				WidgetProvider.authorized = true;
+				// Update the widget
                 WidgetUtils.remoteUpdateWidget(getApplicationContext());
 
 				// Go to settings activity
@@ -132,7 +132,6 @@ public class AuthActivity extends AppCompatActivity {
 
 			@Override
 			public void onFailure(ReturnObject result) {
-			    WidgetProvider.authorized = false;
                 WidgetUtils.remoteUpdateWidget(getApplicationContext());
                 Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, "Authenthication failed!");

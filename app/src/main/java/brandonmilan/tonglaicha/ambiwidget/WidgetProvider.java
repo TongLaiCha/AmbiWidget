@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
 import brandonmilan.tonglaicha.ambiwidget.activities.AuthActivity;
 import brandonmilan.tonglaicha.ambiwidget.activities.SettingsActivity;
 import brandonmilan.tonglaicha.ambiwidget.activities.WidgetConfigureActivity;
@@ -30,14 +31,13 @@ public class WidgetProvider extends AppWidgetProvider {
     private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
     private static final String ActionSwitchOnOff = WidgetService.ACTION_SWITCH_ON_OFF;
     private static final Integer JOB_ID = 10;
-    public static Boolean authorized = false;
 
     /**
      * Instruct the appWidgetManager to load the widgets view and its components.
      */
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         //Check if the user has authorized the widget to access his Ambi account.
-        if(!authorized){
+        if(TokenManager.getRefreshToken(context).value() == null){
             // Construct the RemoteViews object
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_auth_overlay);
 

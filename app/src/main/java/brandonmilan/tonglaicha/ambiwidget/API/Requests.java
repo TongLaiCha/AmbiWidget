@@ -8,13 +8,16 @@ import net.smartam.leeloo.common.message.types.GrantType;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.TokenObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.LogUtil;
 import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
 
@@ -54,15 +57,31 @@ public class Requests {
 
 		// Start a JSON Retrieving Request
 		JSONObject result = null;
-		String accessToken = null;
+		TokenObject accessToken = null;
 		try {
-			result = Utils.getJSONObjectFromURL(uri);
-			accessToken = result.getString("access_token");
+			result = new JSONObject(Utils.getJSONStringFromUrl(uri));
+			if (result.has("access_token") && result.has("expires_in")) {
+				accessToken = new TokenObject("ACCESS_TOKEN", result.getString("access_token"), result.getLong("expires_in"));
+			}
+
+			// If there is any error in the result
+			if (result.has("error")) {
+				Log.d(TAG, "Error: "+result.get("error"));
+
+				// Get status code and handle specific cases
+				String error = result.getString("error");
+				if (Objects.equals(error, "invalid_grant")) {
+					return new ReturnObject(new Exception("ERROR_INVALID_REFRESH_TOKEN"), "Invalid refresh token, could not get new access token.");
+				}
+
+				return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Could not get new access token.");
+			}
+
 		} catch (Exception e) {
 			return new ReturnObject(e, LogUtil.lineNr() + " Failed to get JSON from url.");
 		}
 
-		return new ReturnObject(result, accessToken);
+		return new ReturnObject(accessToken);
 	}
 
 	public static ReturnObject getNewRefreshToken(String authCode) {
@@ -93,7 +112,7 @@ public class Requests {
 		JSONObject result = null;
 		String refreshToken = null;
 		try {
-			result = Utils.getJSONObjectFromURL(uri);
+			result = new JSONObject(Utils.getJSONStringFromUrl(uri));
 			refreshToken = result.getString("refresh_token");
 		} catch (Exception e) {
 			return new ReturnObject(e, "Failed to get JSON from url.");
@@ -109,11 +128,25 @@ public class Requests {
 		String uri = deviceListUrl + "?access_token="+accessToken;
 
 		// Start a JSON Retrieving Request
-		JSONObject result = null;
 		List<DeviceObject> deviceList = new ArrayList<>();
 
 		try {
-			result = Utils.getJSONObjectFromURL(uri);
+			JSONObject result = new JSONObject(Utils.getJSONStringFromUrl(uri));
+
+			// Get status code and handle specific cases if a status code is set
+			if (result.has("error_code")) {
+				Integer errorCode = result.getInt("error_code");
+				switch (errorCode) {
+					case 401:
+						return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
+				}
+			}
+
+			// If there is any error in the result
+			if (result.has("errors")) {
+				Log.d(TAG, "Errors: "+result.get("errors"));
+				return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending feedback failed.");
+			}
 
 			//Retrieve devices from JSON
 			JSONArray deviceArray = result.getJSONArray("data");
@@ -140,7 +173,6 @@ public class Requests {
 	public static ReturnObject getTemperature(String accessToken, DeviceObject deviceObject) {
 
 		// Start a JSON Retrieving Request
-		JSONArray result = null;
 		JSONObject resultAsJsonObject = null;
 		String temperature = null;
 
@@ -151,11 +183,37 @@ public class Requests {
 			String locationName = URLEncoder.encode(deviceObject.locationName(), "UTF-8");
 			String uri = temperatureUrl + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName;
 
-			// Retrieve temperature
-			result = Utils.getJSONArrayFromURL(uri);
+			// Get json from url
+			String json = Utils.getJSONStringFromUrl(uri);
+			Object result = new JSONTokener(json).nextValue();
 
-			resultAsJsonObject = result.getJSONObject(0);
-			temperature = resultAsJsonObject.getString("value");
+			// If json is an jsonObject, it's probably an error.
+			if (result instanceof JSONObject){
+				JSONObject jsonObject= new JSONObject(json);
+
+				// Get status code and handle specific cases if a status code is set
+				if (jsonObject.has("error_code")) {
+					Integer errorCode = jsonObject.getInt("error_code");
+					switch (errorCode) {
+						case 401:
+							return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
+					}
+				}
+
+				// If there is any error in the result
+				if (jsonObject.has("errors")) {
+					Log.d(TAG, "Errors: "+jsonObject.get("errors"));
+					return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending feedback failed.");
+				}
+			}
+			// If json is an jsonArray, it's probably a good response.
+			else if (result instanceof JSONArray) {
+				JSONArray jsonArray = new JSONArray(json);
+				resultAsJsonObject = jsonArray.getJSONObject(0);
+
+				// Retrieve humdity
+				temperature = resultAsJsonObject.getString("value");
+			}
 
 		} catch (Exception e) {
 			return new ReturnObject(e, "Could not get temperature");
@@ -167,24 +225,50 @@ public class Requests {
 	public static ReturnObject getHumidity(String accessToken, DeviceObject deviceObject) {
 
 		// Start a JSON Retrieving Request
-		JSONArray result = null;
 		JSONObject resultAsJsonObject = null;
 		String humidity = null;
 
 		try {
-			// Create URL for Temperature request
+			// Create URL for Humidity request
 			String temperatureUrl = 	"https://api.ambiclimate.com/api/v1/device/sensor/humidity";
 			String roomName = URLEncoder.encode(deviceObject.roomName(), "UTF-8");
 			String locationName = URLEncoder.encode(deviceObject.locationName(), "UTF-8");
 			String uri = temperatureUrl + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName;
 
-			// Retrieve temperature
-			result = Utils.getJSONArrayFromURL(uri);
+			// Get json from url
+			String json = Utils.getJSONStringFromUrl(uri);
+			Object result = new JSONTokener(json).nextValue();
 
-			resultAsJsonObject = result.getJSONObject(0);
-			humidity = resultAsJsonObject.getString("value");
+			// If json is an jsonObject, it's probably an error.
+			if (result instanceof JSONObject){
+				JSONObject jsonObject= new JSONObject(json);
+
+				// Get status code and handle specific cases if a status code is set
+				if (jsonObject.has("error_code")) {
+					Integer errorCode = jsonObject.getInt("error_code");
+					switch (errorCode) {
+						case 401:
+							return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
+					}
+				}
+
+				// If there is any error in the result
+				if (jsonObject.has("errors")) {
+					Log.d(TAG, "Errors: "+jsonObject.get("errors"));
+					return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending feedback failed.");
+				}
+			}
+			// If json is an jsonArray, it's probably a good response.
+			else if (result instanceof JSONArray) {
+				JSONArray jsonArray = new JSONArray(json);
+				resultAsJsonObject = jsonArray.getJSONObject(0);
+
+				// Retrieve humdity
+				humidity = resultAsJsonObject.getString("value");
+			}
 
 		} catch (Exception e) {
+			Log.e(TAG, "getHumidity: Could not get humidity TEST");
 			return new ReturnObject(e, "Could not get humidity");
 		}
 
@@ -192,9 +276,7 @@ public class Requests {
 	}
 
 	public static ReturnObject updateComfort(String accessToken, DeviceObject deviceObject, String feedback) {
-
-		// Start a JSON Retrieving Request
-		JSONObject result = null;
+		JSONObject jsonObject = null;
 
 		try {
 			// Create URL for Temperature request
@@ -205,19 +287,33 @@ public class Requests {
 			String uri = updateComfortUrl + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName+"&value="+feedback;
 
 			// Retrieve temperature
-			result = Utils.getJSONObjectFromURL(uri);
+			String json = Utils.getJSONStringFromUrl(uri);
+			Object result = new JSONTokener(json).nextValue();
 
+			// If json is an jsonObject
+			if (result instanceof JSONObject){
+				jsonObject= new JSONObject(json);
 
-			// If there is any error in the result
-			if (result.has("errors")) {
-				Log.d(TAG, "Errors: "+result.get("errors"));
-				return new ReturnObject(new Exception("ERROR_UPDATE_COMFORT"), "Sending feedback failed.");
+				// Get status code and handle specific cases if an status code is set
+				if (jsonObject.has("error_code")) {
+					Integer errorCode = jsonObject.getInt("error_code");
+					switch (errorCode) {
+						case 401:
+							return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
+					}
+				}
+
+				// If there is any error in the result
+				if (jsonObject.has("errors")) {
+					Log.d(TAG, "Errors: "+jsonObject.get("errors"));
+					return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending feedback failed.");
+				}
 			}
+
+			return new ReturnObject(jsonObject, "OK");
 
 		} catch (Exception e) {
 			return new ReturnObject(e, "Could not send comfort feedback");
 		}
-
-		return new ReturnObject(result, "OK");
 	}
 }

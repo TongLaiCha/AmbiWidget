@@ -14,6 +14,7 @@ public class ReturnObject {
 	public String errorMessage = null;
 	public List<DeviceObject> deviceList = new ArrayList<DeviceObject>();
 	public DeviceObject deviceObject = null;
+	public TokenObject tokenObject = null;
 
 	public ReturnObject(JSONObject jsonObject, String value) {
 		this.jsonObject = jsonObject;
@@ -27,6 +28,10 @@ public class ReturnObject {
 
 	public ReturnObject(String value) {
 		this.value = value;
+	}
+
+	public ReturnObject(TokenObject tokenObject) {
+		this.tokenObject = tokenObject;
 	}
 
 	public ReturnObject(List<DeviceObject> deviceList) {

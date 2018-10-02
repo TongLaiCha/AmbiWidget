@@ -89,13 +89,13 @@ public class WidgetContentManager {
                 Log.d(TAG, "fillView: " + prefTempScale);
 //                String tempScalePref = WidgetUtils.getTempScalePreference();
                 if(prefTempScale.equals(String.valueOf(R.string.pref_tempScale_value_celsius))){
-                    view.setTextViewText(R.id.temperature, temperature + "C");
-                    Log.d(TAG, "fillView: Filling with " + temperature + "C " + view);
+                    view.setTextViewText(R.id.temperature, temperature.toString() + (char) 0x00B0);
+                    Log.d(TAG, "fillView: Filling with " + temperature + (char) 0x00B0 + view);
                     appWidgetManager.updateAppWidget(appWidgetId, view);
                 } else {
                     double tempFahrenheit = WidgetUtils.convertToFahrenheit(temperature);
-                    view.setTextViewText(R.id.temperature, temperature + "F");
-                    Log.d(TAG, "fillView: Filling with " + temperature + "F " + view);
+                    view.setTextViewText(R.id.temperature, temperature.toString() + (char) 0x00B0);
+                    Log.d(TAG, "fillView: Filling with " + temperature + (char) 0x00B0 + view);
                     appWidgetManager.updateAppWidget(appWidgetId, view);
                 }
                 break;

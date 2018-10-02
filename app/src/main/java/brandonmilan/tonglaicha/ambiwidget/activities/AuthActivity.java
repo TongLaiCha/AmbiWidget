@@ -1,11 +1,9 @@
 package brandonmilan.tonglaicha.ambiwidget.activities;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-
 import android.net.Uri;
-
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,9 +14,11 @@ import net.smartam.leeloo.client.request.OAuthClientRequest;
 import net.smartam.leeloo.common.exception.OAuthSystemException;
 
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
-import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
 import brandonmilan.tonglaicha.ambiwidget.R;
+import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
+import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
+import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
  * A login screen that offers login via email/password.
@@ -118,7 +118,8 @@ public class AuthActivity extends AppCompatActivity {
 			@Override
 			public void onSuccess(ReturnObject result) {
 				Toast.makeText(getApplicationContext(), "Authentication successful!", Toast.LENGTH_LONG).show();
-
+				WidgetProvider.authorized = true;
+                WidgetUtils.remoteUpdateWidget(getApplicationContext());
 				// Go to settings activity
 				Intent i = new Intent(AuthActivity.this, SettingsActivity.class);
 				AuthActivity.this.startActivity(i);
@@ -127,7 +128,9 @@ public class AuthActivity extends AppCompatActivity {
 
 			@Override
 			public void onFailure(ReturnObject result) {
-				Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+			    WidgetProvider.authorized = false;
+                WidgetUtils.remoteUpdateWidget(getApplicationContext());
+                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, "Authenthication failed!");
 			}
 		}, authCode).execute();

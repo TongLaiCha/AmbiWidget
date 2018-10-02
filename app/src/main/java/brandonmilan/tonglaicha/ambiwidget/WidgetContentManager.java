@@ -86,20 +86,15 @@ public class WidgetContentManager {
                           String value_celsius, String value_fahrenheit) {
         switch (TAG){
             case "TEMP":
-                //TODO: needs to be 2 decimals always.
                 Double temperature = WidgetUtils.roundOneDecimal(Double.parseDouble(result.value));
 
-                Log.d(TAG, "fillView: " + prefTempScale);
-//                String tempScalePref = WidgetUtils.getTempScalePreference();
                 if(prefTempScale.equals(value_celsius)){
                     view.setTextViewText(R.id.temperature, temperature + "\u00B0");
-                    Log.d(TAG, "fillView: Filling with " + temperature + "\u00B0" + view);
                     appWidgetManager.updateAppWidget(appWidgetId, view);
                 }
                 else if (prefTempScale.equals(value_fahrenheit)){
-                    Double tempFahrenheit = WidgetUtils.convertToFahrenheit(temperature);
+                    Double tempFahrenheit = WidgetUtils.roundOneDecimal(WidgetUtils.convertToFahrenheit(temperature));
                     view.setTextViewText(R.id.temperature, tempFahrenheit + "\u00B0");
-                    Log.d(TAG, "fillView: Filling with " + tempFahrenheit + "\u00B0" + view);
                     appWidgetManager.updateAppWidget(appWidgetId, view);
                 }
                 break;

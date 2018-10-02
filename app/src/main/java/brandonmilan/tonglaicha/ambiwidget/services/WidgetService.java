@@ -93,7 +93,7 @@ public class WidgetService extends JobIntentService {
             Log.d(TAG, "handleActionGiveFeedback: Using prefered device!");
         }
 
-        new DataManager.UpdateComfortTask(feedbackTag, deviceObject, false, getApplicationContext(), new OnProcessFinish<ReturnObject>() {
+        new DataManager.UpdateComfortTask(getApplicationContext(), new OnProcessFinish<ReturnObject>() {
 
             @Override
             public void onSuccess(ReturnObject result) {
@@ -108,6 +108,6 @@ public class WidgetService extends JobIntentService {
                 Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
                 Log.d(TAG, result.errorMessage + ": " + result.exception);
             }
-        }).execute();
+        }, deviceObject, feedbackTag).execute();
     }
 }

@@ -160,7 +160,7 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 		private DeviceObject deviceObject;
 		private String feedback;
 
-		public UpdateComfortTask(DeviceObject deviceObject, OnProcessFinish callback, Context context, String feedback){
+		public UpdateComfortTask(Context context, OnProcessFinish callback, DeviceObject deviceObject, String feedback){
 			super(context, callback);
 			this.deviceObject = deviceObject;
 			this.feedback = feedback;

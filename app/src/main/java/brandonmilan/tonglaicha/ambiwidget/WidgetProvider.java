@@ -5,16 +5,11 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.google.gson.Gson;
-
 import brandonmilan.tonglaicha.ambiwidget.activities.SettingsActivity;
 import brandonmilan.tonglaicha.ambiwidget.activities.WidgetConfigureActivity;
-import brandonmilan.tonglaicha.ambiwidget.objects.WidgetDataObject;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
@@ -23,7 +18,7 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
  * App Widget Configuration implemented in {@link WidgetConfigureActivity WidgetConfigureActivity}
  * @author Milan Sosef
  */
-public class WidgetProvider extends AppWidgetProvider implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class WidgetProvider extends AppWidgetProvider {
     private static final String TAG = "WidgetProvider";
     private static final String TooColdTag = "too_cold";
     private static final String LittleColdTag = "bit_cold";
@@ -34,19 +29,24 @@ public class WidgetProvider extends AppWidgetProvider implements SharedPreferenc
     private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
     private static final Integer JOB_ID = 10;
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                WidgetDataObject widgetData, int appWidgetId) {
-
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
-        Gson gson = new Gson();
-        Log.i(TAG, "RemoteView: "+gson.toJson(views));
-        Log.d(TAG, "updateAppWidget: RemoteViews object created.");
+        setButtonClickHandlers(context, appWidgetId, views);
 
         //Update the temperature, humidity, room name and location name.
         WidgetContentManager.getInstance(appWidgetManager, views, appWidgetId).updateView(context);
 
-        //Set onClickPendingIntents for all the buttons.
+        // Instruct the widget manager to update the widget
+        appWidgetManager.updateAppWidget(appWidgetId, views);
+        Log.d(TAG, "updateAppWidget: Success!");
+    }
+
+    /**
+     * Set all click handlers for the widgets buttons.
+     */
+    private static void setButtonClickHandlers(Context context, int appWidgetId, RemoteViews views) {
+        //Set onClickPendingIntents for all the feedback buttons.
         views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getPendingIntent(context, ActionFeedback, TooColdTag));
         views.setOnClickPendingIntent(R.id.button_little_cold, WidgetUtils.getPendingIntent(context, ActionFeedback, LittleColdTag));
         views.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getPendingIntent(context, ActionFeedback, ComfyTag));
@@ -62,11 +62,7 @@ public class WidgetProvider extends AppWidgetProvider implements SharedPreferenc
 
         //Set onClickPendingIntent for the refresh button.
         views.setOnClickPendingIntent(R.id.button_refresh,
-                WidgetUtils.getPendingIntent(context, ActionUpdate, "Update")); //TODO: try null for the tag
-        
-        // Instruct the widget manager to update the widget
-        appWidgetManager.updateAppWidget(appWidgetId, views);
-        Log.d(TAG, "updateAppWidget: Success!");
+                WidgetUtils.getPendingIntent(context, ActionUpdate, null));
     }
 
     //TODO: Make onUpdate only execute after the configuration is done.
@@ -74,25 +70,18 @@ public class WidgetProvider extends AppWidgetProvider implements SharedPreferenc
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "onUpdate: Executed...");
 
-        //Send the pendingIntent with the update widget action, a background service takes care of updating the widgets UI.
-        PendingIntent pendingIntent = WidgetUtils.getPendingIntent(context, ActionUpdate, "Update"); //TODO: try null for the tag
-        try {
-            pendingIntent.send();
-        } catch (PendingIntent.CanceledException e) {
-            e.printStackTrace();
-        }
+        WidgetUtils.remoteUpdateWidget(context);
 
     }
 
     /**
      * Update all widgets currently active on the screen.
      */
-    public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager,
-                                        WidgetDataObject widgetDataObject, int[] appWidgetIds) {
+    public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "updateAllWidgets: Executed..");
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, widgetDataObject, appWidgetId);
+            updateAppWidget(context, appWidgetManager, appWidgetId);
         }
     }
 
@@ -113,15 +102,12 @@ public class WidgetProvider extends AppWidgetProvider implements SharedPreferenc
         // When the user deletes the widget, delete the preference associated with it.
         for (int appWidgetId : appWidgetIds) {
 //            WidgetConfigureActivity.deleteTitlePref(context, appWidgetId);
-            PreferenceManager.getDefaultSharedPreferences(context)
-                    .unregisterOnSharedPreferenceChangeListener(this);
         }
     }
 
     @Override
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is created
-        setupSharedPreferences(context);
     }
 
     @Override
@@ -129,17 +115,5 @@ public class WidgetProvider extends AppWidgetProvider implements SharedPreferenc
         // Enter relevant functionality for when the last widget is disabled
     }
 
-    private void setupSharedPreferences(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        //TODO: update the widget.
-//        if (key.equals(getString(R.string.pref_show_celsius_key))) {
-//
-//        }
-    }
 }
 

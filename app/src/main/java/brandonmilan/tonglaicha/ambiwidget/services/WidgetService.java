@@ -12,7 +12,6 @@ import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
-import brandonmilan.tonglaicha.ambiwidget.objects.WidgetDataObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
@@ -55,12 +54,12 @@ public class WidgetService extends JobIntentService {
     private void handleActionUpdateWidget() {
         Log.d(TAG, "handleActionUpdateWidget: Updating widget!");
 
-        WidgetDataObject data = new WidgetDataObject("Interns desk", 25.6, 58.2, "Work");
+//        WidgetDataObject data = new WidgetDataObject("Interns desk", 25.6, 58.2, "Work");
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
 
-        WidgetProvider.updateAllWidgets(this, appWidgetManager, data, appWidgetIds);
+        WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds);
     }
 
     /**
@@ -68,18 +67,31 @@ public class WidgetService extends JobIntentService {
      *
      * @param feedbackTag
      */
-    private void handleActionGiveFeedback(String feedbackTag) {
+    private void handleActionGiveFeedback(final String feedbackTag) {
         //Call class for API handling and giving feedback to the Ai.
         Log.d(TAG, "handleActionGiveFeedback: Giving feedback: It is " + feedbackTag + " to the Ai.");
 
-        final DeviceObject deviceObject = WidgetUtils.getDefaultDevice(getApplicationContext());
+       DeviceObject deviceObject;
+        final DeviceObject defaultDeviceObject = WidgetUtils.getDefaultDevice(getApplicationContext());
+        final DeviceObject preferredDeviceObject = WidgetUtils.getPreferredDevice(getApplicationContext());
+
+        //Use default device if no preferred device is selected.
+        if (preferredDeviceObject == null){
+            deviceObject = defaultDeviceObject;
+            Log.d(TAG, "handleActionGiveFeedback: No preferred device selected! Using default.");
+        } else {
+            deviceObject = preferredDeviceObject;
+            Log.d(TAG, "handleActionGiveFeedback: Using prefered device!");
+        }
 
         new DataManager.UpdateComfortTask(feedbackTag, deviceObject, false, getApplicationContext(), new OnProcessFinish<ReturnObject>() {
 
             @Override
             public void onSuccess(ReturnObject result) {
-                String status = result.value;
-                Toast.makeText(getApplicationContext(), "Status: " + status, Toast.LENGTH_LONG).show();
+//                String status = "Status: " + result.value;
+                String feedbackMsg = feedbackTag.replace("_", " ");
+                String confirmToast = "Feedback given: " + feedbackMsg + ".";
+                Toast.makeText(getApplicationContext(), confirmToast, Toast.LENGTH_SHORT).show();
             }
 
             @Override

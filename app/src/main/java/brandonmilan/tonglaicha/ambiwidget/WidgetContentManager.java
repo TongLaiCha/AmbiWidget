@@ -37,7 +37,9 @@ public class WidgetContentManager {
         DeviceObject deviceObject;
         final DeviceObject defaultDeviceObject = WidgetUtils.getDefaultDevice(context);
         final DeviceObject preferredDeviceObject = WidgetUtils.getPreferredDevice(context);
-        prefTempScale = WidgetUtils.getTempScalePreference(context);
+        this.prefTempScale = WidgetUtils.getTempScalePreference(context);
+        final String value_celsius = context.getString(R.string.pref_tempScale_value_celsius);
+        final String value_fahrenheit = context.getString(R.string.pref_tempScale_value_fahrenheit);
         Log.d(TAG, "updateView: PrefTempScale = " + prefTempScale);
 
 
@@ -52,7 +54,7 @@ public class WidgetContentManager {
 
             @Override
             public void onSuccess(ReturnObject result) {
-                fillView(result, "TEMP");
+                fillView(result, "TEMP", value_celsius, value_fahrenheit);
                 Log.d(TAG, "onSuccess: Content filled");
             }
 
@@ -66,7 +68,7 @@ public class WidgetContentManager {
 
             @Override
             public void onSuccess(ReturnObject result) {
-                fillView(result, "HUMID");
+                fillView(result, "HUMID", value_celsius, value_fahrenheit);
                 Log.d(TAG, "onSuccess: Content filled");
             }
 
@@ -76,11 +78,12 @@ public class WidgetContentManager {
             }
         }).execute();
 
-        fillView(new ReturnObject(deviceObject), "ROOM");
-        fillView(new ReturnObject(deviceObject), "LOCATION");
+        fillView(new ReturnObject(deviceObject), "ROOM", null, null);
+        fillView(new ReturnObject(deviceObject), "LOCATION", null, null);
     }
 
-    private void fillView(ReturnObject result, String TAG) {
+    private void fillView(ReturnObject result, String TAG,
+                          String value_celsius, String value_fahrenheit) {
         switch (TAG){
             case "TEMP":
                 //TODO: needs to be 2 decimals always.
@@ -88,14 +91,14 @@ public class WidgetContentManager {
 
                 Log.d(TAG, "fillView: " + prefTempScale);
 //                String tempScalePref = WidgetUtils.getTempScalePreference();
-                if(prefTempScale.equals(String.valueOf(R.string.pref_tempScale_value_celsius))){
+                if(prefTempScale.equals(value_celsius)){
                     view.setTextViewText(R.id.temperature, temperature + "C");
                     Log.d(TAG, "fillView: Filling with " + temperature + "C " + view);
                     appWidgetManager.updateAppWidget(appWidgetId, view);
-                } else {
+                } else if (prefTempScale.equals(value_fahrenheit)){
                     double tempFahrenheit = WidgetUtils.convertToFahrenheit(temperature);
-                    view.setTextViewText(R.id.temperature, temperature + "F");
-                    Log.d(TAG, "fillView: Filling with " + temperature + "F " + view);
+                    view.setTextViewText(R.id.temperature, tempFahrenheit + "F");
+                    Log.d(TAG, "fillView: Filling with " + tempFahrenheit + "F " + view);
                     appWidgetManager.updateAppWidget(appWidgetId, view);
                 }
                 break;

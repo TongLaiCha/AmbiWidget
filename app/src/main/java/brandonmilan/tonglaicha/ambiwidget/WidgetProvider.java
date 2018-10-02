@@ -27,6 +27,7 @@ public class WidgetProvider extends AppWidgetProvider {
     private static final String TooWarmTag = "too_warm";
     private static final String ActionFeedback = WidgetService.ACTION_GIVE_FEEDBACK;
     private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
+    private static final String ActionSwitchOnOff = WidgetService.ACTION_SWITCH_ON_OFF;
     private static final Integer JOB_ID = 10;
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
@@ -52,6 +53,9 @@ public class WidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getPendingIntent(context, ActionFeedback, ComfyTag));
         views.setOnClickPendingIntent(R.id.button_little_warm, WidgetUtils.getPendingIntent(context, ActionFeedback, LittleWarmTag));
         views.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getPendingIntent(context, ActionFeedback, TooWarmTag));
+
+        //Set onClickPendingIntent for on/off button.
+        views.setOnClickPendingIntent(R.id.button_on_off, WidgetUtils.getPendingIntent(context, ActionSwitchOnOff, null));
 
         //Set onClickPendingIntent for the settings button.
         Intent configIntent = new Intent(context, SettingsActivity.class);

@@ -27,8 +27,8 @@ public class WidgetService extends JobIntentService {
             "brandonmilan.tonglaicha.ambiwidget.extra.FEEDBACK_TAG";
     public static final String ACTION_UPDATE_WIDGET =
             "brandonmilan.tonglaicha.ambiwidget.action.update_widget";
-    public static final String ACTION_OPEN_SETTINGS =
-            "brandonmilan.tonglaicha.ambiwidget.action.open_settings";
+    public static final String ACTION_SWITCH_ON_OFF =
+            "brandonmilan.tonglaicha.ambiwidget.action.switch_on_off";
 
     /**
      * Handle the incoming jobIntent in a background thread.
@@ -44,8 +44,17 @@ public class WidgetService extends JobIntentService {
                 handleActionGiveFeedback(feedbackTag);
             } else if(ACTION_UPDATE_WIDGET.equals(action)) {
                 handleActionUpdateWidget();
+            } else if(ACTION_SWITCH_ON_OFF.equals(action)) {
+                handleActionSwitchOnOff();
             }
         }
+    }
+
+    /**
+     * Handle action SwitchOnOff in provided background threat.
+     */
+    private void handleActionSwitchOnOff() {
+        Log.d(TAG, "handleActionSwitchOnOff: Switching on or off!");
     }
 
     /**

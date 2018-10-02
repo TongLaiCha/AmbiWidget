@@ -10,7 +10,8 @@
     <string name="comfy">Comfy</string>
     <string name="bit_cold">Bit cold</string>
     <string name="too_cold">Too cold</string>
-    <string name="mode">Mode</string>
+    <string name="off_state">Off</string>
+    <string name="on_state">On</string>
 
     <!--Preferences-->
 

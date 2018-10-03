@@ -44,7 +44,10 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.SettingsActivity" />
+
+        <activity android:name=".activities.SettingsActivity"
+            android:theme="@style/Ambi">
+        </activity>
 
         <receiver android:name=".WidgetProvider">
             <intent-filter>

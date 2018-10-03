@@ -21,13 +21,11 @@ import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
-public class SettingsFragment extends PreferenceFragmentCompat
-        implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
     private final static String TAG = "SettingsFragment";
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        //WARINING: This must be the first line or settings activity will crash.
         addPreferencesFromResource(R.xml.pref_visualizer);
 
         SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();

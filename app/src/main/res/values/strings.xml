@@ -16,7 +16,7 @@
     <!--Preferences-->
 
     <!--Temperature scale list-->
-    <string name="pref_tempScale_label">Temperature scale</string>
+    <string name="pref_tempScale_label">Temperature Scale</string>
     <string name="pref_tempScale_key" translatable="false">temperature_scale</string>
 
     <!--Option labels-->
@@ -28,8 +28,10 @@
     <string name="pref_tempScale_value_fahrenheit" translatable="false">fahrenheit</string>
 
     <!--Preferred device list-->
-    <string name="pref_preferredDevice_label">Preferred device</string>
+    <string name="pref_preferredDevice_label">Preferred Device</string>
     <string name="pref_preferredDevice_key" translatable="false">preferred_device</string>
+
+    <string name="button_settings_done">Done</string>
 
 
     <!-- Login / Authentication -->

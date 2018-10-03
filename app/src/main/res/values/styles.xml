@@ -13,6 +13,12 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
+    <style name="Ambi.widget" parent="Base.Theme.AppCompat.Light.DarkActionBar">
+        <!-- Default text style -->
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/ambi_grey_5</item>
+    </style>
+
     <!-- Header 3 -->
     <style name="H1">
         <item name="android:textSize">24sp</item>

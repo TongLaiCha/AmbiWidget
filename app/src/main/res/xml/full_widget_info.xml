@@ -3,8 +3,11 @@
     android:configure="brandonmilan.tonglaicha.ambiwidget.activities.WidgetConfigureActivity"
     android:initialKeyguardLayout="@layout/full_widget"
     android:initialLayout="@layout/full_widget"
+    android:resizeMode="vertical|horizontal"
     android:minHeight="110dp"
     android:minWidth="250dp"
+    android:minResizeHeight="55dp"
+    android:minResizeWidth="250dp"
     android:previewImage="@drawable/example_appwidget_preview"
     android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen" />

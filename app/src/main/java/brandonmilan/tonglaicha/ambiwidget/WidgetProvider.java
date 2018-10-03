@@ -64,10 +64,6 @@ public class WidgetProvider extends AppWidgetProvider {
         }
     }
 
-    static void showAuthOverlay(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-
-    }
-
     /**
      * Set all click handlers for the widgets buttons.
      */

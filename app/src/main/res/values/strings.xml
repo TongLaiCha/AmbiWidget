@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Ambi Widget</string>
-    <string name="appwidget_text">EXAMPLE</string>
+    <string name="activity_label_settings">Widget Settings</string>
+    <string name="activity_label_auth">Widget Authorization</string>
+    <string name="appwidget_text">Ambi Widget</string>
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
 
@@ -17,7 +19,7 @@
     <!--Preferences-->
 
     <!--Temperature scale list-->
-    <string name="pref_tempScale_label">Temperature scale</string>
+    <string name="pref_tempScale_label">Temperature Scale</string>
     <string name="pref_tempScale_key" translatable="false">temperature_scale</string>
 
     <!--Option labels-->
@@ -29,8 +31,10 @@
     <string name="pref_tempScale_value_fahrenheit" translatable="false">fahrenheit</string>
 
     <!--Preferred device list-->
-    <string name="pref_preferredDevice_label">Preferred device</string>
+    <string name="pref_preferredDevice_label">Preferred Device</string>
     <string name="pref_preferredDevice_key" translatable="false">preferred_device</string>
+
+    <string name="button_settings_done">Done</string>
 
 
     <!-- Login / Authentication -->

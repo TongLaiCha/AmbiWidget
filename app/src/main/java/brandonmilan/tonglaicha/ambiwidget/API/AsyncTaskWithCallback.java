@@ -21,25 +21,8 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
  * Example see: API.TokenManager.RenewRefreshTokenTask()
  *
  * Then can be used anywhere like this:
+ * (Example usage): {@link brandonmilan.tonglaicha.ambiwidget.activities.AuthActivity#onAuthCodeReceive(String)}
  *
- * (i.e inside an Activity):
- *
- 	new TokenManager.RenewRefreshTokenTask(authCode, false, getApplicationContext(), new OnProcessFinish<JSONObject>() {
-
-		@Override
-		public void onSuccess(JSONObject result) {
-			Toast.makeText(getApplicationContext(), "Authentication successful!", Toast.LENGTH_LONG).show();
-			// ...code to be executed when AsyncTask finishes and succeeds...
-		}
-
-		@Override
-		public void onFailure(Exception e) {
-			Toast.makeText(getApplicationContext(), "ERROR: " + e.getMessage(), Toast.LENGTH_LONG).show();
-			// ...code to be executed when AsyncTask finishes and fails...
-		}
-	})
- 	.execute();
-
  * @author Brandon Yuen
  */
 

@@ -86,9 +86,6 @@ public class AuthActivity extends AppCompatActivity {
         String clientId = 		"a7a70f39-df19-4c11-89bb-f8f74e07e231";
         String redirectUri = 	"https://httpbin.org/get"; // TODO: APPNAME + "://oauthresponse"; // Use custom redirect uri instead
 
-		// TODO: Remove debugging
-        Log.d(TAG, "redirectUri: "+redirectUri);
-
         OAuthClientRequest request = null;
 		try {
 			request = OAuthClientRequest
@@ -98,9 +95,6 @@ public class AuthActivity extends AppCompatActivity {
 		} catch (OAuthSystemException e) {
 			e.printStackTrace();
 		}
-
-		// TODO: Remove debugging
-		Log.d(TAG, "authUrl: " + request.getLocationUri());
 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(request.getLocationUri() + "&response_type=code"));
         startActivity(intent);

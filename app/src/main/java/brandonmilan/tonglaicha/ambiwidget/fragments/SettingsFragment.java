@@ -40,7 +40,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             }
         }
         //TODO: Add divider between preferences.
-//        setDivider();
 
         createDeviceListPreference(prefscreen);
     }
@@ -116,14 +115,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getPreferenceScreen().getSharedPreferences()
-                .registerOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getPreferenceScreen().getSharedPreferences()
-                .unregisterOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 }

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Ambi Widget</string>
-    <string name="appwidget_text">EXAMPLE</string>
+    <string name="activity_label_settings">Widget Settings</string>
+    <string name="activity_label_auth">Widget Authorization</string>
+    <string name="appwidget_text">Ambi Widget</string>
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
 

@@ -51,29 +51,7 @@ public class WidgetService extends JobIntentService {
     }
 
     /**
-     * Handle action SwitchOnOff in provided background threat.
-     */
-    private void handleActionSwitchOnOff() {
-        Log.d(TAG, "handleActionSwitchOnOff: Switching on or off!");
-    }
-
-    /**
-     * Handle action UpdateWidget in the provided background threat.
-     */
-    private void handleActionUpdateWidget() {
-        Log.d(TAG, "handleActionUpdateWidget: Updating widget!");
-
-//        WidgetDataObject data = new WidgetDataObject("Interns desk", 25.6, 58.2, "Work");
-
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
-
-        WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds);
-    }
-
-    /**
      * Handle action GiveFeedback in the provided background threat.
-     *
      * @param feedbackTag
      */
     private void handleActionGiveFeedback(final String feedbackTag) {
@@ -97,7 +75,6 @@ public class WidgetService extends JobIntentService {
 
             @Override
             public void onSuccess(ReturnObject result) {
-//                String status = "Status: " + result.value;
                 String feedbackMsg = feedbackTag.replace("_", " ");
                 String confirmToast = "Feedback given: " + feedbackMsg + ".";
                 Toast.makeText(getApplicationContext(), confirmToast, Toast.LENGTH_SHORT).show();
@@ -109,5 +86,50 @@ public class WidgetService extends JobIntentService {
                 Log.d(TAG, result.errorMessage + ": " + result.exception);
             }
         }, deviceObject, feedbackTag).execute();
+    }
+
+    /**
+     * Handle action UpdateWidget in the provided background threat.
+     */
+    private void handleActionUpdateWidget() {
+        Log.d(TAG, "handleActionUpdateWidget: Updating widget!");
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
+
+        WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds);
+    }
+
+    /**
+     * Handle action SwitchOnOff in provided background threat.
+     */
+    private void handleActionSwitchOnOff() {
+        Log.d(TAG, "handleActionSwitchOnOff: Switching on or off!");
+
+        //Get the current device.
+        final DeviceObject preferredDevice = WidgetUtils.getPreferredDevice(getApplicationContext());
+
+        //Get the current mode of the device.
+        new DataManager.GetModeTask(getApplicationContext(), new OnProcessFinish<ReturnObject>() {
+            @Override
+            public void onSuccess(ReturnObject result) {
+                String confirmToast = "Current Mode: result.value = " + result.value;
+                Log.d(TAG, confirmToast);
+
+                if (result.value.equals("Manual")){
+                    //Set the the device to Comfort mode.
+                    WidgetUtils.setDeviceToComfort(getApplicationContext(), preferredDevice);
+                } else {
+                    //Turn off the AC.
+                    WidgetUtils.turnDeviceOff(getApplicationContext(), preferredDevice);
+                }
+
+            }
+            @Override
+            public void onFailure(ReturnObject result) {
+//                Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+                Log.d(TAG, result.errorMessage + ": " + result.exception);
+            }
+        }, preferredDevice).execute();
     }
 }

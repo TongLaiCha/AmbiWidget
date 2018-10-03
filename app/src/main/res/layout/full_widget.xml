@@ -179,6 +179,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:text="@string/off_state"
                 android:background="@color/ambi_grey_5"
                 android:fontFamily="@font/avenir"
                 android:textSize="11sp" />

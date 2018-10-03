@@ -6,12 +6,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
+import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
 
 public final class WidgetUtils {
@@ -51,6 +55,10 @@ public final class WidgetUtils {
         }
     }
 
+    /**
+     * Returns the device that the widget will use by default.
+     * @return DeviceObject
+     */
     public static DeviceObject getDefaultDevice(Context context){
         SharedPreferences sharedPref = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
         Gson gson = new Gson();
@@ -60,6 +68,10 @@ public final class WidgetUtils {
         return deviceObject;
     }
 
+    /**
+     * Returns the device that the user has currently selected for the widget to use.
+     * @return DeviceObject
+     */
     public static DeviceObject getPreferredDevice(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         Gson gson = new Gson();
@@ -69,11 +81,63 @@ public final class WidgetUtils {
         return deviceObject;
     }
 
+    /**
+     * @return preferred temperature scale.
+     */
     public static String getTempScalePreference(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String prefKey = context.getString(R.string.pref_tempScale_key);
         String defaultValue = context.getString(R.string.pref_tempScale_value_celsius);
+
         return sharedPreferences.getString(prefKey, defaultValue);
+    }
+
+    /**
+     * Helper function to set a device in "Off" mode.
+     * @param preferredDevice
+     */
+    public static void turnDeviceOff(final Context context, DeviceObject preferredDevice) {
+
+        new DataManager.PowerOffTask(context, new OnProcessFinish<ReturnObject>() {
+
+            @Override
+            public void onSuccess(ReturnObject result) {
+                String confirmToast = "Device is now in off mode.";
+                Log.d(TAG, confirmToast);
+                Toast.makeText(context, confirmToast, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(ReturnObject result) {
+//                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+                Log.d(TAG, result.errorMessage + ": " + result.exception);
+            }
+        }, preferredDevice).execute();
+
+    }
+
+    /**
+     * Helper function to set a device in "Comfort" mode.
+     * @param preferredDevice
+     */
+    public static void setDeviceToComfort(final Context context, DeviceObject preferredDevice) {
+
+        new DataManager.UpdateModeTask(context, new OnProcessFinish<ReturnObject>() {
+
+            @Override
+            public void onSuccess(ReturnObject result) {
+                String confirmToast = "Device is now in comfort mode.";
+                Log.d(TAG, confirmToast);
+                Toast.makeText(context, confirmToast, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(ReturnObject result) {
+//                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+                Log.d(TAG, result.errorMessage + ": " + result.exception);
+            }
+        }, preferredDevice, "comfort", null, false).execute();
+
     }
 
     public static double convertToFahrenheit(double temperatureCelsius) {

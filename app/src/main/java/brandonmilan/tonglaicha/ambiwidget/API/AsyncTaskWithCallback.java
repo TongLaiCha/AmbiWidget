@@ -61,7 +61,7 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Return
 					case "ERROR_INVALID_REFRESH_TOKEN":
 						TokenManager.deleteToken(mContext.get(), "REFRESH_TOKEN");
 
-						//pdate widget state with auth button
+						//update widget state with auth button
 						WidgetUtils.remoteUpdateWidget(mContext.get());
 						break;
 				}

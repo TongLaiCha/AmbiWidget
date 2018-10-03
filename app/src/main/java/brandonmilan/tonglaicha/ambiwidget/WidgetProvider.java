@@ -30,6 +30,7 @@ public class WidgetProvider extends AppWidgetProvider {
     private static final String ActionFeedback = WidgetService.ACTION_GIVE_FEEDBACK;
     private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
     private static final String ActionSwitchOnOff = WidgetService.ACTION_SWITCH_ON_OFF;
+    public static WidgetContentManager widgetContentManager;
     private static final Integer JOB_ID = 10;
 
     /**
@@ -40,6 +41,10 @@ public class WidgetProvider extends AppWidgetProvider {
         if(TokenManager.getRefreshToken(context).value() == null){
             // Construct the RemoteViews object
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_auth_overlay);
+
+            if(widgetContentManager == null){
+                widgetContentManager = WidgetContentManager.getInstance(appWidgetManager, views, appWidgetId);
+            }
 
             Intent authIntent = new Intent(context, AuthActivity.class);
             authIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
@@ -52,10 +57,14 @@ public class WidgetProvider extends AppWidgetProvider {
             // Construct the RemoteViews object
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
 
+            if(widgetContentManager == null){
+                widgetContentManager = WidgetContentManager.getInstance(appWidgetManager, views, appWidgetId);
+            }
+
             setButtonClickHandlers(context, appWidgetId, views);
 
             //Update the temperature, humidity, room name and location name.
-            WidgetContentManager.getInstance(appWidgetManager, views, appWidgetId).updateView(context);
+            widgetContentManager.updateView(context);
 
             // Instruct the widget manager to update the widget
             appWidgetManager.updateAppWidget(appWidgetId, views);

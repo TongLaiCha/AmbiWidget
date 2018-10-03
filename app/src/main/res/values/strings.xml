@@ -14,7 +14,7 @@
     <string name="too_cold">Too cold</string>
     <string name="off_state">Off</string>
     <string name="on_state">On</string>
-    <string name="button_on_off">I/O</string>
+    <string name="button_on_off">On/Off</string>
 
     <!--Preferences-->
 

@@ -67,7 +67,7 @@
                 android:src="@drawable/ic_icn_acmode_temperature" />
 
             <TextView
-                android:id="@+id/temperature"
+                android:id="@+id/temperature_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/temperature_svg"
@@ -79,7 +79,7 @@
                 android:id="@+id/humidity_svg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/temperature"
+                android:layout_toEndOf="@id/temperature_text"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/icon_margin"
                 android:src="@drawable/ic_icn_glossary_humidity" />
@@ -94,16 +94,31 @@
                 android:textSize="13sp"/>
 
             <ImageView
+                android:id="@+id/mode_svg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/mode_text"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_icn_acmode_mode"/>
+            <TextView
+                android:id="@+id/mode_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/geolocation_svg"
+                android:layout_gravity="center_vertical"
+                android:textSize="13sp"/>
+
+            <ImageView
                 android:id="@+id/geolocation_svg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@+id/location"
+                android:layout_toStartOf="@+id/location_text"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/icon_margin"
                 android:src="@drawable/ic_icn_geolocation" />
 
             <TextView
-                android:id="@+id/location"
+                android:id="@+id/location_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -178,16 +193,17 @@
                 android:text="@string/too_cold"
                 android:textSize="11sp" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/button_on_off"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/off_state"
+                android:text="@string/button_on_off"
                 android:background="@color/ambi_grey_5"
                 android:fontFamily="@font/avenir"
                 android:textStyle="bold"
-                android:textSize="11sp" />
+                android:textSize="11sp"
+                android:src="@drawable/ic_icn_nav_modes"/>
 
         </LinearLayout>
 

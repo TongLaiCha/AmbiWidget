@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.R;
+import brandonmilan.tonglaicha.ambiwidget.WidgetContentManager;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
@@ -104,6 +105,7 @@ public final class WidgetUtils {
             public void onSuccess(ReturnObject result) {
                 String confirmToast = "Device is now in off mode.";
                 Log.d(TAG, confirmToast);
+                WidgetProvider.widgetContentManager.fillView(new ReturnObject("Manual"), "MODE", null, null);
                 Toast.makeText(context, confirmToast, Toast.LENGTH_SHORT).show();
             }
 
@@ -128,6 +130,7 @@ public final class WidgetUtils {
             public void onSuccess(ReturnObject result) {
                 String confirmToast = "Device is now in comfort mode.";
                 Log.d(TAG, confirmToast);
+                WidgetProvider.widgetContentManager.fillView(new ReturnObject("Comfort"), "MODE", null, null);
                 Toast.makeText(context, confirmToast, Toast.LENGTH_SHORT).show();
             }
 

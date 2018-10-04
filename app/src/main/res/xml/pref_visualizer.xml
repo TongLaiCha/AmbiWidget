@@ -5,5 +5,6 @@
         android:entries="@array/pref_tempScale_option_labels"
         android:entryValues="@array/pref_tempScale_option_values"
         android:key="@string/pref_tempScale_key"
-        android:title="@string/pref_tempScale_label" />
+        android:title="@string/pref_tempScale_label"
+        android:icon="@drawable/ic_icn_settings_tempunits"/>
 </PreferenceScreen>

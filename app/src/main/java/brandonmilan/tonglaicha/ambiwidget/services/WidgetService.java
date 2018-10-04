@@ -78,6 +78,7 @@ public class WidgetService extends JobIntentService {
                 String feedbackMsg = feedbackTag.replace("_", " ");
                 String confirmToast = "Feedback given: " + feedbackMsg + ".";
                 Toast.makeText(getApplicationContext(), confirmToast, Toast.LENGTH_SHORT).show();
+                WidgetUtils.remoteUpdateWidget(getApplicationContext());
             }
 
             @Override

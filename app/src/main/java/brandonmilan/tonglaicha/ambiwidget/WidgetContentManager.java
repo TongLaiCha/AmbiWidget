@@ -48,6 +48,10 @@ public class WidgetContentManager {
 
         //Use default device if no preferred device is selected.
         if (preferredDeviceObject == null){
+            if (defaultDeviceObject == null){
+                Log.d(TAG, "updateView: DevicObject is null, update cancelled.");
+                return;
+            }
             deviceObject = defaultDeviceObject;
         } else {
             deviceObject = preferredDeviceObject;

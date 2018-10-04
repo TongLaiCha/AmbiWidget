@@ -39,7 +39,6 @@ public final class WidgetUtils {
             intent.addCategory(tag);
             intent.putExtra(WidgetService.EXTRA_FEEDBACK_TAG, tag);
         }
-        Log.d(TAG, "getPendingIntent: Creating pendingIntent");
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -77,8 +76,10 @@ public final class WidgetUtils {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         Gson gson = new Gson();
         String jsonString = sharedPreferences.getString(String.valueOf(R.string.pref_preferredDevice_key), "");
-        DeviceObject deviceObject = gson.fromJson(jsonString, DeviceObject.class);
-
+        DeviceObject deviceObject = null;
+        if(Utils.isJson(jsonString)){
+            deviceObject = gson.fromJson(jsonString, DeviceObject.class);
+        }
         return deviceObject;
     }
 

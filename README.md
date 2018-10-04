@@ -2,12 +2,13 @@
 An open source standalone Android widget for the [Ambi Climate](www.ambiclimate.com) smart home device.
 
 ## Widget setup
-1. Install the APK.
-2. Long press on available space on one of your home screens and select the widget option. 
-3. Look for "Ambi Widget" and drag it to a desired location.
-3. A setup page will open. Follow the instructions and authorize the widget to have access to your Ambi account. 
-4. Configure your preferrences in the settings page.
-5. The widget is now ready to use.
+1. Download the APK from [this download link](https://drive.google.com/open?id=1NPxZMm6DBo5qFrwrlQdF4A9CoX9qvA7o). (Open on your android device)
+2. Install the APK.
+3. Long press on available space on one of your home screens and select the widget option. 
+4. Look for "Ambi Widget" and drag it to a desired location.
+5. A setup page will open. Follow the instructions and authorize the widget to have access to your Ambi account. 
+6. Configure your preferrences in the settings page.
+7. The widget is now ready to use.
 
 ## Features
 * Give comfort feedback to your AC with a single click on the widget.

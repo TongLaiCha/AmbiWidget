@@ -72,6 +72,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/temperature_svg"
                 android:layout_gravity="center_vertical"
+                android:paddingStart="@dimen/text_padding"
                 tools:text="23.1"
                 android:textSize="13sp"/>
 
@@ -89,6 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/humidity_svg"
+                android:paddingStart="@dimen/text_padding"
                 android:layout_gravity="center_vertical"
                 tools:text="61.4"
                 android:textSize="13sp"/>
@@ -105,7 +107,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/geolocation_svg"
+                android:paddingStart="@dimen/text_padding"
                 android:layout_gravity="center_vertical"
+                tools:text="Comfort"
                 android:textSize="13sp"/>
 
             <ImageView
@@ -123,6 +127,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center_vertical"
+                android:paddingStart="@dimen/text_padding"
                 android:layout_marginEnd="@dimen/icon_margin"
                 tools:text="Home"
                 android:textSize="13sp"/>

@@ -1,6 +1,8 @@
 # Ambi Widget
 An open source standalone Android widget for the [Ambi Climate](www.ambiclimate.com) smart home device.
 
+![Widget Preview Screenshot](https://raw.githubusercontent.com/TongLaiCha/AmbiWidget/master/app/release/readme_previewImage.png)
+
 ## Widget setup
 1. Download the APK from [this download link](https://drive.google.com/open?id=1NPxZMm6DBo5qFrwrlQdF4A9CoX9qvA7o). (Open on your android device)
 2. Install the APK.

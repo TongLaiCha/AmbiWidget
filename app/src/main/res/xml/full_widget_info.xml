@@ -8,6 +8,6 @@
     android:minWidth="250dp"
     android:minResizeHeight="55dp"
     android:minResizeWidth="250dp"
-    android:previewImage="@drawable/example_appwidget_preview"
+    android:previewImage="@drawable/widget_preview_img"
     android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen"/>

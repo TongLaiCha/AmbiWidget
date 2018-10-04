@@ -115,7 +115,6 @@ public class WidgetContentManager {
                     view.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_comfort);
                 }
                 break;
-
             case "ROOM":
                 String roomName = result.deviceObject.roomName();
                 view.setTextViewText(R.id.roomName, roomName);

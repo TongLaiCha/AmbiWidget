@@ -15,22 +15,25 @@ public class WidgetContentManager {
     private static final String TAG = "WidgetContentManager";
     private static WidgetContentManager INSTANCE;
     private static AppWidgetManager appWidgetManager;
-    private static RemoteViews view;
+    private RemoteViews view;
     private static int appWidgetId;
     private String prefTempScale;
 
     private WidgetContentManager(){
     }
 
-    public static WidgetContentManager getInstance(AppWidgetManager appWidgetManager, RemoteViews view, int appWidgetId) {
+    public static WidgetContentManager getInstance(AppWidgetManager appWidgetManager, int appWidgetId) {
         if(INSTANCE == null) {
             INSTANCE = new WidgetContentManager();
         }
         WidgetContentManager.appWidgetManager = appWidgetManager;
-        WidgetContentManager.view = view;
         WidgetContentManager.appWidgetId = appWidgetId;
 
         return INSTANCE;
+    }
+
+    public void setView(RemoteViews view) {
+        this.view = view;
     }
 
     public void updateView(final Context context) {
@@ -99,8 +102,7 @@ public class WidgetContentManager {
         fillView(new ReturnObject(deviceObject), "LOCATION", null, null);
     }
 
-    public void fillView(ReturnObject result, String TAG,
-                          String value_celsius, String value_fahrenheit) {
+    public void fillView(ReturnObject result, String TAG, String value_celsius, String value_fahrenheit) {
         switch (TAG){
             case "TEMP":
                 Double temperature = WidgetUtils.roundOneDecimal(Double.parseDouble(result.value));
@@ -115,7 +117,7 @@ public class WidgetContentManager {
                 break;
             case "HUMID":
                 Double humidity = WidgetUtils.roundOneDecimal(Double.parseDouble(result.value));
-                WidgetContentManager.view.setTextViewText(R.id.humidity, humidity + "%");
+                view.setTextViewText(R.id.humidity, humidity + "%");
                 break;
             case "MODE":
                 String mode = result.value;
@@ -132,11 +134,11 @@ public class WidgetContentManager {
 
             case "ROOM":
                 String roomName = result.deviceObject.roomName();
-                WidgetContentManager.view.setTextViewText(R.id.roomName, roomName);
+                view.setTextViewText(R.id.roomName, roomName);
                 break;
             case "LOCATION":
                 String location = result.deviceObject.locationName();
-                WidgetContentManager.view.setTextViewText(R.id.location_text, location);
+                view.setTextViewText(R.id.location_text, location);
                 break;
         }
         appWidgetManager.updateAppWidget(appWidgetId, view);

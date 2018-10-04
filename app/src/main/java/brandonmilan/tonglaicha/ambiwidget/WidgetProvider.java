@@ -37,14 +37,18 @@ public class WidgetProvider extends AppWidgetProvider {
      * Instruct the appWidgetManager to load the widgets view and its components.
      */
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+        Log.d(TAG, "UPDATING WIDGET WITH ID = "+appWidgetId);
+
+		if(widgetContentManager == null){
+			widgetContentManager = WidgetContentManager.getInstance(appWidgetManager, appWidgetId);
+		}
+
         //Check if the user has authorized the widget to access his Ambi account.
         if(TokenManager.getRefreshToken(context).value() == null){
+            Log.d(TAG, "REFRESH TOKEN NOT SET: Constructing widget widget_auth_overlay");
             // Construct the RemoteViews object
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_auth_overlay);
-
-            if(widgetContentManager == null){
-                widgetContentManager = WidgetContentManager.getInstance(appWidgetManager, views, appWidgetId);
-            }
+			widgetContentManager.setView(views);
 
             Intent authIntent = new Intent(context, AuthActivity.class);
             authIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
@@ -54,12 +58,10 @@ public class WidgetProvider extends AppWidgetProvider {
             // Instruct the widget manager to update the widget
             appWidgetManager.updateAppWidget(appWidgetId, views);
         } else {
+            Log.d(TAG, "REFRESH TOKEN IS SET: Constructing widget full_widget");
             // Construct the RemoteViews object
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
-
-            if(widgetContentManager == null){
-                widgetContentManager = WidgetContentManager.getInstance(appWidgetManager, views, appWidgetId);
-            }
+            widgetContentManager.setView(views);
 
             setButtonClickHandlers(context, appWidgetId, views);
 
@@ -113,6 +115,7 @@ public class WidgetProvider extends AppWidgetProvider {
      */
     public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "updateAllWidgets: Executed..");
+        Log.d(TAG, "ALL WIDGET ID'S= "+appWidgetIds);
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);

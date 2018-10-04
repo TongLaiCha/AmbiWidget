@@ -89,7 +89,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 ListPreference listPreference = new ListPreference(screen.getContext());
                 listPreference.setKey(String.valueOf(R.string.pref_preferredDevice_key));
                 listPreference.setTitle(R.string.pref_preferredDevice_label);
-                listPreference.setIcon(R.drawable.ic_icn_nav_device);
+                listPreference.setIcon(R.drawable.ic_icn_nav_device_resize);
                 listPreference.setEntries(deviceRoomNames.toArray(new CharSequence[deviceRoomNames.size()]));
                 listPreference.setEntryValues(deviceListGson.toArray(new CharSequence[deviceListGson.size()]));
 

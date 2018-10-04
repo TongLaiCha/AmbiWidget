@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -106,7 +107,7 @@ public final class WidgetUtils {
             public void onSuccess(ReturnObject result) {
                 String confirmToast = "Device is now in off mode.";
                 Log.d(TAG, confirmToast);
-                WidgetProvider.widgetContentManager.fillView(new ReturnObject("Manual"), "MODE", null, null);
+                WidgetUtils.remoteUpdateWidget(context);
                 Toast.makeText(context, confirmToast, Toast.LENGTH_SHORT).show();
             }
 
@@ -131,7 +132,7 @@ public final class WidgetUtils {
             public void onSuccess(ReturnObject result) {
                 String confirmToast = "Device is now in comfort mode.";
                 Log.d(TAG, confirmToast);
-                WidgetProvider.widgetContentManager.fillView(new ReturnObject("Comfort"), "MODE", null, null);
+                WidgetUtils.remoteUpdateWidget(context);
                 Toast.makeText(context, confirmToast, Toast.LENGTH_SHORT).show();
             }
 

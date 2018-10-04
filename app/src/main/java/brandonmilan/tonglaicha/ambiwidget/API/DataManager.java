@@ -75,7 +75,7 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 	public static class GetTemperatureTask extends AsyncTaskWithCallback {
 		private DeviceObject deviceObject;
 
-		public GetTemperatureTask(DeviceObject deviceObject, Context context, OnProcessFinish callback){
+		public GetTemperatureTask(Context context, OnProcessFinish callback, DeviceObject deviceObject){
 			super(context, callback);
 			this.deviceObject = deviceObject;
 		}

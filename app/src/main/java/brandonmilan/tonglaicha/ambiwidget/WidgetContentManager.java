@@ -13,34 +13,16 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 public class WidgetContentManager {
     private static final String TAG = "WidgetContentManager";
-    private static WidgetContentManager INSTANCE;
-    private static AppWidgetManager appWidgetManager;
-    private RemoteViews view;
-    private static int appWidgetId;
-    private String prefTempScale;
+    private static String prefTempScale;
 
     private WidgetContentManager(){
     }
 
-    public static WidgetContentManager getInstance(AppWidgetManager appWidgetManager, int appWidgetId) {
-        if(INSTANCE == null) {
-            INSTANCE = new WidgetContentManager();
-        }
-        WidgetContentManager.appWidgetManager = appWidgetManager;
-        WidgetContentManager.appWidgetId = appWidgetId;
-
-        return INSTANCE;
-    }
-
-    public void setView(RemoteViews view) {
-        this.view = view;
-    }
-
-    public void updateView(final Context context) {
+    public static void updateView(final Context context, final RemoteViews view, final int appWidgetId) {
         DeviceObject deviceObject;
         final DeviceObject defaultDeviceObject = WidgetUtils.getDefaultDevice(context);
         final DeviceObject preferredDeviceObject = WidgetUtils.getPreferredDevice(context);
-        this.prefTempScale = WidgetUtils.getTempScalePreference(context);
+        WidgetContentManager.prefTempScale = WidgetUtils.getTempScalePreference(context);
         final String value_celsius = context.getString(R.string.pref_tempScale_value_celsius);
         final String value_fahrenheit = context.getString(R.string.pref_tempScale_value_fahrenheit);
         Log.d(TAG, "updateView: PrefTempScale = " + prefTempScale);
@@ -57,24 +39,11 @@ public class WidgetContentManager {
             deviceObject = preferredDeviceObject;
         }
 
-        new DataManager.GetTemperatureTask(deviceObject, context, new OnProcessFinish<ReturnObject>() {
+        new DataManager.GetTemperatureTask(context, new OnProcessFinish<ReturnObject>() {
 
             @Override
             public void onSuccess(ReturnObject result) {
-                fillView(result, "TEMP", value_celsius, value_fahrenheit);
-            }
-
-            @Override
-            public void onFailure(ReturnObject result) {
-                Log.d(TAG, result.errorMessage + ": " + result.exception);
-            }
-        }).execute();
-
-        new DataManager.GetHumidityTask(context, new OnProcessFinish<ReturnObject>() {
-
-            @Override
-            public void onSuccess(ReturnObject result) {
-                fillView(result, "HUMID", null, null);
+                fillView(result, "TEMP", context, view, appWidgetId, value_celsius, value_fahrenheit);
             }
 
             @Override
@@ -83,8 +52,18 @@ public class WidgetContentManager {
             }
         }, deviceObject).execute();
 
-        //Get the current device.
-        final DeviceObject preferredDevice = WidgetUtils.getPreferredDevice(context);
+        new DataManager.GetHumidityTask(context, new OnProcessFinish<ReturnObject>() {
+
+            @Override
+            public void onSuccess(ReturnObject result) {
+                fillView(result, "HUMID", context, view, appWidgetId, null, null);
+            }
+
+            @Override
+            public void onFailure(ReturnObject result) {
+                Log.d(TAG, result.errorMessage + ": " + result.exception);
+            }
+        }, deviceObject).execute();
 
         //Get the current mode of the device.
         new DataManager.GetModeTask(context, new OnProcessFinish<ReturnObject>() {
@@ -92,7 +71,7 @@ public class WidgetContentManager {
             public void onSuccess(ReturnObject result) {
                 String confirmToast = "Current Mode: result.value = " + result.value;
                 Log.d(TAG, confirmToast);
-                fillView(result, "MODE", null, null);
+                fillView(result, "MODE", context, view, appWidgetId, null, null);
 
             }
             @Override
@@ -100,13 +79,14 @@ public class WidgetContentManager {
 //                Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
                 Log.d(TAG, result.errorMessage + ": " + result.exception);
             }
-        }, preferredDevice).execute();
+        }, deviceObject).execute();
 
-        fillView(new ReturnObject(deviceObject), "ROOM", null, null);
-        fillView(new ReturnObject(deviceObject), "LOCATION", null, null);
+        fillView(new ReturnObject(deviceObject), "ROOM", context, view, appWidgetId, null, null);
+        fillView(new ReturnObject(deviceObject), "LOCATION", context, view, appWidgetId, null, null);
     }
 
-    public void fillView(ReturnObject result, String TAG, String value_celsius, String value_fahrenheit) {
+    public static void fillView(ReturnObject result, String TAG, Context context, RemoteViews view, int appWidgetId, String value_celsius, String value_fahrenheit) {
+		Log.d(TAG, "fillView -> Updating ("+TAG+"): view = "+view);
         switch (TAG){
             case "TEMP":
                 Double temperature = WidgetUtils.roundOneDecimal(Double.parseDouble(result.value));
@@ -125,6 +105,7 @@ public class WidgetContentManager {
                 break;
             case "MODE":
                 String mode = result.value;
+				Log.d(TAG, "fillView: FILLING MODE: "+mode);
                 if (mode.equals("Manual")) {
                     mode = "Off";
                     view.setTextViewText(R.id.mode_text, mode);
@@ -133,7 +114,6 @@ public class WidgetContentManager {
                     view.setTextViewText(R.id.mode_text, mode);
                     view.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_comfort);
                 }
-
                 break;
 
             case "ROOM":
@@ -145,6 +125,7 @@ public class WidgetContentManager {
                 view.setTextViewText(R.id.location_text, location);
                 break;
         }
-        appWidgetManager.updateAppWidget(appWidgetId, view);
+		Log.d(TAG, "fillView: DONE, updating widget");
+        AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, view);
     }
 }

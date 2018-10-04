@@ -30,7 +30,6 @@ public class WidgetProvider extends AppWidgetProvider {
     private static final String ActionFeedback = WidgetService.ACTION_GIVE_FEEDBACK;
     private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
     private static final String ActionSwitchOnOff = WidgetService.ACTION_SWITCH_ON_OFF;
-    public static WidgetContentManager widgetContentManager;
     private static final Integer JOB_ID = 10;
 
     /**
@@ -39,16 +38,11 @@ public class WidgetProvider extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         Log.d(TAG, "UPDATING WIDGET WITH ID = "+appWidgetId);
 
-		if(widgetContentManager == null){
-			widgetContentManager = WidgetContentManager.getInstance(appWidgetManager, appWidgetId);
-		}
-
         //Check if the user has authorized the widget to access his Ambi account.
         if(TokenManager.getRefreshToken(context).value() == null){
             Log.d(TAG, "REFRESH TOKEN NOT SET: Constructing widget widget_auth_overlay");
             // Construct the RemoteViews object
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_auth_overlay);
-			widgetContentManager.setView(views);
 
             Intent authIntent = new Intent(context, AuthActivity.class);
             authIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
@@ -61,12 +55,11 @@ public class WidgetProvider extends AppWidgetProvider {
             Log.d(TAG, "REFRESH TOKEN IS SET: Constructing widget full_widget");
             // Construct the RemoteViews object
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
-            widgetContentManager.setView(views);
 
             setButtonClickHandlers(context, appWidgetId, views);
 
             //Update the temperature, humidity, room name and location name.
-            widgetContentManager.updateView(context);
+            WidgetContentManager.updateView(context, views, appWidgetId);
 
             // Instruct the widget manager to update the widget
             appWidgetManager.updateAppWidget(appWidgetId, views);

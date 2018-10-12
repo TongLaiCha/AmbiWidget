@@ -108,7 +108,7 @@ public final class WidgetUtils {
                 String confirmToast = "Device is now in off mode.";
                 Log.d(TAG, confirmToast);
                 WidgetUtils.remoteUpdateWidget(context);
-                Toast.makeText(context, confirmToast, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -133,7 +133,7 @@ public final class WidgetUtils {
                 String confirmToast = "Device is now in comfort mode.";
                 Log.d(TAG, confirmToast);
                 WidgetUtils.remoteUpdateWidget(context);
-                Toast.makeText(context, confirmToast, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
             }
 
             @Override

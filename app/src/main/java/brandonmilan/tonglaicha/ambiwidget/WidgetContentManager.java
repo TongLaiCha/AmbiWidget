@@ -14,8 +14,6 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 public class WidgetContentManager {
     private static final String TAG = "WidgetContentManager";
     private static String prefTempScale;
-    private static int contentViewsMaxCount = 5;
-	private static int contentViewsUpdatedCount = 0;
 
     private WidgetContentManager(){
     }
@@ -127,12 +125,7 @@ public class WidgetContentManager {
                 break;
         }
 
-        WidgetContentManager.contentViewsUpdatedCount++;
-
-        if (WidgetContentManager.contentViewsUpdatedCount >= contentViewsMaxCount) {
-			AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, view);
-			WidgetContentManager.contentViewsUpdatedCount = 0;
-			Log.d(TAG, "fillView: DONE, updating widget");
-		}
+        AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, view);
+        Log.d(TAG, "fillView: DONE, updating widget");
     }
 }

@@ -3,6 +3,7 @@ package brandonmilan.tonglaicha.ambiwidget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -24,18 +25,20 @@ public class WidgetContentManager {
         private int runningTasks;
         private final Context context;
         private final int appWidgetId;
-        private RemoteViews view;
+        private RemoteViews views;
 
-        public WorkCounter(int numberOfTasks, Context context, final int appWidgetId, RemoteViews view) {
+        public WorkCounter(int numberOfTasks, Context context, final int appWidgetId, RemoteViews views) {
             this.runningTasks = numberOfTasks;
             this.context = context;
             this.appWidgetId = appWidgetId;
-            this.view = view;
+            this.views = views;
         }
         // Only call this in onPostExecute! (or add synchronized to method declaration)
         public void taskFinished() {
             if (--runningTasks == 0) {
-                AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, view);
+				views.setViewVisibility(R.id.button_refresh, View.VISIBLE);
+				views.setViewVisibility(R.id.progressBar, View.INVISIBLE);
+				AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
                 Log.d(TAG, "workCounter DONE, updating widget");
 				Toast.makeText(context, "Refreshed Data", Toast.LENGTH_LONG).show();
             }

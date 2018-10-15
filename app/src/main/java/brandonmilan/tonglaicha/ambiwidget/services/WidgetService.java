@@ -23,8 +23,8 @@ public class WidgetService extends JobIntentService {
 
     public static final String ACTION_GIVE_FEEDBACK =
             "brandonmilan.tonglaicha.ambiwidget.action.give_feedback";
-    public static final String EXTRA_FEEDBACK_TAG =
-            "brandonmilan.tonglaicha.ambiwidget.extra.FEEDBACK_TAG";
+    public static final String EXTRA_ACTION_TAG =
+            "brandonmilan.tonglaicha.ambiwidget.extra.ACTION_TAG";
     public static final String ACTION_UPDATE_WIDGET =
             "brandonmilan.tonglaicha.ambiwidget.action.update_widget";
     public static final String ACTION_SWITCH_ON_OFF =
@@ -40,10 +40,11 @@ public class WidgetService extends JobIntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_GIVE_FEEDBACK.equals(action)) {
-                final String feedbackTag = intent.getStringExtra(EXTRA_FEEDBACK_TAG);
+                final String feedbackTag = intent.getStringExtra(EXTRA_ACTION_TAG);
                 handleActionGiveFeedback(feedbackTag);
             } else if(ACTION_UPDATE_WIDGET.equals(action)) {
-                handleActionUpdateWidget();
+                final String UpdateByUser = intent.getStringExtra(EXTRA_ACTION_TAG);
+                handleActionUpdateWidget(UpdateByUser);
             } else if(ACTION_SWITCH_ON_OFF.equals(action)) {
                 handleActionSwitchOnOff();
             }
@@ -92,13 +93,17 @@ public class WidgetService extends JobIntentService {
     /**
      * Handle action UpdateWidget in the provided background threat.
      */
-    private void handleActionUpdateWidget() {
+    private void handleActionUpdateWidget(String TAG) {
         Log.d(TAG, "handleActionUpdateWidget: Updating widget!");
+        Boolean updateFromUser = false;
+        if(TAG != null && TAG.equals(WidgetProvider.UpdateByUserTag)){
+            updateFromUser = true;
+        }
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
 
-        WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds);
+        WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds, updateFromUser);
     }
 
     /**
@@ -114,8 +119,7 @@ public class WidgetService extends JobIntentService {
         new DataManager.GetModeTask(getApplicationContext(), new OnProcessFinish<ReturnObject>() {
             @Override
             public void onSuccess(ReturnObject result) {
-                String confirmToast = "Current Mode: result.value = " + result.value;
-                Log.d(TAG, confirmToast);
+                Log.d(TAG, "Current Mode: result.value = " + result.value);
 
                 if (result.value.equals("Manual")){
                     //Set the the device to Comfort mode.

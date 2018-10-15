@@ -59,7 +59,7 @@ public class WidgetProvider extends AppWidgetProvider {
             setButtonClickHandlers(context, appWidgetId, views);
 
             //Update the temperature, humidity, room name and location name.
-            WidgetContentManager.updateView(context, views, appWidgetId);
+            WidgetContentManager.updateAllViews(context, views, appWidgetId);
 
             // Instruct the widget manager to update the widget
             appWidgetManager.updateAppWidget(appWidgetId, views);

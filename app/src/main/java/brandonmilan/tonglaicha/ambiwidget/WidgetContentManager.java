@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
@@ -18,20 +19,40 @@ public class WidgetContentManager {
     private WidgetContentManager(){
     }
 
-    public static void updateView(final Context context, final RemoteViews view, final int appWidgetId) {
+
+    private static class WorkCounter {
+        private int runningTasks;
+        private final Context context;
+        private final int appWidgetId;
+        private RemoteViews view;
+
+        public WorkCounter(int numberOfTasks, Context context, final int appWidgetId, RemoteViews view) {
+            this.runningTasks = numberOfTasks;
+            this.context = context;
+            this.appWidgetId = appWidgetId;
+            this.view = view;
+        }
+        // Only call this in onPostExecute! (or add synchronized to method declaration)
+        public void taskFinished() {
+            if (--runningTasks == 0) {
+                AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, view);
+                Log.d(TAG, "workCounter DONE, updating widget");
+				Toast.makeText(context, "Refreshed Data", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public static void updateAllViews(final Context context, final RemoteViews view, final int appWidgetId) {
         DeviceObject deviceObject;
         final DeviceObject defaultDeviceObject = WidgetUtils.getDefaultDevice(context);
         final DeviceObject preferredDeviceObject = WidgetUtils.getPreferredDevice(context);
         WidgetContentManager.prefTempScale = WidgetUtils.getTempScalePreference(context);
         final String value_celsius = context.getString(R.string.pref_tempScale_value_celsius);
         final String value_fahrenheit = context.getString(R.string.pref_tempScale_value_fahrenheit);
-        Log.d(TAG, "updateView: PrefTempScale = " + prefTempScale);
-
 
         //Use default device if no preferred device is selected.
         if (preferredDeviceObject == null){
             if (defaultDeviceObject == null){
-                Log.d(TAG, "updateView: DevicObject is null, update cancelled.");
                 return;
             }
             deviceObject = defaultDeviceObject;
@@ -39,16 +60,25 @@ public class WidgetContentManager {
             deviceObject = preferredDeviceObject;
         }
 
+        // Fill content (local values)
+        fillView(new ReturnObject(deviceObject), "ROOM", context, view, appWidgetId, null, null);
+        fillView(new ReturnObject(deviceObject), "LOCATION", context, view, appWidgetId, null, null);
+
+        // Retrieve and fill data from API
+        final WorkCounter workCounter = new WorkCounter(3, context, appWidgetId, view);
+
         new DataManager.GetTemperatureTask(context, new OnProcessFinish<ReturnObject>() {
 
             @Override
             public void onSuccess(ReturnObject result) {
                 fillView(result, "TEMP", context, view, appWidgetId, value_celsius, value_fahrenheit);
+                workCounter.taskFinished();
             }
 
             @Override
             public void onFailure(ReturnObject result) {
                 Log.d(TAG, result.errorMessage + ": " + result.exception);
+                workCounter.taskFinished();
             }
         }, deviceObject).execute();
 
@@ -57,11 +87,13 @@ public class WidgetContentManager {
             @Override
             public void onSuccess(ReturnObject result) {
                 fillView(result, "HUMID", context, view, appWidgetId, null, null);
+                workCounter.taskFinished();
             }
 
             @Override
             public void onFailure(ReturnObject result) {
                 Log.d(TAG, result.errorMessage + ": " + result.exception);
+                workCounter.taskFinished();
             }
         }, deviceObject).execute();
 
@@ -72,17 +104,15 @@ public class WidgetContentManager {
                 String confirmToast = "Current Mode: result.value = " + result.value;
                 Log.d(TAG, confirmToast);
                 fillView(result, "MODE", context, view, appWidgetId, null, null);
-
+                workCounter.taskFinished();
             }
             @Override
             public void onFailure(ReturnObject result) {
 //                Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
                 Log.d(TAG, result.errorMessage + ": " + result.exception);
+                workCounter.taskFinished();
             }
         }, deviceObject).execute();
-
-        fillView(new ReturnObject(deviceObject), "ROOM", context, view, appWidgetId, null, null);
-        fillView(new ReturnObject(deviceObject), "LOCATION", context, view, appWidgetId, null, null);
     }
 
     public static void fillView(ReturnObject result, String TAG, Context context, RemoteViews view, int appWidgetId, String value_celsius, String value_fahrenheit) {
@@ -124,8 +154,5 @@ public class WidgetContentManager {
                 view.setTextViewText(R.id.location_text, location);
                 break;
         }
-
-        AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, view);
-        Log.d(TAG, "fillView: DONE, updating widget");
     }
 }

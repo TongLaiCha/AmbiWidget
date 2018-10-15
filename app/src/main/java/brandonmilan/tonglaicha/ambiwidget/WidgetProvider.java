@@ -6,7 +6,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
 import brandonmilan.tonglaicha.ambiwidget.activities.AuthActivity;
@@ -29,13 +31,14 @@ public class WidgetProvider extends AppWidgetProvider {
     private static final String TooWarmTag = "too_warm";
     private static final String ActionFeedback = WidgetService.ACTION_GIVE_FEEDBACK;
     private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
+    public static final String UpdateByUserTag = "update_by_user";
     private static final String ActionSwitchOnOff = WidgetService.ACTION_SWITCH_ON_OFF;
     private static final Integer JOB_ID = 10;
 
     /**
      * Instruct the appWidgetManager to load the widgets view and its components.
      */
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Boolean updateFromUser) {
         Log.d(TAG, "UPDATING WIDGET WITH ID = "+appWidgetId);
 
         //Check if the user has authorized the widget to access his Ambi account.
@@ -55,6 +58,12 @@ public class WidgetProvider extends AppWidgetProvider {
             Log.d(TAG, "REFRESH TOKEN IS SET: Constructing widget full_widget");
             // Construct the RemoteViews object
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
+
+            //Display loading animation when the user clicks the refresh button.
+            if(updateFromUser){
+                views.setViewVisibility(R.id.button_refresh, View.INVISIBLE);
+                views.setViewVisibility(R.id.progressBar, View.VISIBLE);
+            }
 
             setButtonClickHandlers(context, appWidgetId, views);
 
@@ -91,7 +100,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
         //Set onClickPendingIntent for the refresh button.
         views.setOnClickPendingIntent(R.id.button_refresh,
-                WidgetUtils.getPendingIntent(context, ActionUpdate, null));
+                WidgetUtils.getPendingIntent(context, ActionUpdate, UpdateByUserTag));
     }
 
     //TODO: Make onUpdate only execute after the configuration is done.
@@ -106,13 +115,13 @@ public class WidgetProvider extends AppWidgetProvider {
     /**
      * Update all widgets currently active on the screen.
      */
-    public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Boolean updateFromUser) {
         Log.d(TAG, "updateAllWidgets: Executed..");
         Log.d(TAG, "ALL WIDGET ID'S= " + appWidgetIds);
 
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+            updateAppWidget(context, appWidgetManager, appWidgetId, updateFromUser);
         }
     }
 

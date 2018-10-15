@@ -38,7 +38,7 @@ public final class WidgetUtils {
         //If pendingIntents only vary by their "extra" contents, they will be seen as the same and get overwritten.
         if(tag != null){
             intent.addCategory(tag);
-            intent.putExtra(WidgetService.EXTRA_FEEDBACK_TAG, tag);
+            intent.putExtra(WidgetService.EXTRA_ACTION_TAG, tag);
         }
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }

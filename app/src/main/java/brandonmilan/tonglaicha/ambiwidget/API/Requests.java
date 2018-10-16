@@ -24,19 +24,20 @@ import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
 /**
  * (MODEL)
  * Class containing all API requests to the Ambi Climate Open API.
+ * @version API v1
  * @author Brandon Yuen
  */
 
 public class Requests {
 
+	private static final String CLIENT_ID = "a7a70f39-df19-4c11-89bb-f8f74e07e231";
+	private static final String CLIENT_SECRET = "68a78747-1cd1-4303-9f1e-ac5f1a0f7aba";
 	private static final String TAG = Requests.class.getSimpleName();
 
 	public static ReturnObject getNewAccessToken(String refreshToken) {
 
 		// Create URL for Access Token Request
 		String refreshTokenUrl = 	"https://api.ambiclimate.com/oauth2/token";
-		String clientId = 			"a7a70f39-df19-4c11-89bb-f8f74e07e231";
-		String clientSecret = 		"68a78747-1cd1-4303-9f1e-ac5f1a0f7aba";
 		String redirectUri = 		"https://httpbin.org/get"; // TODO: APPNAME + "://oauthresponse"; // Use custom redirect uri instead
 
 		OAuthClientRequest request = null;
@@ -44,8 +45,8 @@ public class Requests {
 			request = OAuthClientRequest
 					.tokenLocation(refreshTokenUrl)
 					.setGrantType(GrantType.REFRESH_TOKEN)
-					.setClientId(clientId)
-					.setClientSecret(clientSecret)
+					.setClientId(CLIENT_ID)
+					.setClientSecret(CLIENT_SECRET)
 					.setRedirectURI(redirectUri)
 					.setRefreshToken(refreshToken)
 					.buildQueryMessage();
@@ -88,8 +89,6 @@ public class Requests {
 
 		// Create URL for Refresh Token Request
 		String accessTokenUrl = 	"https://api.ambiclimate.com/oauth2/token";
-		String clientId = 			"a7a70f39-df19-4c11-89bb-f8f74e07e231";
-		String clientSecret = 		"68a78747-1cd1-4303-9f1e-ac5f1a0f7aba";
 		String redirectUri = 		"https://httpbin.org/get"; // TODO: APPNAME + "://oauthresponse"; // Use custom redirect uri instead
 
 		OAuthClientRequest request = null;
@@ -97,8 +96,8 @@ public class Requests {
 			request = OAuthClientRequest
 					.tokenLocation(accessTokenUrl)
 					.setGrantType(GrantType.AUTHORIZATION_CODE)
-					.setClientId(clientId)
-					.setClientSecret(clientSecret)
+					.setClientId(CLIENT_ID)
+					.setClientSecret(CLIENT_SECRET)
 					.setRedirectURI(redirectUri)
 					.setCode(authCode)
 					.buildQueryMessage();
@@ -320,7 +319,6 @@ public class Requests {
 			}
 
 		} catch (Exception e) {
-			Log.e(TAG, "getHumidity: Could not get humidity TEST");
 			return new ReturnObject(e, "Could not get humidity");
 		}
 

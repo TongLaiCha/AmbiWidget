@@ -13,6 +13,10 @@ import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
+/**
+ * (CONTROLLER)
+ * Manager for all content in the widget.
+ */
 public class WidgetContentManager {
     private static final String TAG = "WidgetContentManager";
     private static String prefTempScale;
@@ -20,7 +24,9 @@ public class WidgetContentManager {
     private WidgetContentManager(){
     }
 
-
+	/**
+	 * A class that can be be used to create an instance that counts finished tasks. (For multiple async tasks at the same time)
+	 */
     private static class WorkCounter {
         private int runningTasks;
         private final Context context;
@@ -45,7 +51,10 @@ public class WidgetContentManager {
         }
     }
 
-    public static void updateAllViews(final Context context, final RemoteViews view, final int appWidgetId) {
+	/**
+	 * Updates the the widget remoteView object with NEW data.
+	 */
+    public static void updateAllViews(final Context context, final RemoteViews views, final int appWidgetId) {
         DeviceObject deviceObject;
         final DeviceObject defaultDeviceObject = WidgetUtils.getDefaultDevice(context);
         final DeviceObject preferredDeviceObject = WidgetUtils.getPreferredDevice(context);
@@ -64,17 +73,17 @@ public class WidgetContentManager {
         }
 
         // Fill content (local values)
-        fillView(new ReturnObject(deviceObject), "ROOM", context, view, appWidgetId, null, null);
-        fillView(new ReturnObject(deviceObject), "LOCATION", context, view, appWidgetId, null, null);
+        fillView(new ReturnObject(deviceObject), "ROOM", context, views, appWidgetId, null, null);
+        fillView(new ReturnObject(deviceObject), "LOCATION", context, views, appWidgetId, null, null);
 
         // Retrieve and fill data from API
-        final WorkCounter workCounter = new WorkCounter(3, context, appWidgetId, view);
+        final WorkCounter workCounter = new WorkCounter(3, context, appWidgetId, views);
 
         new DataManager.GetTemperatureTask(context, new OnProcessFinish<ReturnObject>() {
 
             @Override
             public void onSuccess(ReturnObject result) {
-                fillView(result, "TEMP", context, view, appWidgetId, value_celsius, value_fahrenheit);
+                fillView(result, "TEMP", context, views, appWidgetId, value_celsius, value_fahrenheit);
                 workCounter.taskFinished();
             }
 
@@ -89,7 +98,7 @@ public class WidgetContentManager {
 
             @Override
             public void onSuccess(ReturnObject result) {
-                fillView(result, "HUMID", context, view, appWidgetId, null, null);
+                fillView(result, "HUMID", context, views, appWidgetId, null, null);
                 workCounter.taskFinished();
             }
 
@@ -106,7 +115,7 @@ public class WidgetContentManager {
             public void onSuccess(ReturnObject result) {
                 String confirmToast = "Current Mode: result.value = " + result.value;
                 Log.d(TAG, confirmToast);
-                fillView(result, "MODE", context, view, appWidgetId, null, null);
+                fillView(result, "MODE", context, views, appWidgetId, null, null);
                 workCounter.taskFinished();
             }
             @Override
@@ -118,43 +127,55 @@ public class WidgetContentManager {
         }, deviceObject).execute();
     }
 
-    public static void fillView(ReturnObject result, String TAG, Context context, RemoteViews view, int appWidgetId, String value_celsius, String value_fahrenheit) {
-		Log.d(TAG, "fillView -> Updating ("+TAG+"): view = "+view);
+	/**
+	 * Fills a view of a remoteViews object with content.
+	 */
+    private static void fillView(ReturnObject result, String TAG, Context context, RemoteViews views, int appWidgetId, String value_celsius, String value_fahrenheit) {
+
         switch (TAG){
+
+        	// Temperature
             case "TEMP":
                 Double temperature = WidgetUtils.roundOneDecimal(Double.parseDouble(result.value));
-
                 if(prefTempScale.equals(value_celsius)){
-                    view.setTextViewText(R.id.temperature_text, temperature + "\u00B0");
+                    views.setTextViewText(R.id.temperature_text, temperature + "\u00B0");
                 }
                 else if (prefTempScale.equals(value_fahrenheit)){
                     Double tempFahrenheit = WidgetUtils.roundOneDecimal(WidgetUtils.convertToFahrenheit(temperature));
-                    view.setTextViewText(R.id.temperature_text, tempFahrenheit + "\u00B0");
+                    views.setTextViewText(R.id.temperature_text, tempFahrenheit + "\u00B0");
                 }
                 break;
+
+			// Humidity
             case "HUMID":
                 Double humidity = WidgetUtils.roundOneDecimal(Double.parseDouble(result.value));
-                view.setTextViewText(R.id.humidity, humidity + "%");
+                views.setTextViewText(R.id.humidity, humidity + "%");
                 break;
+
+			// Current Mode
             case "MODE":
                 String mode = result.value;
 				Log.d(TAG, "fillView: FILLING MODE: "+mode);
                 if (mode.equals("Manual")) {
                     mode = "Off";
-                    view.setTextViewText(R.id.mode_text, mode);
-                    view.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_off);
+                    views.setTextViewText(R.id.mode_text, mode);
+                    views.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_off);
                 } else {
-                    view.setTextViewText(R.id.mode_text, mode);
-                    view.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_comfort);
+                    views.setTextViewText(R.id.mode_text, mode);
+                    views.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_comfort);
                 }
                 break;
+
+			// Device Name
             case "ROOM":
                 String roomName = result.deviceObject.roomName();
-                view.setTextViewText(R.id.roomName, roomName);
+                views.setTextViewText(R.id.roomName, roomName);
                 break;
+
+			// Device Location TODO: Remove
             case "LOCATION":
                 String location = result.deviceObject.locationName();
-                view.setTextViewText(R.id.location_text, location);
+                views.setTextViewText(R.id.location_text, location);
                 break;
         }
     }

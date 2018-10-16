@@ -42,8 +42,7 @@ public class WidgetContentManager {
         // Only call this in onPostExecute! (or add synchronized to method declaration)
         public void taskFinished() {
             if (--runningTasks == 0) {
-				views.setViewVisibility(R.id.button_refresh, View.VISIBLE);
-				views.setViewVisibility(R.id.progressBar, View.INVISIBLE);
+				WidgetUtils.updateRefreshAnimation(false, views);
 				AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
                 Log.d(TAG, "workCounter DONE, updating widget");
 				Toast.makeText(context, "Refreshed Data", Toast.LENGTH_LONG).show();

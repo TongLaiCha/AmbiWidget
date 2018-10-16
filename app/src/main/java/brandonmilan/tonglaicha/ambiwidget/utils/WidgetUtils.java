@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -53,6 +54,16 @@ public final class WidgetUtils {
             pendingIntent.send();
         } catch (PendingIntent.CanceledException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void updateRefreshAnimation(Boolean showAnimation, RemoteViews views) {
+        if (showAnimation) {
+            views.setViewVisibility(R.id.button_refresh, View.INVISIBLE);
+            views.setViewVisibility(R.id.progressBar, View.VISIBLE);
+        } else {
+            views.setViewVisibility(R.id.button_refresh, View.VISIBLE);
+            views.setViewVisibility(R.id.progressBar, View.INVISIBLE);
         }
     }
 

@@ -38,20 +38,10 @@ public class WidgetProvider extends AppWidgetProvider {
 	 */
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Boolean updateFromUser) {
 		Log.d(TAG, "UPDATING WIDGET WITH ID = "+appWidgetId);
+		String refreshToken = TokenManager.getRefreshToken(context).value();
 
 		//Check if the user has authorized the widget to access his Ambi account.
-		if(TokenManager.getRefreshToken(context).value() == null){
-			// Construct the RemoteViews object
-			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_auth_overlay);
-
-			Intent authIntent = new Intent(context, AuthActivity.class);
-			authIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-			PendingIntent configPendingIntent = PendingIntent.getActivity(context, appWidgetId, authIntent, 0);
-			views.setOnClickPendingIntent(R.id.button_authorize, configPendingIntent);
-
-			// Instruct the widget manager to update the widget
-			appWidgetManager.updateAppWidget(appWidgetId, views);
-		} else {
+		if(refreshToken != null){
 			// Construct the RemoteViews object
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
 
@@ -67,9 +57,22 @@ public class WidgetProvider extends AppWidgetProvider {
 
 			// Instruct the widget manager to update the widget
 			appWidgetManager.updateAppWidget(appWidgetId, views);
-
-			Log.d(TAG, "updateAppWidget: Success!");
+		} else {
+			createWidgetAuthOverlay(context, appWidgetManager, appWidgetId);
 		}
+	}
+
+	private static void createWidgetAuthOverlay(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+		// Construct the RemoteViews object
+		RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_auth_overlay);
+
+		Intent authIntent = new Intent(context, AuthActivity.class);
+		authIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+		PendingIntent configPendingIntent = PendingIntent.getActivity(context, appWidgetId, authIntent, 0);
+		views.setOnClickPendingIntent(R.id.button_authorize, configPendingIntent);
+
+		// Instruct the widget manager to update the widget
+		appWidgetManager.updateAppWidget(appWidgetId, views);
 	}
 
 	/**
@@ -102,17 +105,14 @@ public class WidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		Log.d(TAG, "onUpdate: Executed...");
-
 		WidgetUtils.remoteUpdateWidget(context);
-
 	}
 
 	/**
 	 * Update all widgets currently active on the screen.
 	 */
 	public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Boolean updateFromUser) {
-		Log.d(TAG, "updateAllWidgets: Executed..");
-		Log.d(TAG, "ALL WIDGET ID'S= " + appWidgetIds);
+		Log.d(TAG, "updateAllWidgets: Executed. ALL WIDGET ID'S= " + appWidgetIds);
 
 		// There may be multiple widgets active, so update all of them
 		for (int appWidgetId : appWidgetIds) {
@@ -128,7 +128,6 @@ public class WidgetProvider extends AppWidgetProvider {
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context, intent);
 		Log.d(TAG, "onReceive()" + intent.getAction());
-
 		WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
 	}
 

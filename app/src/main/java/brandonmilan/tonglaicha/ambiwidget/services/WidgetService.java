@@ -95,6 +95,7 @@ public class WidgetService extends JobIntentService {
 	 */
 	private void handleActionUpdateWidget(String TAG) {
 		Boolean updateFromUser = false;
+		//Check if the update was requested by the user.
 		if(TAG != null && TAG.equals(WidgetProvider.UpdateByUserTag)){
 			updateFromUser = true;
 		}

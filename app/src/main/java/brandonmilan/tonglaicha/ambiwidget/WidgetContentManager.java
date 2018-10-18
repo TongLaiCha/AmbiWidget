@@ -73,7 +73,6 @@ public class WidgetContentManager {
 
         // Fill content (local values)
         fillView(new ReturnObject(deviceObject), "ROOM", context, views, appWidgetId, null, null);
-        fillView(new ReturnObject(deviceObject), "LOCATION", context, views, appWidgetId, null, null);
 
         // Retrieve and fill data from API
         final WorkCounter workCounter = new WorkCounter(3, context, appWidgetId, views);
@@ -169,12 +168,6 @@ public class WidgetContentManager {
             case "ROOM":
                 String roomName = result.deviceObject.roomName();
                 views.setTextViewText(R.id.roomName, roomName);
-                break;
-
-			// Device Location TODO: Remove
-            case "LOCATION":
-                String location = result.deviceObject.locationName();
-                views.setTextViewText(R.id.location_text, location);
                 break;
         }
     }

@@ -2,6 +2,7 @@ package brandonmilan.tonglaicha.ambiwidget.services;
 
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
@@ -29,6 +30,21 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.action.update_widget";
 	public static final String ACTION_SWITCH_ON_OFF =
 			"brandonmilan.tonglaicha.ambiwidget.action.switch_on_off";
+
+	public static Boolean busy = false;
+
+	public static void preEnqueueWork(Context context, int JOB_ID, Intent intent) {
+		// Prevent button spam
+		String action = intent.getAction();
+		if (action == ACTION_GIVE_FEEDBACK || action == ACTION_SWITCH_ON_OFF)  {
+			if (WidgetService.busy) {
+				return;
+			} else {
+				WidgetService.busy = true;
+			}
+		}
+		WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
+	}
 
 	/**
 	 * Handle the incoming jobIntent in a background thread.
@@ -80,12 +96,14 @@ public class WidgetService extends JobIntentService {
 				String confirmToast = "Feedback given: " + feedbackMsg + ".";
 				Toast.makeText(getApplicationContext(), confirmToast, Toast.LENGTH_LONG).show();
 				WidgetUtils.remoteUpdateWidget(getApplicationContext());
+				WidgetService.busy = false;
 			}
 
 			@Override
 			public void onFailure(ReturnObject result) {
 				Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+				WidgetService.busy = false;
 			}
 		}, deviceObject, feedbackTag).execute();
 	}
@@ -129,11 +147,12 @@ public class WidgetService extends JobIntentService {
 					//Turn off the AC.
 					WidgetUtils.turnDeviceOff(getApplicationContext(), preferredDevice);
 				}
-
+				WidgetService.busy = false;
 			}
 			@Override
 			public void onFailure(ReturnObject result) {
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+				WidgetService.busy = false;
 			}
 		}, preferredDevice).execute();
 	}

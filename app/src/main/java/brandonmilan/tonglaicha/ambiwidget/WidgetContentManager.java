@@ -135,7 +135,7 @@ public class WidgetContentManager {
 	/**
 	 * Fills a view of a remoteViews object with content.
 	 */
-    private static void fillView(ReturnObject result, String TAG, Context context, RemoteViews views, int appWidgetId, String value_celsius, String value_fahrenheit) {
+    public static void fillView(ReturnObject result, String TAG, Context context, RemoteViews views, int appWidgetId, String value_celsius, String value_fahrenheit) {
 
         switch (TAG){
 

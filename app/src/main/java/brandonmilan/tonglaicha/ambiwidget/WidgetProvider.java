@@ -29,8 +29,8 @@ public class WidgetProvider extends AppWidgetProvider {
 	private static final String TooWarmTag = "too_warm";
 	private static final String ActionFeedback = WidgetService.ACTION_GIVE_FEEDBACK;
 	private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
-	public static final String UpdateByUserTag = "update_by_user";
 	private static final String ActionSwitchOnOff = WidgetService.ACTION_SWITCH_ON_OFF;
+	public static final String UpdateByUserTag = "update_by_user";
 	private static final Integer JOB_ID = 10;
 
 	/**
@@ -79,6 +79,7 @@ public class WidgetProvider extends AppWidgetProvider {
 	 * Set all click handlers for the widgets buttons.
 	 */
 	private static void setButtonClickHandlers(Context context, int appWidgetId, RemoteViews views) {
+
 		//Set onClickPendingIntents for all the feedback buttons.
 		views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getPendingIntent(context, ActionFeedback, TooColdTag));
 		views.setOnClickPendingIntent(R.id.button_little_cold, WidgetUtils.getPendingIntent(context, ActionFeedback, LittleColdTag));
@@ -127,16 +128,14 @@ public class WidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context, intent);
-		Log.d(TAG, "onReceive()" + intent.getAction());
-		WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
+		WidgetService.preEnqueueWork(context, JOB_ID, intent);
 	}
 
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		// When the user deletes the widget, delete the preference associated with it.
-		for (int appWidgetId : appWidgetIds) {
-//            WidgetConfigureActivity.deleteTitlePref(context, appWidgetId);
-		}
+//		for (int appWidgetId : appWidgetIds) {
+//		}
 	}
 
 	@Override

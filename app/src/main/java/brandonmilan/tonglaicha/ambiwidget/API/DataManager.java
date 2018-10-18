@@ -89,7 +89,7 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 
 	/**
 	 * Returns the temperature reading of a device.
-	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
+	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
 	 * @return temperature
 	 */
 	public static ReturnObject getHumidity(Context context, DeviceObject deviceObject) {
@@ -125,7 +125,7 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 
 	/**
 	 * Returns the temperature reading of a device.
-	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
+	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
 	 * @return temperature
 	 */
 	public static ReturnObject updateComfort(Context context, DeviceObject deviceObject, String feedback) {
@@ -173,8 +173,8 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 	}
 
 	/**
-	 * Returns the temperature reading of a device.
-	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
+	 * Returns the current mode of the ambi device and also checks the last appliance state to determine Manual Mode as ON / OFF.
+	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
 	 * @return temperature
 	 */
 	public static ReturnObject getMode(Context context, DeviceObject deviceObject) {
@@ -187,7 +187,29 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 			return getAccessTokenResult;
 		}
 
-		return Requests.getMode(getAccessTokenResult.value, deviceObject);
+		// Request mode
+		ReturnObject getModeResult = Requests.getMode(getAccessTokenResult.value, deviceObject);
+
+		// If result has an error (exception)
+		if (getModeResult.exception != null) {
+			return getModeResult;
+		}
+
+		// If mode is Manual, need an additional appliance state call to check if it's on or off.
+		if (getModeResult.modeObject.mode().equals("Manual")) {
+
+			// Request last appliance state
+			ReturnObject getLastApplianceStateResult = Requests.getLastApplianceState(getAccessTokenResult.value, deviceObject);
+
+			// If result has an error (exception)
+			if (getLastApplianceStateResult.exception != null) {
+				return getLastApplianceStateResult;
+			}
+
+			return new ReturnObject(getModeResult.modeObject, getLastApplianceStateResult.applianceStateObject);
+		}
+
+		return getModeResult;
 	}
 
 	/**
@@ -205,6 +227,42 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 		@Override
 		public ReturnObject doInBackground(Void... voids) {
 			return getMode(mContext.get(), deviceObject);
+		}
+	}
+
+	/**
+	 * Returns the temperature reading of a device.
+	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
+	 * @return temperature
+	 */
+	public static ReturnObject getLastApplianceState(Context context, DeviceObject deviceObject) {
+
+		// Get access token
+		ReturnObject getAccessTokenResult = TokenManager.getAccessToken(context);
+
+		// If result has an error (exception)
+		if (getAccessTokenResult.exception != null) {
+			return getAccessTokenResult;
+		}
+
+		return Requests.getLastApplianceState(getAccessTokenResult.value, deviceObject);
+	}
+
+	/**
+	 * Same as getAccessToken(), but as a custom AsyncTask with callbacks.
+	 * More info about AsyncTaskWithCallback -> API.AsyncTaskWithCallback.java
+	 */
+	public static class GetLastApplianceStateTask extends AsyncTaskWithCallback {
+		private DeviceObject deviceObject;
+
+		public GetLastApplianceStateTask(Context context, OnProcessFinish callback, DeviceObject deviceObject){
+			super(context, callback);
+			this.deviceObject = deviceObject;
+		}
+
+		@Override
+		public ReturnObject doInBackground(Void... voids) {
+			return getLastApplianceState(mContext.get(), deviceObject);
 		}
 	}
 
@@ -247,7 +305,7 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 
 	/**
 	 * Returns the temperature reading of a device.
-	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
+	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.ho
 	 * @return temperature
 	 */
 	public static ReturnObject updateMode(Context context, DeviceObject deviceObject, String mode, String value, Boolean multiple) {

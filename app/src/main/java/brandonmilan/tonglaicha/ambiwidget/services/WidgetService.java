@@ -108,6 +108,7 @@ public class WidgetService extends JobIntentService {
 	/**
 	 * Handle action SwitchOnOff in provided background threat.
 	 */
+	// TODO: Do ON/OFF feedback based on what the USER SEES (local data from last update) and NOT doing a new update.
 	private void handleActionSwitchOnOff() {
 
 		//Get the current device.
@@ -117,9 +118,10 @@ public class WidgetService extends JobIntentService {
 		new DataManager.GetModeTask(getApplicationContext(), new OnProcessFinish<ReturnObject>() {
 			@Override
 			public void onSuccess(ReturnObject result) {
-				Log.d(TAG, "Current Mode: result.value = " + result.value);
+				Log.d(TAG, "Current Mode: result.modeObject.mode() = " + result.modeObject.mode());
 
-				if (result.value.equals("Manual")){
+				// If AC is off
+				if (result.modeObject.mode().equals("Off") || (result.modeObject.mode().equals("Manual")) && result.applianceStateObject.power().equals("Off")) {
 					//Set the the device to Comfort mode.
 					WidgetUtils.setDeviceToComfort(getApplicationContext(), preferredDevice);
 				} else {

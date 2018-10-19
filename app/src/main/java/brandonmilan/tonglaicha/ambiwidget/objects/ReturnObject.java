@@ -18,6 +18,7 @@ public class ReturnObject {
 	public TokenObject tokenObject = null;
 	public ApplianceStateObject applianceStateObject = null;
 	public ModeObject modeObject = null;
+	public DeviceStatusObject deviceStatusObject = null;
 
 	public ReturnObject(ModeObject modeObject, ApplianceStateObject applianceStateObject) {
 		this.modeObject = modeObject;
@@ -58,5 +59,9 @@ public class ReturnObject {
 
 	public ReturnObject(DeviceObject deviceObject) {
 		this.deviceObject = deviceObject;
+	}
+
+	public ReturnObject(DeviceStatusObject deviceStatusObject) {
+		this.deviceStatusObject = deviceStatusObject;
 	}
 }

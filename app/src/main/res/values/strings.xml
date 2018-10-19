@@ -7,12 +7,14 @@
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
 
-    <!--Comfort feedback buttons-->
+    <!--Comfort Tags to Displayed Text-->
+    <string name="hot">Hot</string>
     <string name="too_warm">Too warm</string>
-    <string name="bit_warm">Bit warm</string>
+    <string name="bit_warm">A bit warm</string>
     <string name="comfy">Comfy</string>
-    <string name="bit_cold">Bit cold</string>
+    <string name="bit_cold">A bit cold</string>
     <string name="too_cold">Too cold</string>
+    <string name="freezing">Freezing</string>
     <string name="off_state">Off</string>
     <string name="on_state">On</string>
     <string name="button_on_off">On/Off</string>

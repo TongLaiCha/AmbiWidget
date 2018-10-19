@@ -40,19 +40,19 @@ public class WidgetProvider extends AppWidgetProvider {
 		Log.d(TAG, "UPDATING WIDGET WITH ID = "+appWidgetId);
 		String refreshToken = TokenManager.getRefreshToken(context).value();
 
-		//Check if the user has authorized the widget to access his Ambi account.
+		// Check if the user has authorized the widget to access his Ambi account.
 		if(refreshToken != null){
 			// Construct the RemoteViews object
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
 
-			//Display loading animation when the user clicks the refresh button.
+			// Display loading animation when the user clicks the refresh button.
 			if(updateFromUser){
 				WidgetUtils.updateRefreshAnimation(true, views);
 			}
 
 			setButtonClickHandlers(context, appWidgetId, views);
 
-			//Update the temperature, humidity, room name and location name.
+			// Update the temperature, humidity, room name and location name.
 			WidgetContentManager.updateAllViews(context, views, appWidgetId);
 
 			// Instruct the widget manager to update the widget

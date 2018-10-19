@@ -10,14 +10,14 @@ import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
  * Manager for all user data related communication with the Ambi Climate Open API.
  * @author Brandon Yuen
  */
-public class DataManager { // TODO: Add check to every TokenManager.getAccessToken() -> can not be null.
+public class DataManager {
 	private DataManager() {} // Deny instantiation
 
 	private static final String TAG = DataManager.class.getSimpleName();
 
 	/**
 	 * Returns a list of devices from the user
-	 * Can ONLY be used inside async tasks. Use DataManager.GetDeviceListTask() for a custom AsyncTask with callbacks for sync-code.
+	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
 	 * @return deviceList
 	 */
 	public static ReturnObject getDeviceList(Context context) {
@@ -51,8 +51,45 @@ public class DataManager { // TODO: Add check to every TokenManager.getAccessTok
 
 
 	/**
+	 * Returns consolidated data about the status of an ambi device (inc. humidity, temp, mode, appliance state)
+	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
+	 * @return temperature
+	 */
+	public static ReturnObject getDeviceStatus(Context context, DeviceObject deviceObject) {
+
+		// Get access token
+		ReturnObject getAccessTokenResult = TokenManager.getAccessToken(context);
+
+		// If result has an error (exception)
+		if (getAccessTokenResult.exception != null) {
+			return getAccessTokenResult;
+		}
+
+		return Requests.getDeviceStatus(getAccessTokenResult.value, deviceObject);
+	}
+
+	/**
+	 * Same as getAccessToken(), but as a custom AsyncTask with callbacks.
+	 * More info about AsyncTaskWithCallback -> API.AsyncTaskWithCallback.java
+	 */
+	public static class GetDeviceStatusTask extends AsyncTaskWithCallback {
+		private DeviceObject deviceObject;
+
+		public GetDeviceStatusTask(Context context, OnProcessFinish callback, DeviceObject deviceObject){
+			super(context, callback);
+			this.deviceObject = deviceObject;
+		}
+
+		@Override
+		public ReturnObject doInBackground(Void... voids) {
+			return getDeviceStatus(mContext.get(), deviceObject);
+		}
+	}
+
+
+	/**
 	 * Returns the temperature reading of a device.
-	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
+	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
 	 * @return temperature
 	 */
 	public static ReturnObject getTemperature(Context context, DeviceObject deviceObject) {

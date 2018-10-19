@@ -16,9 +16,12 @@ import java.util.List;
 import java.util.Objects;
 
 import brandonmilan.tonglaicha.ambiwidget.objects.ApplianceStateObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.ComfortPredictionObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.DeviceStatusObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ModeObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.SensorDataObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.TokenObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.LogUtil;
 import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
@@ -171,6 +174,84 @@ public class Requests {
 		return new ReturnObject(deviceList);
 	}
 
+	public static ReturnObject getDeviceStatus(String accessToken, DeviceObject deviceObject) {
+
+		// Start a JSON Retrieving Request
+		DeviceStatusObject deviceStatusObject = null;
+
+		try {
+			// Create URL for Temperature request
+			String url = 	"https://api.ambiclimate.com/api/v1/device/device_status";
+			String deviceId = deviceObject.deviceId();
+			String uri = url + "?access_token="+accessToken+"&device_id="+deviceId;
+
+			// Get json from url
+			String json = Utils.getJSONStringFromUrl(uri);
+			Object result = new JSONTokener(json).nextValue();
+
+			// If json is an jsonObject
+			if (result instanceof JSONObject){
+				JSONObject jsonObject= new JSONObject(json);
+
+				// Get status code and handle specific cases if a status code is set
+				if (jsonObject.has("error_code")) {
+					Integer errorCode = jsonObject.getInt("error_code");
+					switch (errorCode) {
+						case 401:
+							return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
+					}
+				}
+
+				// If there is any error in the result
+				if (jsonObject.has("errors")) {
+					Log.d(TAG, "Errors: "+jsonObject.get("errors"));
+					return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending feedback failed.");
+				}
+
+				// Retrieve appliance control target (ambi device mode) data
+				JSONObject applianceControlTarget = jsonObject.getJSONObject("appliance_control_target");
+				String mode = applianceControlTarget.getString("quantity");
+				if (mode.equals("Climate")) mode = "Comfort";
+				String value = applianceControlTarget.getString("value");
+
+				// Create modeObject
+				ModeObject modeObject = new ModeObject(mode, value);
+
+				// Retrieve appliance state data
+				JSONObject applianceState = jsonObject.getJSONObject("appliance_state");
+				String acMode = applianceState.getString("mode");
+				String power = applianceState.getString("power");
+
+				// Create applianceStateObject
+				ApplianceStateObject applianceStateObject = new ApplianceStateObject(null, acMode, power, null, null);
+
+				// Retrieve comfort prediction data
+				JSONObject comfortPrediction = jsonObject.getJSONObject("comfort_prediction");
+				double level = comfortPrediction.getDouble("comfort");
+
+				// Create comfortPredictionObject
+				ComfortPredictionObject comfortPredictionObject = new ComfortPredictionObject(level);
+
+				// Retrieve sensor data
+				JSONObject sensorData = jsonObject.getJSONObject("sensor_data");
+				double humidity = sensorData.getDouble("humidity_refined");
+				double temperature = sensorData.getDouble("temperature_refined");
+
+				// Create comfortPredictionObject
+				SensorDataObject sensorDataObject = new SensorDataObject(temperature, humidity);
+
+				// Create final deviceStatusObject
+				deviceStatusObject = new DeviceStatusObject(modeObject, applianceStateObject, comfortPredictionObject, sensorDataObject);
+
+			}
+
+		} catch (Exception e) {
+			return new ReturnObject(e, "Could not get current mode info.");
+		}
+
+		return new ReturnObject(deviceStatusObject);
+	}
+
 	public static ReturnObject getMode(String accessToken, DeviceObject deviceObject) {
 
 		// Start a JSON Retrieving Request
@@ -213,10 +294,10 @@ public class Requests {
 				// Retrieve value
 				String value = jsonObject.getString("value");
 
-				// Create mode objec
+				// Create mode object
 				modeObject = new ModeObject(mode, value);
 			}
-			// If json is an jsonArray, it's probably a good response.
+			// If json is an jsonArray
 			else if (result instanceof JSONArray) {
 				JSONArray jsonArray = new JSONArray(json);
 				resultAsJsonObject = jsonArray.getJSONObject(0);

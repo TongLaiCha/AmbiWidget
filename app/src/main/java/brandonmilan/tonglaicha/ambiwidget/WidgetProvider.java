@@ -54,7 +54,7 @@ public class WidgetProvider extends AppWidgetProvider {
 			setButtonClickHandlers(context, appWidgetId, views);
 
 			// Update the temperature, humidity, room name and location name.
-			WidgetContentManager.updateAllViews(context, views, appWidgetId);
+			WidgetContentManager.updateWidgetContent(context, appWidgetId);
 
 			// Instruct the widget manager to update the widget
 			appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -190,9 +190,6 @@ public class WidgetProvider extends AppWidgetProvider {
 					}
 					break;
 			}
-			//Partially update the widget.
-			AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-			appWidgetManager.updateAppWidget(appWidgetId, remoteViewsFromArray);
 		} else {
 			Log.e(TAG, "ERROR: in displayFeedbackLoadingAnimation, feedbackgiven = null", new Exception("ERROR_FEEDBACKGIVEN_IS_NULL"));
 		}

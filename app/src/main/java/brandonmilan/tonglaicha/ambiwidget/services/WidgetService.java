@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
+import brandonmilan.tonglaicha.ambiwidget.WidgetContentManager;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
@@ -62,6 +63,13 @@ public class WidgetService extends JobIntentService {
 			String feedbackGiven = intent.getStringExtra(WidgetService.EXTRA_FEEDBACK_TAG);
 			Integer appWidgetId = intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0);
 			displayFeedbackLoadingAnimation(context, appWidgetId, feedbackGiven, true);
+
+			// Get removeViews object
+			RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
+
+			//Partially update the widget.
+			AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+			appWidgetManager.updateAppWidget(appWidgetId, remoteViewsFromArray);
 		}
 		WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
 	}
@@ -121,7 +129,15 @@ public class WidgetService extends JobIntentService {
 				String confirmToast = "Feedback given: " + feedbackMsg + ".";
 				Toast.makeText(getApplicationContext(), confirmToast, Toast.LENGTH_LONG).show();
 
+				WidgetContentManager.updateModeIcon(appWidgetId, "Comfort", null);
 				displayFeedbackLoadingAnimation(getApplicationContext(), appWidgetId, feedbackTag,false);
+
+				// Get removeViews object
+				RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
+
+				//Partially update the widget.
+				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+				appWidgetManager.updateAppWidget(appWidgetId, remoteViewsFromArray);
 
 				WidgetService.busy = false;
 			}

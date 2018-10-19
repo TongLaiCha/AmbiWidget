@@ -62,7 +62,9 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Return
 						TokenManager.deleteToken(mContext.get(), "REFRESH_TOKEN");
 
 						//update widget state with auth button
-						WidgetUtils.remoteUpdateWidget(mContext.get());
+//						WidgetUtils.remoteUpdateWidget(mContext.get(), null);
+						//TODO: Only update the widget that needs to be updated.
+						WidgetUtils.remoteUpdateAllWidgets(mContext.get());
 						break;
 				}
 

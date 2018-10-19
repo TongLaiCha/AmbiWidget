@@ -15,7 +15,6 @@ import com.google.gson.Gson;
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.R;
-import brandonmilan.tonglaicha.ambiwidget.WidgetContentManager;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
@@ -23,24 +22,50 @@ import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
 
 public final class WidgetUtils {
     private static final String TAG = "WidgetUtils";
-    private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
 
     /**
-     * Helper function for creating a pendingIntent.
+     * Helper function for creating a give feedback pendingIntent.
      * The broadcast pendingIntent is send to the {@link WidgetProvider onReceive} method.
      *
      * @return PendingIntent
      */
-    public static PendingIntent getPendingIntent(Context context, String action, String tag) {
+    public static PendingIntent getGiveFeedbackPendingIntent(Context context, int appWidgetId, RemoteViews views, String FeedbackTag) {
         Intent intent = new Intent(context, WidgetProvider.class);
-        intent.setAction(action);
-
+        intent.setAction(WidgetService.ACTION_GIVE_FEEDBACK);
         //Give the pendingIntent a category
         //If pendingIntents only vary by their "extra" contents, they will be seen as the same and get overwritten.
-        if(tag != null){
-            intent.addCategory(tag);
-            intent.putExtra(WidgetService.EXTRA_ACTION_TAG, tag);
-        }
+        intent.addCategory(FeedbackTag);
+        intent.putExtra(WidgetService.EXTRA_FEEDBACK_TAG, FeedbackTag);
+        intent.putExtra(WidgetService.EXTRA_REMOTEVIEWS_OBJECT, views);
+        intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
+
+        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    /**
+     * Helper function for creating a switch power pendingIntent.
+     * The broadcast pendingIntent is send to the {@link WidgetProvider onReceive} method.
+     *
+     * @return PendingIntent
+     */
+    public static PendingIntent getSwitchPowerPendingIntent(Context context, int appWidgetId) {
+        Intent intent = new Intent(context, WidgetProvider.class);
+        intent.setAction(WidgetService.ACTION_SWITCH_ON_OFF);
+
+        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    /**
+     * Helper function for creating an update pendingIntent.
+     * The broadcast pendingIntent is send to the {@link WidgetProvider onReceive} method.
+     *
+     * @return PendingIntent
+     */
+    public static PendingIntent getUpdatePendingIntent(Context context, int appWidgetId, Boolean updateByUser, String feedbackGiven) {
+        Intent intent = new Intent(context, WidgetProvider.class);
+        intent.setAction(WidgetService.ACTION_UPDATE_WIDGET);
+        intent.putExtra(WidgetService.EXTRA_UPDATE_BY_USER, updateByUser);
+
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -48,8 +73,21 @@ public final class WidgetUtils {
      * Send a pendingIntent with the updateWidgetAction.
      * A background service takes care of updating the widgets UI.
      */
-    public static void remoteUpdateWidget(Context context) {
-        PendingIntent pendingIntent = WidgetUtils.getPendingIntent(context, ActionUpdate, null);
+    public static void remoteUpdateWidget(Context context, int appWidgetId, String feedbackGiven) {
+        PendingIntent pendingIntent = WidgetUtils.getUpdatePendingIntent(context, appWidgetId, false, feedbackGiven);
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void remoteUpdateAllWidgets(Context context){
+        Intent intent = new Intent(context, WidgetProvider.class);
+        intent.setAction(WidgetService.ACTION_UPDATE_WIDGET);
+        intent.putExtra(WidgetService.EXTRA_UPDATE_BY_USER, false);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         try {
             pendingIntent.send();
         } catch (PendingIntent.CanceledException e) {
@@ -65,6 +103,26 @@ public final class WidgetUtils {
             views.setViewVisibility(R.id.button_refresh, View.VISIBLE);
             views.setViewVisibility(R.id.progressBar, View.INVISIBLE);
         }
+    }
+
+    /**
+     * Helper function to get the remoteViews object matching the given widgetId.
+     * @return remoteViewFromArray
+     */
+    public static RemoteViews getRemoteViewsByWidgetId(int appWidgetId) {
+        RemoteViews remoteViewsFromArray = null;
+        for (int i = 0; i < WidgetProvider.remoteViewsByWidgetIds.size(); i++) {
+            Integer key = WidgetProvider.remoteViewsByWidgetIds.keyAt(i);
+            if(key.equals(appWidgetId)){
+                remoteViewsFromArray = WidgetProvider.remoteViewsByWidgetIds.valueAt(i);
+            }
+        }
+
+        if (remoteViewsFromArray == null){
+            Log.e(TAG, "ERROR: viewFromArray = null.", new Exception("ERROR_REMOTEVIEW_NOT_FOUND"));
+        }
+
+        return remoteViewsFromArray;
     }
 
     /**
@@ -110,7 +168,7 @@ public final class WidgetUtils {
      * Helper function to set a device in "Off" mode.
      * @param preferredDevice
      */
-    public static void turnDeviceOff(final Context context, DeviceObject preferredDevice) {
+    public static void turnDeviceOff(final Context context, final int appWidgetId, DeviceObject preferredDevice) {
 
         new DataManager.PowerOffTask(context, new OnProcessFinish<ReturnObject>() {
 
@@ -118,7 +176,7 @@ public final class WidgetUtils {
             public void onSuccess(ReturnObject result) {
                 String confirmToast = "Device is now in off mode.";
                 Log.d(TAG, confirmToast);
-                WidgetUtils.remoteUpdateWidget(context);
+                WidgetUtils.remoteUpdateWidget(context, appWidgetId, null);
                 Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
             }
 
@@ -135,7 +193,7 @@ public final class WidgetUtils {
      * Helper function to set a device in "Comfort" mode.
      * @param preferredDevice
      */
-    public static void setDeviceToComfort(final Context context, DeviceObject preferredDevice) {
+    public static void setDeviceToComfort(final Context context, final int appWidgetId, DeviceObject preferredDevice) {
 
         new DataManager.UpdateModeTask(context, new OnProcessFinish<ReturnObject>() {
 
@@ -143,7 +201,7 @@ public final class WidgetUtils {
             public void onSuccess(ReturnObject result) {
                 String confirmToast = "Device is now in comfort mode.";
                 Log.d(TAG, confirmToast);
-                WidgetUtils.remoteUpdateWidget(context);
+                WidgetUtils.remoteUpdateWidget(context, appWidgetId, null);
                 Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
             }
 

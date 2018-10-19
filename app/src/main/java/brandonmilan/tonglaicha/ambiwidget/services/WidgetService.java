@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
@@ -23,12 +24,20 @@ public class WidgetService extends JobIntentService {
 
 	public static final String ACTION_GIVE_FEEDBACK =
 			"brandonmilan.tonglaicha.ambiwidget.action.give_feedback";
-	public static final String EXTRA_ACTION_TAG =
+	public static final String EXTRA_FEEDBACK_TAG =
 			"brandonmilan.tonglaicha.ambiwidget.extra.ACTION_TAG";
 	public static final String ACTION_UPDATE_WIDGET =
 			"brandonmilan.tonglaicha.ambiwidget.action.update_widget";
+	public static final String EXTRA_UPDATE_BY_USER =
+			"brandonmilan.tonglaicha.ambiwidget.extra.update_by_user";
+	public static final String EXTRA_FEEDBACK_GIVEN =
+			"brandonmilan.tonglaicha.ambiwidget.extra.feedback_given";
 	public static final String ACTION_SWITCH_ON_OFF =
 			"brandonmilan.tonglaicha.ambiwidget.action.switch_on_off";
+	public static final String EXTRA_WIDGET_ID =
+			"brandonmilan.tonglaicha.ambiwidget.extra.widget_id";
+	public static final String EXTRA_REMOTEVIEWS_OBJECT =
+			"brandonmilan.tonglaicha.ambiwidget.extra.remoteviews_object";
 
 	/**
 	 * Handle the incoming jobIntent in a background thread.
@@ -39,13 +48,18 @@ public class WidgetService extends JobIntentService {
 		if (intent != null) {
 			final String action = intent.getAction();
 			if (ACTION_GIVE_FEEDBACK.equals(action)) {
-				final String feedbackTag = intent.getStringExtra(EXTRA_ACTION_TAG);
-				handleActionGiveFeedback(feedbackTag);
+				final String feedbackTag = intent.getStringExtra(EXTRA_FEEDBACK_TAG);
+				final RemoteViews views = intent.getParcelableExtra(EXTRA_REMOTEVIEWS_OBJECT);
+				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
+				handleActionGiveFeedback(appWidgetId, feedbackTag);
 			} else if(ACTION_UPDATE_WIDGET.equals(action)) {
-				final String UpdateByUser = intent.getStringExtra(EXTRA_ACTION_TAG);
-				handleActionUpdateWidget(UpdateByUser);
+				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
+				final Boolean UpdateByUser = intent.getBooleanExtra(EXTRA_UPDATE_BY_USER, false);
+				final String feedbackGiven = intent.getStringExtra(EXTRA_FEEDBACK_GIVEN);
+				handleActionUpdateWidget(appWidgetId, UpdateByUser, feedbackGiven);
 			} else if(ACTION_SWITCH_ON_OFF.equals(action)) {
-				handleActionSwitchOnOff();
+				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
+				handleActionSwitchOnOff(appWidgetId);
 			}
 		}
 	}
@@ -54,7 +68,7 @@ public class WidgetService extends JobIntentService {
 	 * Handle action GiveFeedback in the provided background threat.
 	 * @param feedbackTag
 	 */
-	private void handleActionGiveFeedback(final String feedbackTag) {
+	private void handleActionGiveFeedback(final int appWidgetId, final String feedbackTag) {
 		//Call class for API handling and giving feedback to the Ai.
 		Log.d(TAG, "handleActionGiveFeedback: Giving feedback: It is " + feedbackTag + " to the Ai.");
 
@@ -79,7 +93,7 @@ public class WidgetService extends JobIntentService {
 				String feedbackMsg = feedbackTag.replace("_", " ");
 				String confirmToast = "Feedback given: " + feedbackMsg + ".";
 				Toast.makeText(getApplicationContext(), confirmToast, Toast.LENGTH_LONG).show();
-				WidgetUtils.remoteUpdateWidget(getApplicationContext());
+				WidgetProvider.displayFeedbackLoadingAnimation(getApplicationContext(), appWidgetId, feedbackTag,false);
 			}
 
 			@Override
@@ -90,26 +104,23 @@ public class WidgetService extends JobIntentService {
 		}, deviceObject, feedbackTag).execute();
 	}
 
+
 	/**
+	 * TODO: Only update the widget matching the given widget id.
 	 * Handle action UpdateWidget in the provided background threat.
 	 */
-	private void handleActionUpdateWidget(String TAG) {
-		Boolean updateFromUser = false;
-		//Check if the update was requested by the user.
-		if(TAG != null && TAG.equals(WidgetProvider.UpdateByUserTag)){
-			updateFromUser = true;
-		}
+	private void handleActionUpdateWidget(int appWidgetId, Boolean updateByUser, String feedbackGiven) {
 
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
 		int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
 
-		WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds, updateFromUser);
+		WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds, updateByUser, feedbackGiven);
 	}
 
 	/**
 	 * Handle action SwitchOnOff in provided background threat.
 	 */
-	private void handleActionSwitchOnOff() {
+	private void handleActionSwitchOnOff(final int appWidgetId) {
 
 		//Get the current device.
 		final DeviceObject preferredDevice = WidgetUtils.getPreferredDevice(getApplicationContext());
@@ -122,10 +133,10 @@ public class WidgetService extends JobIntentService {
 
 				if (result.value.equals("Manual")){
 					//Set the the device to Comfort mode.
-					WidgetUtils.setDeviceToComfort(getApplicationContext(), preferredDevice);
+					WidgetUtils.setDeviceToComfort(getApplicationContext(), appWidgetId, preferredDevice);
 				} else {
 					//Turn off the AC.
-					WidgetUtils.turnDeviceOff(getApplicationContext(), preferredDevice);
+					WidgetUtils.turnDeviceOff(getApplicationContext(), appWidgetId, preferredDevice);
 				}
 
 			}

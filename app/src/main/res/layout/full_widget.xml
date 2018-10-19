@@ -23,6 +23,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
+                android:paddingTop="2dp"
+                android:paddingEnd="2dp"
                 android:background="@color/white"
                 android:src="@drawable/ic_icn_settings_24px" />
 
@@ -44,13 +46,14 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:background="@color/white"
-                android:padding="5dp"
-                android:src="@drawable/ic_icn_cloud_checking_grey" />
+                android:paddingTop="2dp"
+                android:paddingEnd="2dp"
+                android:src="@drawable/ic_icn_reload_24px" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_margin="2dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
@@ -108,13 +111,13 @@
                 android:paddingBottom="@dimen/text_padding"
                 android:src="@drawable/ic_icn_acmode_mode"/>
 
-            <TextView
-                android:id="@+id/mode_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/text_padding"
-                tools:text="Comfort"
-                android:textSize="13sp"/>
+            <!--<TextView-->
+                <!--android:id="@+id/mode_text"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:paddingStart="@dimen/text_padding"-->
+                <!--tools:text="Comfort"-->
+                <!--android:textSize="13sp"/>-->
 
         </LinearLayout>
 
@@ -127,60 +130,149 @@
             android:orientation="horizontal" >
             <!--style="@style/feedback_buttons_section">-->
 
-            <Button
-                android:id="@+id/button_too_warm"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:orientation="horizontal"
                 android:background="@drawable/button_selector_too_warm"
-                android:fontFamily="@font/avenir_next_medium"
-                android:textStyle="bold"
-                android:text="@string/too_warm"
-                android:textSize="11sp" />
+                android:gravity="center"
+                android:layout_weight="1"
+                tools:ignore="Suspicious0dp">
 
-            <Button
-                android:id="@+id/button_little_warm"
+                <Button
+                    android:id="@+id/button_too_warm"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/avenir_next_medium"
+                    android:textStyle="bold"
+                    android:text="@string/too_warm"
+                    android:textSize="11sp"/>
+
+                <ProgressBar
+                    android:id="@+id/progress_too_warm"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:indeterminateTint="@color/white"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:orientation="horizontal"
                 android:background="@drawable/button_selector_little_warm"
-                android:fontFamily="@font/avenir"
-                android:textStyle="bold"
-                android:text="@string/bit_warm"
-                android:textSize="11sp" />
+                android:gravity="center"
+                android:layout_weight="1"
+                tools:ignore="Suspicious0dp">
 
-            <Button
-                android:id="@+id/button_comfy"
+                <Button
+                    android:id="@+id/button_bit_warm"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/avenir"
+                    android:textStyle="bold"
+                    android:text="@string/bit_warm"
+                    android:textSize="11sp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bit_warm"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:indeterminateTint="@color/white"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:orientation="horizontal"
                 android:background="@drawable/button_selector_comfy"
-                android:fontFamily="@font/avenir"
-                android:textStyle="bold"
-                android:text="@string/comfy"
-                android:textSize="11sp" />
+                android:gravity="center"
+                android:layout_weight="1"
+                tools:ignore="Suspicious0dp">
 
-            <Button
-                android:id="@+id/button_little_cold"
+                <Button
+                    android:id="@+id/button_comfy"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/avenir"
+                    android:textStyle="bold"
+                    android:text="@string/comfy"
+                    android:textSize="11sp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_comfy"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:indeterminateTint="@color/white"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:orientation="horizontal"
                 android:background="@drawable/button_selector_little_cold"
-                android:fontFamily="@font/avenir"
-                android:textStyle="bold"
-                android:text="@string/bit_cold"
-                android:textSize="11sp" />
+                android:gravity="center"
+                android:layout_weight="1"
+                tools:ignore="Suspicious0dp">
 
-            <Button
-                android:id="@+id/button_too_cold"
+                <Button
+                    android:id="@+id/button_bit_cold"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/avenir"
+                    android:textStyle="bold"
+                    android:text="@string/bit_cold"
+                    android:textSize="11sp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bit_cold"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:indeterminateTint="@color/white"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:orientation="horizontal"
                 android:background="@drawable/button_selector_too_cold"
-                android:fontFamily="@font/avenir"
-                android:textStyle="bold"
-                android:text="@string/too_cold"
-                android:textSize="11sp" />
+                android:gravity="center"
+                android:layout_weight="1"
+                tools:ignore="Suspicious0dp">
+
+                <Button
+                    android:id="@+id/button_too_cold"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/avenir"
+                    android:textStyle="bold"
+                    android:text="@string/too_cold"
+                    android:textSize="11sp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_too_cold"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:indeterminateTint="@color/white"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
 
             <ImageButton
                 android:id="@+id/button_on_off"

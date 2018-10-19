@@ -156,10 +156,8 @@ public class WidgetContentManager {
 				Log.d(TAG, "fillView: FILLING MODE: "+mode);
                 if (mode.equals("Manual")) {
                     mode = "Off";
-                    views.setTextViewText(R.id.mode_text, mode);
                     views.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_off);
                 } else {
-                    views.setTextViewText(R.id.mode_text, mode);
                     views.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_comfort);
                 }
                 break;

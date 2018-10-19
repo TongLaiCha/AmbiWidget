@@ -5,7 +5,9 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.util.ArrayMap;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
@@ -27,16 +29,13 @@ public class WidgetProvider extends AppWidgetProvider {
 	private static final String ComfyTag = "comfortable";
 	private static final String LittleWarmTag = "bit_warm";
 	private static final String TooWarmTag = "too_warm";
-	private static final String ActionFeedback = WidgetService.ACTION_GIVE_FEEDBACK;
-	private static final String ActionUpdate = WidgetService.ACTION_UPDATE_WIDGET;
-	public static final String UpdateByUserTag = "update_by_user";
-	private static final String ActionSwitchOnOff = WidgetService.ACTION_SWITCH_ON_OFF;
 	private static final Integer JOB_ID = 10;
+	public static ArrayMap<Integer, RemoteViews> remoteViewsByWidgetIds = new ArrayMap<>();
 
 	/**
 	 * Instruct the appWidgetManager to load the widgets view and its components.
 	 */
-	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Boolean updateFromUser) {
+	static void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Boolean updateFromUser, String feedbackGiven) {
 		Log.d(TAG, "UPDATING WIDGET WITH ID = "+appWidgetId);
 		String refreshToken = TokenManager.getRefreshToken(context).value();
 
@@ -44,12 +43,14 @@ public class WidgetProvider extends AppWidgetProvider {
 		if(refreshToken != null){
 			// Construct the RemoteViews object
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
+			remoteViewsByWidgetIds.put(appWidgetId, views);
+            Log.i(TAG, "updateWidget: remoteviews object = " + views);
 
 			//Display loading animation when the user clicks the refresh button.
 			if(updateFromUser){
 				WidgetUtils.updateRefreshAnimation(true, views);
 			}
-
+			
 			setButtonClickHandlers(context, appWidgetId, views);
 
 			//Update the temperature, humidity, room name and location name.
@@ -80,14 +81,14 @@ public class WidgetProvider extends AppWidgetProvider {
 	 */
 	private static void setButtonClickHandlers(Context context, int appWidgetId, RemoteViews views) {
 		//Set onClickPendingIntents for all the feedback buttons.
-		views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getPendingIntent(context, ActionFeedback, TooColdTag));
-		views.setOnClickPendingIntent(R.id.button_little_cold, WidgetUtils.getPendingIntent(context, ActionFeedback, LittleColdTag));
-		views.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getPendingIntent(context, ActionFeedback, ComfyTag));
-		views.setOnClickPendingIntent(R.id.button_little_warm, WidgetUtils.getPendingIntent(context, ActionFeedback, LittleWarmTag));
-		views.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getPendingIntent(context, ActionFeedback, TooWarmTag));
+		views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, TooColdTag));
+		views.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, LittleColdTag));
+		views.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, ComfyTag));
+		views.setOnClickPendingIntent(R.id.button_bit_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, LittleWarmTag));
+		views.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, TooWarmTag));
 
 		//Set onClickPendingIntent for on/off button.
-		views.setOnClickPendingIntent(R.id.button_on_off, WidgetUtils.getPendingIntent(context, ActionSwitchOnOff, null));
+		views.setOnClickPendingIntent(R.id.button_on_off, WidgetUtils.getSwitchPowerPendingIntent(context, appWidgetId));
 
 		//Set onClickPendingIntent for the settings button.
 		Intent configIntent = new Intent(context, SettingsActivity.class);
@@ -98,25 +99,27 @@ public class WidgetProvider extends AppWidgetProvider {
 
 		//Set onClickPendingIntent for the refresh button.
 		views.setOnClickPendingIntent(R.id.button_refresh,
-				WidgetUtils.getPendingIntent(context, ActionUpdate, UpdateByUserTag));
+				WidgetUtils.getUpdatePendingIntent(context, appWidgetId, true, null));
 	}
 
 	//TODO: Make onUpdate only execute after the configuration is done.
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		Log.d(TAG, "onUpdate: Executed...");
-		WidgetUtils.remoteUpdateWidget(context);
+		for (int appWidgetId : appWidgetIds) {
+			WidgetUtils.remoteUpdateWidget(context, appWidgetId, null);
+		}
 	}
 
 	/**
 	 * Update all widgets currently active on the screen.
 	 */
-	public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Boolean updateFromUser) {
+	public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Boolean updateFromUser, String feedbackGiven) {
 		Log.d(TAG, "updateAllWidgets: Executed. ALL WIDGET ID'S= " + appWidgetIds);
 
 		// There may be multiple widgets active, so update all of them
 		for (int appWidgetId : appWidgetIds) {
-			updateAppWidget(context, appWidgetManager, appWidgetId, updateFromUser);
+			updateWidget(context, appWidgetManager, appWidgetId, updateFromUser, feedbackGiven);
 		}
 	}
 
@@ -128,14 +131,88 @@ public class WidgetProvider extends AppWidgetProvider {
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context, intent);
 		Log.d(TAG, "onReceive()" + intent.getAction());
+		String action = intent.getAction();
+
+		//TODO: Handle loading animation for refresh button here.
+
+		//Display loading animation on feedback buttons.
+		if(WidgetService.ACTION_GIVE_FEEDBACK.equals(action)){
+			String feedbackGiven = intent.getStringExtra(WidgetService.EXTRA_FEEDBACK_TAG);
+			Integer appWidgetId = intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0);
+			displayFeedbackLoadingAnimation(context, appWidgetId, feedbackGiven, true);
+		}
+
 		WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
+	}
+
+	/**
+	 * Display loading animation when the user presses a feedback button.
+	 * @param feedbackGiven
+	 */
+	public static void displayFeedbackLoadingAnimation(Context context, Integer appWidgetId, String feedbackGiven, Boolean enabled) {
+		RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
+
+		if(feedbackGiven != null){
+			switch (feedbackGiven){
+				case "too_warm":
+					if (enabled) {
+						remoteViewsFromArray.setViewVisibility(R.id.button_too_warm, View.GONE);
+						remoteViewsFromArray.setViewVisibility(R.id.progress_too_warm, View.VISIBLE);
+					} else {
+						remoteViewsFromArray.setViewVisibility(R.id.button_too_warm, View.VISIBLE);
+						remoteViewsFromArray.setViewVisibility(R.id.progress_too_warm, View.GONE);
+					}
+					break;
+				case "bit_warm":
+					if (enabled) {
+						remoteViewsFromArray.setViewVisibility(R.id.button_bit_warm, View.GONE);
+						remoteViewsFromArray.setViewVisibility(R.id.progress_bit_warm, View.VISIBLE);
+					} else {
+						remoteViewsFromArray.setViewVisibility(R.id.button_bit_warm, View.VISIBLE);
+						remoteViewsFromArray.setViewVisibility(R.id.progress_bit_warm, View.GONE);
+					}
+					break;
+				case "comfortable":
+					if (enabled) {
+						remoteViewsFromArray.setViewVisibility(R.id.button_comfy, View.GONE);
+						remoteViewsFromArray.setViewVisibility(R.id.progress_comfy, View.VISIBLE);
+					} else {
+						remoteViewsFromArray.setViewVisibility(R.id.button_comfy, View.VISIBLE);
+						remoteViewsFromArray.setViewVisibility(R.id.progress_comfy, View.GONE);
+					}
+					break;
+				case "bit_cold":
+					if (enabled) {
+						remoteViewsFromArray.setViewVisibility(R.id.button_bit_cold, View.GONE);
+						remoteViewsFromArray.setViewVisibility(R.id.progress_bit_cold, View.VISIBLE);
+					} else {
+						remoteViewsFromArray.setViewVisibility(R.id.button_bit_cold, View.VISIBLE);
+						remoteViewsFromArray.setViewVisibility(R.id.progress_bit_cold, View.GONE);
+					}
+					break;
+				case "too_cold":
+					if (enabled) {
+						remoteViewsFromArray.setViewVisibility(R.id.button_too_cold, View.GONE);
+						remoteViewsFromArray.setViewVisibility(R.id.progress_too_cold, View.VISIBLE);
+					} else {
+						remoteViewsFromArray.setViewVisibility(R.id.button_too_cold, View.VISIBLE);
+						remoteViewsFromArray.setViewVisibility(R.id.progress_too_cold, View.GONE);
+					}
+					break;
+			}
+			//Partially update the widget.
+			AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+			appWidgetManager.updateAppWidget(appWidgetId, remoteViewsFromArray);
+		} else {
+			Log.e(TAG, "ERROR: in displayFeedbackLoadingAnimation, feedbackgiven = null", new Exception("ERROR_FEEDBACKGIVEN_IS_NULL"));
+		}
 	}
 
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		// When the user deletes the widget, delete the preference associated with it.
 		for (int appWidgetId : appWidgetIds) {
-//            WidgetConfigureActivity.deleteTitlePref(context, appWidgetId);
+			remoteViewsByWidgetIds.remove(appWidgetId);
 		}
 	}
 

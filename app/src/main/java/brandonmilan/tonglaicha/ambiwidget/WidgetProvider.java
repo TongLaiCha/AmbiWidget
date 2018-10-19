@@ -39,21 +39,21 @@ public class WidgetProvider extends AppWidgetProvider {
 		Log.d(TAG, "UPDATING WIDGET WITH ID = "+appWidgetId);
 		String refreshToken = TokenManager.getRefreshToken(context).value();
 
-		//Check if the user has authorized the widget to access his Ambi account.
+		// Check if the user has authorized the widget to access his Ambi account.
 		if(refreshToken != null){
 			// Construct the RemoteViews object
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
 			remoteViewsByWidgetIds.put(appWidgetId, views);
             Log.i(TAG, "updateWidget: remoteviews object = " + views);
 
-			//Display loading animation when the user clicks the refresh button.
+			// Display loading animation when the user clicks the refresh button.
 			if(updateFromUser){
 				WidgetUtils.updateRefreshAnimation(true, views);
 			}
 			
 			setButtonClickHandlers(context, appWidgetId, views);
 
-			//Update the temperature, humidity, room name and location name.
+			// Update the temperature, humidity, room name and location name.
 			WidgetContentManager.updateAllViews(context, views, appWidgetId);
 
 			// Instruct the widget manager to update the widget
@@ -80,6 +80,7 @@ public class WidgetProvider extends AppWidgetProvider {
 	 * Set all click handlers for the widgets buttons.
 	 */
 	private static void setButtonClickHandlers(Context context, int appWidgetId, RemoteViews views) {
+
 		//Set onClickPendingIntents for all the feedback buttons.
 		views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, TooColdTag));
 		views.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, LittleColdTag));
@@ -131,18 +132,7 @@ public class WidgetProvider extends AppWidgetProvider {
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context, intent);
 		Log.d(TAG, "onReceive()" + intent.getAction());
-		String action = intent.getAction();
-
-		//TODO: Handle loading animation for refresh button here.
-
-		//Display loading animation on feedback buttons.
-		if(WidgetService.ACTION_GIVE_FEEDBACK.equals(action)){
-			String feedbackGiven = intent.getStringExtra(WidgetService.EXTRA_FEEDBACK_TAG);
-			Integer appWidgetId = intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0);
-			displayFeedbackLoadingAnimation(context, appWidgetId, feedbackGiven, true);
-		}
-
-		WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
+		WidgetService.preEnqueueWork(context, JOB_ID, intent);
 	}
 
 	/**

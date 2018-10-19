@@ -2,6 +2,7 @@ package brandonmilan.tonglaicha.ambiwidget.services;
 
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
@@ -14,6 +15,8 @@ import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
+
+import static brandonmilan.tonglaicha.ambiwidget.WidgetProvider.displayFeedbackLoadingAnimation;
 
 /**
  * Class for handling tasks in a background thread.
@@ -38,6 +41,30 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.extra.widget_id";
 	public static final String EXTRA_REMOTEVIEWS_OBJECT =
 			"brandonmilan.tonglaicha.ambiwidget.extra.remoteviews_object";
+
+	public static Boolean busy = false;
+
+	public static void preEnqueueWork(Context context, int JOB_ID, Intent intent) {
+		// Prevent button spam
+		String action = intent.getAction();
+		if (action == ACTION_GIVE_FEEDBACK || action == ACTION_SWITCH_ON_OFF)  {
+			if (WidgetService.busy) {
+				return;
+			} else {
+				WidgetService.busy = true;
+			}
+		}
+
+		//TODO: Handle loading animation for refresh button here.
+
+		//Display loading animation on feedback buttons.
+		if(WidgetService.ACTION_GIVE_FEEDBACK.equals(action)){
+			String feedbackGiven = intent.getStringExtra(WidgetService.EXTRA_FEEDBACK_TAG);
+			Integer appWidgetId = intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0);
+			displayFeedbackLoadingAnimation(context, appWidgetId, feedbackGiven, true);
+		}
+		WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
+	}
 
 	/**
 	 * Handle the incoming jobIntent in a background thread.
@@ -93,13 +120,17 @@ public class WidgetService extends JobIntentService {
 				String feedbackMsg = feedbackTag.replace("_", " ");
 				String confirmToast = "Feedback given: " + feedbackMsg + ".";
 				Toast.makeText(getApplicationContext(), confirmToast, Toast.LENGTH_LONG).show();
-				WidgetProvider.displayFeedbackLoadingAnimation(getApplicationContext(), appWidgetId, feedbackTag,false);
+
+				displayFeedbackLoadingAnimation(getApplicationContext(), appWidgetId, feedbackTag,false);
+
+				WidgetService.busy = false;
 			}
 
 			@Override
 			public void onFailure(ReturnObject result) {
 				Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+				WidgetService.busy = false;
 			}
 		}, deviceObject, feedbackTag).execute();
 	}
@@ -120,8 +151,8 @@ public class WidgetService extends JobIntentService {
 	/**
 	 * Handle action SwitchOnOff in provided background threat.
 	 */
+	// TODO: Do ON/OFF feedback based on what the USER SEES (local data from last update) and NOT doing a new update.
 	private void handleActionSwitchOnOff(final int appWidgetId) {
-
 		//Get the current device.
 		final DeviceObject preferredDevice = WidgetUtils.getPreferredDevice(getApplicationContext());
 
@@ -129,20 +160,22 @@ public class WidgetService extends JobIntentService {
 		new DataManager.GetModeTask(getApplicationContext(), new OnProcessFinish<ReturnObject>() {
 			@Override
 			public void onSuccess(ReturnObject result) {
-				Log.d(TAG, "Current Mode: result.value = " + result.value);
+				Log.d(TAG, "Current Mode: result.modeObject.mode() = " + result.modeObject.mode());
 
-				if (result.value.equals("Manual")){
+				// If AC is off
+				if (result.modeObject.mode().equals("Off") || (result.modeObject.mode().equals("Manual")) && result.applianceStateObject.power().equals("Off")) {
 					//Set the the device to Comfort mode.
 					WidgetUtils.setDeviceToComfort(getApplicationContext(), appWidgetId, preferredDevice);
 				} else {
 					//Turn off the AC.
 					WidgetUtils.turnDeviceOff(getApplicationContext(), appWidgetId, preferredDevice);
 				}
-
+				WidgetService.busy = false;
 			}
 			@Override
 			public void onFailure(ReturnObject result) {
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+				WidgetService.busy = false;
 			}
 		}, preferredDevice).execute();
 	}

@@ -46,41 +46,44 @@ public class WidgetService extends JobIntentService {
 	public static Boolean busy = false;
 
 	public static void preEnqueueWork(Context context, int JOB_ID, Intent intent) {
-		// Prevent button spam
 		String action = intent.getAction();
-		if (action == ACTION_GIVE_FEEDBACK || action == ACTION_SWITCH_ON_OFF)  {
-			if (WidgetService.busy) {
-				return;
-			} else {
-				WidgetService.busy = true;
+
+		if (action != null) {
+			// Prevent button spam
+			if (action.equals(ACTION_GIVE_FEEDBACK) || action.equals(ACTION_SWITCH_ON_OFF))  {
+				if (WidgetService.busy) {
+					return;
+				} else {
+					WidgetService.busy = true;
+				}
 			}
+
+			//TODO: Handle loading animation for refresh button here.
+
+			//Display loading animation on feedback buttons.
+			if(WidgetService.ACTION_GIVE_FEEDBACK.equals(action)){
+				String feedbackGiven = intent.getStringExtra(WidgetService.EXTRA_FEEDBACK_TAG);
+				Integer appWidgetId = intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0);
+				displayFeedbackLoadingAnimation(context, appWidgetId, feedbackGiven, true);
+
+				// Get removeViews object
+				RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
+
+				//Partially update the widget.
+				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+				appWidgetManager.updateAppWidget(appWidgetId, remoteViewsFromArray);
+			}
+			WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
+		} else {
+			Log.e(TAG, "preEnqueueWork: Unable to enqueue work, action is null.", new Exception("ERROR_ACTION_IS_NULL"));
 		}
-
-		//TODO: Handle loading animation for refresh button here.
-
-		//Display loading animation on feedback buttons.
-		if(WidgetService.ACTION_GIVE_FEEDBACK.equals(action)){
-			String feedbackGiven = intent.getStringExtra(WidgetService.EXTRA_FEEDBACK_TAG);
-			Integer appWidgetId = intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0);
-			displayFeedbackLoadingAnimation(context, appWidgetId, feedbackGiven, true);
-
-			// Get removeViews object
-			RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
-
-			//Partially update the widget.
-			AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-			appWidgetManager.updateAppWidget(appWidgetId, remoteViewsFromArray);
-		}
-		WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
 	}
 
 	/**
-	 * Handle the incoming jobIntent in a background thread.
-	 * @param intent
+	 * Handle the incoming job intent in a background thread.
 	 */
 	@Override
 	protected void onHandleWork(Intent intent) {
-		if (intent != null) {
 			final String action = intent.getAction();
 			if (ACTION_GIVE_FEEDBACK.equals(action)) {
 				final String feedbackTag = intent.getStringExtra(EXTRA_FEEDBACK_TAG);
@@ -96,7 +99,6 @@ public class WidgetService extends JobIntentService {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				handleActionSwitchOnOff(appWidgetId);
 			}
-		}
 	}
 
 	/**
@@ -161,7 +163,7 @@ public class WidgetService extends JobIntentService {
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
 		int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
 
-		WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds, updateByUser, feedbackGiven);
+		WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds, updateByUser);
 	}
 
 	/**
@@ -181,10 +183,10 @@ public class WidgetService extends JobIntentService {
 				// If AC is off
 				if (result.modeObject.mode().equals("Off") || (result.modeObject.mode().equals("Manual")) && result.applianceStateObject.power().equals("Off")) {
 					//Set the the device to Comfort mode.
-					WidgetUtils.setDeviceToComfort(getApplicationContext(), appWidgetId, preferredDevice);
+					setDeviceToComfort(getApplicationContext(), appWidgetId, preferredDevice);
 				} else {
 					//Turn off the AC.
-					WidgetUtils.turnDeviceOff(getApplicationContext(), appWidgetId, preferredDevice);
+					turnDeviceOff(getApplicationContext(), appWidgetId, preferredDevice);
 				}
 				WidgetService.busy = false;
 			}
@@ -194,5 +196,55 @@ public class WidgetService extends JobIntentService {
 				WidgetService.busy = false;
 			}
 		}, preferredDevice).execute();
+	}
+
+	/**
+	 * Set a device in "Off" mode.
+	 * @param preferredDevice
+	 */
+	private void turnDeviceOff(final Context context, final int appWidgetId, DeviceObject preferredDevice) {
+
+		new DataManager.PowerOffTask(context, new OnProcessFinish<ReturnObject>() {
+
+			@Override
+			public void onSuccess(ReturnObject result) {
+				String confirmToast = "Device is now in off mode.";
+				Log.d(TAG, confirmToast);
+				WidgetUtils.remoteUpdateWidget(context, appWidgetId, null);
+				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public void onFailure(ReturnObject result) {
+//                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+				Log.d(TAG, result.errorMessage + ": " + result.exception);
+			}
+		}, preferredDevice).execute();
+
+	}
+
+	/**
+	 * Set a device in "Comfort" mode.
+	 * @param preferredDevice
+	 */
+	private void setDeviceToComfort(final Context context, final int appWidgetId, DeviceObject preferredDevice) {
+
+		new DataManager.UpdateModeTask(context, new OnProcessFinish<ReturnObject>() {
+
+			@Override
+			public void onSuccess(ReturnObject result) {
+				String confirmToast = "Device is now in comfort mode.";
+				Log.d(TAG, confirmToast);
+				WidgetUtils.remoteUpdateWidget(context, appWidgetId, null);
+				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public void onFailure(ReturnObject result) {
+//                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+				Log.d(TAG, result.errorMessage + ": " + result.exception);
+			}
+		}, preferredDevice, "comfort", null, false).execute();
+
 	}
 }

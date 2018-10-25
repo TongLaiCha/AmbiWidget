@@ -35,7 +35,7 @@ public class WidgetProvider extends AppWidgetProvider {
 	/**
 	 * Instruct the appWidgetManager to load the widgets view and its components.
 	 */
-	static void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Boolean updateFromUser, String feedbackGiven) {
+	static void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Boolean updateFromUser) {
 		Log.d(TAG, "UPDATING WIDGET WITH ID = "+appWidgetId);
 		String refreshToken = TokenManager.getRefreshToken(context).value();
 
@@ -115,12 +115,12 @@ public class WidgetProvider extends AppWidgetProvider {
 	/**
 	 * Update all widgets currently active on the screen.
 	 */
-	public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Boolean updateFromUser, String feedbackGiven) {
+	public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Boolean updateFromUser) {
 		Log.d(TAG, "updateAllWidgets: Executed. ALL WIDGET ID'S= " + appWidgetIds);
 
 		// There may be multiple widgets active, so update all of them
 		for (int appWidgetId : appWidgetIds) {
-			updateWidget(context, appWidgetManager, appWidgetId, updateFromUser, feedbackGiven);
+			updateWidget(context, appWidgetManager, appWidgetId, updateFromUser);
 		}
 	}
 

@@ -70,7 +70,7 @@ public final class WidgetUtils {
     }
 
     /**
-     * Send a pendingIntent with the updateWidgetAction.
+     * Helper function for updating a widget by its ID.
      * A background service takes care of updating the widgets UI.
      */
     public static void remoteUpdateWidget(Context context, int appWidgetId, String feedbackGiven) {
@@ -82,6 +82,10 @@ public final class WidgetUtils {
         }
     }
 
+    /**
+     * Helper function for updating all widgets on the screen.
+     * A background service takes care of updating the widgets UI.
+     */
     public static void remoteUpdateAllWidgets(Context context){
         Intent intent = new Intent(context, WidgetProvider.class);
         intent.setAction(WidgetService.ACTION_UPDATE_WIDGET);
@@ -162,56 +166,6 @@ public final class WidgetUtils {
         String defaultValue = context.getString(R.string.pref_tempScale_value_celsius);
 
         return sharedPreferences.getString(prefKey, defaultValue);
-    }
-
-    /**
-     * Helper function to set a device in "Off" mode.
-     * @param preferredDevice
-     */
-    public static void turnDeviceOff(final Context context, final int appWidgetId, DeviceObject preferredDevice) {
-
-        new DataManager.PowerOffTask(context, new OnProcessFinish<ReturnObject>() {
-
-            @Override
-            public void onSuccess(ReturnObject result) {
-                String confirmToast = "Device is now in off mode.";
-                Log.d(TAG, confirmToast);
-                WidgetUtils.remoteUpdateWidget(context, appWidgetId, null);
-                Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onFailure(ReturnObject result) {
-//                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
-                Log.d(TAG, result.errorMessage + ": " + result.exception);
-            }
-        }, preferredDevice).execute();
-
-    }
-
-    /**
-     * Helper function to set a device in "Comfort" mode.
-     * @param preferredDevice
-     */
-    public static void setDeviceToComfort(final Context context, final int appWidgetId, DeviceObject preferredDevice) {
-
-        new DataManager.UpdateModeTask(context, new OnProcessFinish<ReturnObject>() {
-
-            @Override
-            public void onSuccess(ReturnObject result) {
-                String confirmToast = "Device is now in comfort mode.";
-                Log.d(TAG, confirmToast);
-                WidgetUtils.remoteUpdateWidget(context, appWidgetId, null);
-                Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onFailure(ReturnObject result) {
-//                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
-                Log.d(TAG, result.errorMessage + ": " + result.exception);
-            }
-        }, preferredDevice, "comfort", null, false).execute();
-
     }
 
     public static double convertToFahrenheit(double temperatureCelsius) {

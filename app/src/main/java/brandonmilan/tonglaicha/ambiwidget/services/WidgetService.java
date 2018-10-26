@@ -17,7 +17,7 @@ import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
-import static brandonmilan.tonglaicha.ambiwidget.WidgetProvider.displayFeedbackLoadingAnimation;
+import static brandonmilan.tonglaicha.ambiwidget.WidgetProvider.displayFeedbackButtonConfirmation;
 
 /**
  * Class for handling tasks in a background thread.
@@ -64,7 +64,7 @@ public class WidgetService extends JobIntentService {
 			if(WidgetService.ACTION_GIVE_FEEDBACK.equals(action)){
 				String feedbackGiven = intent.getStringExtra(WidgetService.EXTRA_FEEDBACK_TAG);
 				Integer appWidgetId = intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0);
-				displayFeedbackLoadingAnimation(context, appWidgetId, feedbackGiven, true);
+				displayFeedbackButtonConfirmation(context, appWidgetId, feedbackGiven, true);
 
 				// Get removeViews object
 				RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
@@ -132,7 +132,7 @@ public class WidgetService extends JobIntentService {
 				Toast.makeText(getApplicationContext(), confirmToast, Toast.LENGTH_LONG).show();
 
 				WidgetContentManager.updateModeIcon(appWidgetId, "Comfort", null);
-				displayFeedbackLoadingAnimation(getApplicationContext(), appWidgetId, feedbackTag,false);
+				displayFeedbackButtonConfirmation(getApplicationContext(), appWidgetId, feedbackTag,false);
 
 				// Get removeViews object
 				RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
@@ -164,6 +164,8 @@ public class WidgetService extends JobIntentService {
 		int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
 
 		WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds, updateByUser);
+
+//		WidgetProvider.updateWidget(this, appWidgetManager, appWidgetId, updateByUser);
 	}
 
 	/**

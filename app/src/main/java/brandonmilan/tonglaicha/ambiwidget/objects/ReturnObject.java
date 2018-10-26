@@ -13,6 +13,7 @@ public class ReturnObject {
 	public String value = null;
 	public JSONObject jsonObject = null;
 	public String errorMessage = null;
+
 	public List<DeviceObject> deviceList = new ArrayList<DeviceObject>();
 	public DeviceObject deviceObject = null;
 	public TokenObject tokenObject = null;

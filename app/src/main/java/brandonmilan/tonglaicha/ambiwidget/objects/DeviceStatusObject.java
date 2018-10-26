@@ -19,12 +19,8 @@ public class DeviceStatusObject {
 		return sensorDataObject;
 	}
 
-	public DeviceStatusObject (
-			ModeObject modeObject,
-			ApplianceStateObject applianceStateObject,
-			ComfortPredictionObject comfortPredictionObject,
-			SensorDataObject sensorDataObject)
-	{
+	public DeviceStatusObject (ModeObject modeObject, ApplianceStateObject applianceStateObject,
+			ComfortPredictionObject comfortPredictionObject, SensorDataObject sensorDataObject) {
 		this.modeObject = modeObject;
 		this.applianceStateObject = applianceStateObject;
 		this.comfortPredictionObject = comfortPredictionObject;

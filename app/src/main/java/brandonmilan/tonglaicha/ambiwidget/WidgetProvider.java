@@ -35,7 +35,7 @@ public class WidgetProvider extends AppWidgetProvider {
 	/**
 	 * Instruct the appWidgetManager to load the widgets view and its components.
 	 */
-	static void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Boolean updateFromUser) {
+	public static void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Boolean updateFromUser) {
 		Log.d(TAG, "UPDATING WIDGET WITH ID = "+appWidgetId);
 		String refreshToken = TokenManager.getRefreshToken(context).value();
 
@@ -50,7 +50,7 @@ public class WidgetProvider extends AppWidgetProvider {
 			if(updateFromUser){
 				WidgetUtils.updateRefreshAnimation(true, views);
 			}
-			
+
 			setButtonClickHandlers(context, appWidgetId, views);
 
 			// Update the temperature, humidity, room name and location name.
@@ -80,7 +80,6 @@ public class WidgetProvider extends AppWidgetProvider {
 	 * Set all click handlers for the widgets buttons.
 	 */
 	private static void setButtonClickHandlers(Context context, int appWidgetId, RemoteViews views) {
-
 		//Set onClickPendingIntents for all the feedback buttons.
 		views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, TooColdTag));
 		views.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, LittleColdTag));
@@ -136,11 +135,18 @@ public class WidgetProvider extends AppWidgetProvider {
 	}
 
 	/**
-	 * Display loading animation when the user presses a feedback button.
+	 * Display loading animation and border when the user presses a feedback button.
 	 * @param feedbackGiven
 	 */
-	public static void displayFeedbackLoadingAnimation(Context context, Integer appWidgetId, String feedbackGiven, Boolean enabled) {
+	public static void displayFeedbackButtonConfirmation(Context context, Integer appWidgetId, String feedbackGiven, Boolean enabled) {
 		RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
+
+		//Reset all button drawables to have no border.
+		remoteViewsFromArray.setInt(R.id.container_btn_too_cold, "setBackgroundResource", R.drawable.button_selector_too_cold);
+		remoteViewsFromArray.setInt(R.id.container_btn_bit_cold, "setBackgroundResource", R.drawable.button_selector_bit_cold);
+		remoteViewsFromArray.setInt(R.id.container_btn_comfy, "setBackgroundResource", R.drawable.button_selector_comfy);
+		remoteViewsFromArray.setInt(R.id.container_btn_bit_warm, "setBackgroundResource", R.drawable.button_selector_bit_warm);
+		remoteViewsFromArray.setInt(R.id.container_btn_too_warm, "setBackgroundResource", R.drawable.button_selector_too_warm);
 
 		if(feedbackGiven != null){
 			switch (feedbackGiven){
@@ -151,6 +157,7 @@ public class WidgetProvider extends AppWidgetProvider {
 					} else {
 						remoteViewsFromArray.setViewVisibility(R.id.button_too_warm, View.VISIBLE);
 						remoteViewsFromArray.setViewVisibility(R.id.progress_too_warm, View.GONE);
+						remoteViewsFromArray.setInt(R.id.container_btn_too_warm, "setBackgroundResource", R.drawable.button_too_warm_border);
 					}
 					break;
 				case "bit_warm":
@@ -160,6 +167,7 @@ public class WidgetProvider extends AppWidgetProvider {
 					} else {
 						remoteViewsFromArray.setViewVisibility(R.id.button_bit_warm, View.VISIBLE);
 						remoteViewsFromArray.setViewVisibility(R.id.progress_bit_warm, View.GONE);
+						remoteViewsFromArray.setInt(R.id.container_btn_bit_warm, "setBackgroundResource", R.drawable.button_bit_warm_border);
 					}
 					break;
 				case "comfortable":
@@ -169,6 +177,7 @@ public class WidgetProvider extends AppWidgetProvider {
 					} else {
 						remoteViewsFromArray.setViewVisibility(R.id.button_comfy, View.VISIBLE);
 						remoteViewsFromArray.setViewVisibility(R.id.progress_comfy, View.GONE);
+						remoteViewsFromArray.setInt(R.id.container_btn_comfy, "setBackgroundResource", R.drawable.button_comfy_border);
 					}
 					break;
 				case "bit_cold":
@@ -178,6 +187,7 @@ public class WidgetProvider extends AppWidgetProvider {
 					} else {
 						remoteViewsFromArray.setViewVisibility(R.id.button_bit_cold, View.VISIBLE);
 						remoteViewsFromArray.setViewVisibility(R.id.progress_bit_cold, View.GONE);
+						remoteViewsFromArray.setInt(R.id.container_btn_bit_cold, "setBackgroundResource", R.drawable.button_bit_cold_border);
 					}
 					break;
 				case "too_cold":
@@ -187,11 +197,12 @@ public class WidgetProvider extends AppWidgetProvider {
 					} else {
 						remoteViewsFromArray.setViewVisibility(R.id.button_too_cold, View.VISIBLE);
 						remoteViewsFromArray.setViewVisibility(R.id.progress_too_cold, View.GONE);
+						remoteViewsFromArray.setInt(R.id.container_btn_too_cold, "setBackgroundResource", R.drawable.button_too_cold_border);
 					}
 					break;
 			}
 		} else {
-			Log.e(TAG, "ERROR: in displayFeedbackLoadingAnimation, feedbackgiven = null", new Exception("ERROR_FEEDBACKGIVEN_IS_NULL"));
+			Log.e(TAG, "ERROR: in displayFeedbackButtonConfirmation, feedbackgiven = null", new Exception("ERROR_FEEDBACKGIVEN_IS_NULL"));
 		}
 	}
 

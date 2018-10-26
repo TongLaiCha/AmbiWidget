@@ -121,7 +121,7 @@
 
         </LinearLayout>
 
-        <!--Feedback button's row-->
+        <!--Feedback button's row container-->
         <LinearLayout
             android:id="@+id/feedback_row"
             android:layout_width="wrap_content"
@@ -130,7 +130,9 @@
             android:orientation="horizontal" >
             <!--style="@style/feedback_buttons_section">-->
 
+            <!--Button too warm-->
             <LinearLayout
+                android:id="@+id/container_btn_too_warm"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
@@ -159,11 +161,13 @@
 
             </LinearLayout>
 
+            <!--Button bit warm-->
             <LinearLayout
+                android:id="@+id/container_btn_bit_warm"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:background="@drawable/button_selector_little_warm"
+                android:background="@drawable/button_selector_bit_warm"
                 android:gravity="center"
                 android:layout_weight="1"
                 tools:ignore="Suspicious0dp">
@@ -187,7 +191,9 @@
 
             </LinearLayout>
 
+            <!--Button comfy-->
             <LinearLayout
+                android:id="@+id/container_btn_comfy"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
@@ -215,12 +221,13 @@
 
             </LinearLayout>
 
-
+            <!--Button bit cold-->
             <LinearLayout
+                android:id="@+id/container_btn_bit_cold"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:background="@drawable/button_selector_little_cold"
+                android:background="@drawable/button_selector_bit_cold"
                 android:gravity="center"
                 android:layout_weight="1"
                 tools:ignore="Suspicious0dp">
@@ -244,8 +251,9 @@
 
             </LinearLayout>
 
-
+            <!--Button too cold-->
             <LinearLayout
+                android:id="@+id/container_btn_too_cold"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
@@ -273,7 +281,7 @@
 
             </LinearLayout>
 
-
+            <!--Button power on/off-->
             <ImageButton
                 android:id="@+id/button_on_off"
                 android:layout_width="0dp"

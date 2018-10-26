@@ -3,11 +3,7 @@ package brandonmilan.tonglaicha.ambiwidget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
 import android.widget.RemoteViews;
-import android.widget.Toast;
-
-import java.util.Date;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
@@ -48,7 +44,7 @@ public class WidgetContentManager {
 
 		// Get removeViews object
 		final RemoteViews views = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
-
+		
 		new DataManager.GetDeviceStatusTask(context, new OnProcessFinish<ReturnObject>() {
 
 			@Override
@@ -61,6 +57,9 @@ public class WidgetContentManager {
 				// Fill views with the new data
 				fillViews(result, context, appWidgetId);
 
+				//TODO: Only do this when device is in comfort mode.
+				updateComfortPrediction(result, context, appWidgetId);
+
 				// Update the widget to display the new data
 				WidgetUtils.updateRefreshAnimation(false, views);
 				AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
@@ -71,6 +70,39 @@ public class WidgetContentManager {
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
 			}
 		}, deviceObject).execute();
+	}
+
+	/**
+	 * Updates visual feedback around the feedback buttons to show the current comfortPrediction,
+	 * or the last comfort feedback given.
+	 */
+	private static void updateComfortPrediction(ReturnObject result, Context context, int appWidgetId) {
+		// Get removeViews object
+		RemoteViews views = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
+
+		String currentComfortPrediction = result.deviceStatusObject.getComfortPredictionObject().levelAsText(context);
+
+		switch (currentComfortPrediction) {
+			case "Freezing":
+				break;
+			case "Too cold":
+				views.setInt(R.id.container_btn_too_cold, "setBackgroundResource", R.drawable.button_too_cold_border);
+				break;
+			case "A bit cold":
+				views.setInt(R.id.container_btn_bit_cold, "setBackgroundResource", R.drawable.button_bit_cold_border);
+				break;
+			case "Comfy":
+				views.setInt(R.id.container_btn_comfy, "setBackgroundResource", R.drawable.button_comfy_border);
+				break;
+			case "A bit warm":
+				views.setInt(R.id.container_btn_bit_warm, "setBackgroundResource", R.drawable.button_bit_warm_border);
+				break;
+			case "Too warm":
+				views.setInt(R.id.container_btn_too_warm, "setBackgroundResource", R.drawable.button_too_warm_border);
+				break;
+			case "Hot":
+				break;
+		}
 	}
 
 	/**
@@ -87,7 +119,7 @@ public class WidgetContentManager {
 		String roomName = deviceObject.roomName();
 		views.setTextViewText(R.id.roomName, roomName);
 
-		// Sensor data
+		// Temperature
 		Double temperature = WidgetUtils.roundOneDecimal(deviceStatusObject.getSensorDataObject().getTemperature());
 		if(prefTempScale.equals(context.getString(R.string.pref_tempScale_value_celsius))){
 			views.setTextViewText(R.id.temperature_text, temperature + "\u00B0");

@@ -82,6 +82,13 @@ public class WidgetContentManager {
 
 		String currentComfortPrediction = result.deviceStatusObject.getComfortPredictionObject().levelAsText(context);
 
+		//Reset all button drawables to have no border.
+		views.setInt(R.id.container_btn_too_cold, "setBackgroundResource", R.drawable.button_selector_too_cold);
+		views.setInt(R.id.container_btn_bit_cold, "setBackgroundResource", R.drawable.button_selector_bit_cold);
+		views.setInt(R.id.container_btn_comfy, "setBackgroundResource", R.drawable.button_selector_comfy);
+		views.setInt(R.id.container_btn_bit_warm, "setBackgroundResource", R.drawable.button_selector_bit_warm);
+		views.setInt(R.id.container_btn_too_warm, "setBackgroundResource", R.drawable.button_selector_too_warm);
+
 		switch (currentComfortPrediction) {
 			case "Freezing":
 				break;

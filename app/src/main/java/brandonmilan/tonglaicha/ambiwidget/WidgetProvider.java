@@ -48,7 +48,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
 			// Display loading animation when the user clicks the refresh button.
 			if(updateFromUser){
-				WidgetUtils.updateRefreshAnimation(true, views);
+				WidgetContentManager.updateRefreshButtonAnimation(true, views);
 			}
 
 			setButtonClickHandlers(context, appWidgetId, views);

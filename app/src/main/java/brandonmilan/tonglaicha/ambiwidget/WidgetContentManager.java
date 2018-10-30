@@ -3,6 +3,7 @@ package brandonmilan.tonglaicha.ambiwidget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
@@ -61,7 +62,7 @@ public class WidgetContentManager {
 				updateComfortPrediction(result, context, appWidgetId);
 
 				// Update the widget to display the new data
-				WidgetUtils.updateRefreshAnimation(false, views);
+				updateRefreshButtonAnimation(false, views);
 				AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
 			}
 
@@ -199,5 +200,30 @@ public class WidgetContentManager {
 				// TODO: Read result.modeObject.value and update corresponding textview
 				break;
 		}
+	}
+
+	public static void updateRefreshButtonAnimation(Boolean showAnimation, RemoteViews views) {
+		if (showAnimation) {
+			views.setViewVisibility(R.id.button_refresh, View.INVISIBLE);
+			views.setViewVisibility(R.id.progressBar, View.VISIBLE);
+		} else {
+			views.setViewVisibility(R.id.button_refresh, View.VISIBLE);
+			views.setViewVisibility(R.id.progressBar, View.INVISIBLE);
+		}
+	}
+
+	public static void updatePowerButtonAnimation(Context context, int appWidgetId, boolean displayAnimation) {
+		RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
+
+		if(displayAnimation) {
+			remoteViewsFromArray.setViewVisibility(R.id.button_on_off, View.GONE);
+			remoteViewsFromArray.setViewVisibility(R.id.progress_on_off, View.VISIBLE);
+		} else {
+			remoteViewsFromArray.setViewVisibility(R.id.button_on_off, View.VISIBLE);
+			remoteViewsFromArray.setViewVisibility(R.id.progress_on_off, View.GONE);
+		}
+
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		appWidgetManager.updateAppWidget(appWidgetId, remoteViewsFromArray);
 	}
 }

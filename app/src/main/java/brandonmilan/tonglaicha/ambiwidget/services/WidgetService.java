@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
+import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetContentManager;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
@@ -62,8 +64,10 @@ public class WidgetService extends JobIntentService {
 
 			//Display loading animation on feedback buttons.
 			if(WidgetService.ACTION_GIVE_FEEDBACK.equals(action)){
-				String feedbackGiven = intent.getStringExtra(WidgetService.EXTRA_FEEDBACK_TAG);
-				Integer appWidgetId = intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0);
+				String feedbackGiven = intent.getStringExtra(EXTRA_FEEDBACK_TAG);
+				Integer appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
+
+				//Display feedback button loading animation.
 				displayFeedbackButtonConfirmation(context, appWidgetId, feedbackGiven, true);
 
 				// Get removeViews object
@@ -72,7 +76,14 @@ public class WidgetService extends JobIntentService {
 				//Partially update the widget.
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 				appWidgetManager.updateAppWidget(appWidgetId, remoteViewsFromArray);
+
+			} else if(WidgetService.ACTION_SWITCH_ON_OFF.equals(action)) {
+				Integer appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
+
+				//Display loading animation on/off button.
+				WidgetContentManager.updatePowerButtonAnimation(context, appWidgetId, true);
 			}
+
 			WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
 		} else {
 			Log.e(TAG, "preEnqueueWork: Unable to enqueue work, action is null.", new Exception("ERROR_ACTION_IS_NULL"));
@@ -155,17 +166,16 @@ public class WidgetService extends JobIntentService {
 
 
 	/**
-	 * TODO: Only update the widget matching the given widget id.
 	 * Handle action UpdateWidget in the provided background threat.
 	 */
 	private void handleActionUpdateWidget(int appWidgetId, Boolean updateByUser, String feedbackGiven) {
 
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-		int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
 
-		WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds, updateByUser);
+//		int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
+//		WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds, updateByUser);
 
-//		WidgetProvider.updateWidget(this, appWidgetManager, appWidgetId, updateByUser);
+		WidgetProvider.updateWidget(this, appWidgetManager, appWidgetId, updateByUser);
 	}
 
 	/**
@@ -190,6 +200,10 @@ public class WidgetService extends JobIntentService {
 					//Turn off the AC.
 					turnDeviceOff(getApplicationContext(), appWidgetId, preferredDevice);
 				}
+
+				//Stop displaying loading animation.
+				WidgetContentManager.updatePowerButtonAnimation(getApplicationContext(), appWidgetId, false);
+
 				WidgetService.busy = false;
 			}
 			@Override

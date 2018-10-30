@@ -297,17 +297,32 @@
             </LinearLayout>
 
             <!--Button power on/off-->
-            <ImageButton
-                android:id="@+id/button_on_off"
+            <LinearLayout
+                android:id="@+id/container_btn_on_off"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/button_on_off"
+                android:orientation="horizontal"
                 android:background="@drawable/button_selector_on_off"
-                android:fontFamily="@font/avenir"
-                android:textStyle="bold"
-                android:textSize="11sp"
-                android:src="@drawable/ic_icn_nav_modes"/>
+                android:gravity="center"
+                android:layout_weight="1"
+                tools:ignore="Suspicious0dp">
+
+                <ImageButton
+                    android:id="@+id/button_on_off"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_selector_on_off"
+                    android:src="@drawable/ic_icn_nav_modes"/>
+
+                <ProgressBar
+                    android:id="@+id/progress_on_off"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:indeterminateTint="@color/white"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 

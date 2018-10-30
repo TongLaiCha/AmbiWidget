@@ -51,6 +51,7 @@ public final class WidgetUtils {
     public static PendingIntent getSwitchPowerPendingIntent(Context context, int appWidgetId) {
         Intent intent = new Intent(context, WidgetProvider.class);
         intent.setAction(WidgetService.ACTION_SWITCH_ON_OFF);
+        intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
 
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -65,6 +66,7 @@ public final class WidgetUtils {
         Intent intent = new Intent(context, WidgetProvider.class);
         intent.setAction(WidgetService.ACTION_UPDATE_WIDGET);
         intent.putExtra(WidgetService.EXTRA_UPDATE_BY_USER, updateByUser);
+        intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
 
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -96,16 +98,6 @@ public final class WidgetUtils {
             pendingIntent.send();
         } catch (PendingIntent.CanceledException e) {
             e.printStackTrace();
-        }
-    }
-
-    public static void updateRefreshAnimation(Boolean showAnimation, RemoteViews views) {
-        if (showAnimation) {
-            views.setViewVisibility(R.id.button_refresh, View.INVISIBLE);
-            views.setViewVisibility(R.id.progressBar, View.VISIBLE);
-        } else {
-            views.setViewVisibility(R.id.button_refresh, View.VISIBLE);
-            views.setViewVisibility(R.id.progressBar, View.INVISIBLE);
         }
     }
 

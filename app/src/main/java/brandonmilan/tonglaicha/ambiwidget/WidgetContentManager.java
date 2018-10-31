@@ -125,7 +125,7 @@ public class WidgetContentManager {
 
 		// Device Name
 		String roomName = deviceObject.roomName();
-		views.setTextViewText(R.id.roomName, roomName);
+		views.setTextViewText(R.id.device_name, roomName);
 
 		// Temperature
 		Double temperature = WidgetUtils.roundOneDecimal(deviceStatusObject.getSensorDataObject().getTemperature());

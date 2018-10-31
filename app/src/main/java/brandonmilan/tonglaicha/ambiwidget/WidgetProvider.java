@@ -25,10 +25,12 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 public class WidgetProvider extends AppWidgetProvider {
 	private static final String TAG = "WidgetProvider";
 	private static final String TooColdTag = "too_cold";
-	private static final String LittleColdTag = "bit_cold";
+	private static final String BitColdTag = "bit_cold";
 	private static final String ComfyTag = "comfortable";
-	private static final String LittleWarmTag = "bit_warm";
+	private static final String BitWarmTag = "bit_warm";
 	private static final String TooWarmTag = "too_warm";
+	public static final String PreviousTag = "previous";
+	public static final String NextTag = "next";
 	private static final Integer JOB_ID = 10;
 	public static ArrayMap<Integer, RemoteViews> remoteViewsByWidgetIds = new ArrayMap<>();
 
@@ -81,14 +83,18 @@ public class WidgetProvider extends AppWidgetProvider {
 	 */
 	private static void setButtonClickHandlers(Context context, int appWidgetId, RemoteViews views) {
 		//Set onClickPendingIntents for all the feedback buttons.
-		views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, TooColdTag));
-		views.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, LittleColdTag));
-		views.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, ComfyTag));
-		views.setOnClickPendingIntent(R.id.button_bit_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, LittleWarmTag));
-		views.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, TooWarmTag));
+		views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, TooColdTag));
+		views.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, BitColdTag));
+		views.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, ComfyTag));
+		views.setOnClickPendingIntent(R.id.button_bit_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, BitWarmTag));
+		views.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, TooWarmTag));
 
 		//Set onClickPendingIntent for on/off button.
 		views.setOnClickPendingIntent(R.id.button_on_off, WidgetUtils.getSwitchPowerPendingIntent(context, appWidgetId));
+
+		//Set onClickPendingIntent for prev/next device buttons.
+		views.setOnClickPendingIntent(R.id.device_previous, WidgetUtils.getSwitchDevicePendingIntent(context, appWidgetId, PreviousTag));
+		views.setOnClickPendingIntent(R.id.device_next, WidgetUtils.getSwitchDevicePendingIntent(context, appWidgetId, NextTag));
 
 		//Set onClickPendingIntent for the settings button.
 		Intent configIntent = new Intent(context, SettingsActivity.class);
@@ -225,4 +231,3 @@ public class WidgetProvider extends AppWidgetProvider {
 	}
 
 }
-

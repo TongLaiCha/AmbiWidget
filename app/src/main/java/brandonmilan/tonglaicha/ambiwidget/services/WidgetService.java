@@ -1,18 +1,15 @@
 package brandonmilan.tonglaicha.ambiwidget.services;
 
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
-import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
-import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetContentManager;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
@@ -42,8 +39,10 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.action.switch_on_off";
 	public static final String EXTRA_WIDGET_ID =
 			"brandonmilan.tonglaicha.ambiwidget.extra.widget_id";
-	public static final String EXTRA_REMOTEVIEWS_OBJECT =
-			"brandonmilan.tonglaicha.ambiwidget.extra.remoteviews_object";
+	public static final String ACTION_SWITCH_DEVICE =
+			"brandonmilan.tonglaicha.ambiwidget.action.switch_device";
+	public static final String EXTRA_DEVICE_SWITCH_DIRECTION =
+			"brandonmilan.tonglaicha.ambiwidget.extra.device_switch_direction";
 
 	public static Boolean busy = false;
 
@@ -59,8 +58,6 @@ public class WidgetService extends JobIntentService {
 					WidgetService.busy = true;
 				}
 			}
-
-			//TODO: Handle loading animation for refresh button here.
 
 			//Display loading animation on feedback buttons.
 			if(WidgetService.ACTION_GIVE_FEEDBACK.equals(action)){
@@ -98,7 +95,6 @@ public class WidgetService extends JobIntentService {
 			final String action = intent.getAction();
 			if (ACTION_GIVE_FEEDBACK.equals(action)) {
 				final String feedbackTag = intent.getStringExtra(EXTRA_FEEDBACK_TAG);
-				final RemoteViews views = intent.getParcelableExtra(EXTRA_REMOTEVIEWS_OBJECT);
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				handleActionGiveFeedback(appWidgetId, feedbackTag);
 			} else if(ACTION_UPDATE_WIDGET.equals(action)) {
@@ -109,6 +105,10 @@ public class WidgetService extends JobIntentService {
 			} else if(ACTION_SWITCH_ON_OFF.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				handleActionSwitchOnOff(appWidgetId);
+			} else if (ACTION_SWITCH_DEVICE.equals(action)) {
+				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
+				final String switchDirection = intent.getStringExtra(EXTRA_DEVICE_SWITCH_DIRECTION);
+				handleActionSwitchDevice(appWidgetId, switchDirection);
 			}
 	}
 
@@ -176,6 +176,14 @@ public class WidgetService extends JobIntentService {
 //		WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds, updateByUser);
 
 		WidgetProvider.updateWidget(this, appWidgetManager, appWidgetId, updateByUser);
+	}
+
+	/**
+	 * Handle action SwitchDevice in the provided background threat.
+	 */
+	private void handleActionSwitchDevice(int appWidgetId, String switchDirection) {
+		Log.d(TAG, "handleActionSwitchDevice: switching to the " + switchDirection + " device.");
+		//TODO: Write functionality to iterate over the device list and switch device.
 	}
 
 	/**

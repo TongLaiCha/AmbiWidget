@@ -3,6 +3,7 @@ package brandonmilan.tonglaicha.ambiwidget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
@@ -63,7 +64,7 @@ public class WidgetContentManager {
 
 				// Save new widgetObject
 				widgetObject.saveToFile(context);
-
+        
 				// Tell android to update the widget
 				AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, widgetObject.getRemoteViews(context));
 			}

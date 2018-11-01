@@ -3,6 +3,10 @@ package brandonmilan.tonglaicha.ambiwidget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
@@ -40,7 +44,8 @@ public class WidgetContentManager {
 		} else {
 			deviceObject = preferredDeviceObject;
 		}
-		
+
+		// Get the device status data
 		new DataManager.GetDeviceStatusTask(context, new OnProcessFinish<ReturnObject>() {
 
 			@Override
@@ -76,5 +81,27 @@ public class WidgetContentManager {
 				widgetObject.saveAndUpdate(context);
 			}
 		}, deviceObject).execute();
+
+		// Get the device list.
+		new DataManager.GetDeviceListTask(context, new OnProcessFinish<ReturnObject>() {
+
+			@Override
+			public void onSuccess(ReturnObject result) {
+				List<DeviceObject> deviceList = result.deviceList;
+
+				// Get widget object
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+
+				// TODO: Save device to file.
+
+//				DeviceObject preferredDevice = WidgetUtils.getPreferredDevice(context);
+			}
+
+			@Override
+			public void onFailure(ReturnObject result) {
+                Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+				Log.d(TAG, result.errorMessage + ": " + result.exception);
+			}
+		}).execute();
 	}
 }

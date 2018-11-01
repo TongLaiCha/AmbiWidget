@@ -112,26 +112,6 @@ public final class WidgetUtils {
     }
 
     /**
-     * Helper function to get the remoteViews object matching the given widgetId.
-     * @return remoteViewFromArray
-     */
-    public static RemoteViews getRemoteViewsByWidgetId(int appWidgetId) {
-        RemoteViews remoteViewsFromArray = null;
-        for (int i = 0; i < WidgetProvider.remoteViewsByWidgetIds.size(); i++) {
-            Integer key = WidgetProvider.remoteViewsByWidgetIds.keyAt(i);
-            if(key.equals(appWidgetId)){
-                remoteViewsFromArray = WidgetProvider.remoteViewsByWidgetIds.valueAt(i);
-            }
-        }
-
-        if (remoteViewsFromArray == null){
-            Log.e(TAG, "ERROR: viewFromArray = null.", new Exception("ERROR_REMOTEVIEW_NOT_FOUND"));
-        }
-
-        return remoteViewsFromArray;
-    }
-
-    /**
      * Returns the device that the widget will use by default.
      * @return DeviceObject
      */

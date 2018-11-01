@@ -54,7 +54,7 @@ public class WidgetObject implements Serializable {
 		// TODO: Check & update device data (name, loc)
 
 		// Device Name
-		remoteViews.setTextViewText(R.id.roomName, device.roomName());
+		remoteViews.setTextViewText(R.id.device_name, device.roomName());
 
 		// Temperature
 		String prefTempScale = WidgetUtils.getTempScalePreference(context);
@@ -110,11 +110,11 @@ public class WidgetObject implements Serializable {
 	 */
 	private void setButtonClickHandlers(Context context, RemoteViews remoteViews) {
 		//Set onClickPendingIntents for all the feedback buttons.
-		remoteViews.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, remoteViews, context.getString(R.string.too_cold_tag)));
-		remoteViews.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, remoteViews, context.getString(R.string.bit_cold_tag)));
-		remoteViews.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, remoteViews, context.getString(R.string.comfy_tag)));
-		remoteViews.setOnClickPendingIntent(R.id.button_bit_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, remoteViews, context.getString(R.string.bit_warm_tag)));
-		remoteViews.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, remoteViews, context.getString(R.string.too_warm_tag)));
+		remoteViews.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_cold_tag)));
+		remoteViews.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.bit_cold_tag)));
+		remoteViews.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.comfy_tag)));
+		remoteViews.setOnClickPendingIntent(R.id.button_bit_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.bit_warm_tag)));
+		remoteViews.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_warm_tag)));
 
 		//Set onClickPendingIntent for on/off button.
 		remoteViews.setOnClickPendingIntent(R.id.button_on_off, WidgetUtils.getSwitchPowerPendingIntent(context, widgetId));

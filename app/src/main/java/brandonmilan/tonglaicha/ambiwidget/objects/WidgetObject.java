@@ -23,12 +23,13 @@ public class WidgetObject implements Serializable {
 	private int widgetId;
 	public DeviceObject device;
 	public DeviceStatusObject deviceStatus;
-	public Boolean refreshBtnIsLoading = false;
-	public Boolean tooWarmBtnIsLoading = false;
-	public Boolean bitWarmBtnIsLoading = false;
-	public Boolean comfortableBtnIsLoading = false;
-	public Boolean bitColdBtnIsLoading = false;
-	public Boolean tooColdBtnIsLoading = false;
+	private Boolean refreshBtnIsLoading = false;
+	private Boolean tooWarmBtnIsLoading = false;
+	private Boolean bitWarmBtnIsLoading = false;
+	private Boolean comfortableBtnIsLoading = false;
+	private Boolean bitColdBtnIsLoading = false;
+	private Boolean tooColdBtnIsLoading = false;
+	private Boolean powerBtnIsLoading = false;
 
 	public WidgetObject(int widgetId, RemoteViews remoteViews, DeviceObject deviceObject, DeviceStatusObject deviceStatusObject) {
 		this.widgetId = widgetId;
@@ -36,8 +37,12 @@ public class WidgetObject implements Serializable {
 		this.deviceStatus = deviceStatusObject;
 	}
 
-	public void saveToFile(Context context) {
+	public void saveAndUpdate(Context context) {
 		WidgetStorageManager.setWidgetObjectByWidgetId(context, widgetId, this);
+
+		//Partially update the widget.
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		appWidgetManager.updateAppWidget(widgetId, this.getRemoteViews(context));
 	}
 
 	public RemoteViews getRemoteViews(Context context) {
@@ -48,7 +53,7 @@ public class WidgetObject implements Serializable {
 		setButtonClickHandlers(context, remoteViews);
 
 		// Check & update refresh animation of refresh button
-		// Check & update comfort button loading animations
+		// Check & update feedback button loading animations
 		updateButtons(context, remoteViews);
 
 		// TODO: Check & update device data (name, loc)
@@ -76,6 +81,14 @@ public class WidgetObject implements Serializable {
 		updateModeIcon(mode, deviceStatus, remoteViews);
 
 		return remoteViews;
+	}
+
+	public void setPowerBtnIsLoading(Boolean enabled) {
+		this.powerBtnIsLoading = enabled;
+	}
+
+	public void setRefreshBtnIsLoading(Boolean enabled) {
+		this.refreshBtnIsLoading = enabled;
 	}
 
 	public void setFeedbackBtnLoadingState(String feedbackTag, Boolean enabled) {
@@ -109,33 +122,37 @@ public class WidgetObject implements Serializable {
 	 * Set all click handlers for the widgets buttons.
 	 */
 	private void setButtonClickHandlers(Context context, RemoteViews remoteViews) {
-		//Set onClickPendingIntents for all the feedback buttons.
+		// Set onClickPendingIntents for all the feedback buttons.
 		remoteViews.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_cold_tag)));
 		remoteViews.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.bit_cold_tag)));
 		remoteViews.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.comfy_tag)));
 		remoteViews.setOnClickPendingIntent(R.id.button_bit_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.bit_warm_tag)));
 		remoteViews.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_warm_tag)));
 
-		//Set onClickPendingIntent for on/off button.
+		// Set onClickPendingIntent for on/off button.
 		remoteViews.setOnClickPendingIntent(R.id.button_on_off, WidgetUtils.getSwitchPowerPendingIntent(context, widgetId));
 
-		//Set onClickPendingIntent for the settings button.
+		// Set onClickPendingIntent for prev/next device buttons.
+		remoteViews.setOnClickPendingIntent(R.id.device_previous, WidgetUtils.getSwitchDevicePendingIntent(context, widgetId, context.getString(R.string.btn_previous_tag)));
+		remoteViews.setOnClickPendingIntent(R.id.device_next, WidgetUtils.getSwitchDevicePendingIntent(context, widgetId, context.getString(R.string.btn_next_tag)));
+
+		// Set onClickPendingIntent for the settings button.
 		Intent configIntent = new Intent(context, SettingsActivity.class);
 
-		//WARNING: Include the widget ID with the pendingIntent, or the configuration activity will not be opened.
+		// WARNING: Include the widget ID with the pendingIntent, or the configuration activity will not be opened.
 		configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
 		PendingIntent configPendingIntent = PendingIntent.getActivity(context, widgetId, configIntent, 0);
 		remoteViews.setOnClickPendingIntent(R.id.button_settings, configPendingIntent);
 
-		//Set onClickPendingIntent for the refresh button.
-		remoteViews.setOnClickPendingIntent(R.id.button_refresh, WidgetUtils.getUpdatePendingIntent(context, widgetId, true, null));
+		// Set onClickPendingIntent for the refresh button.
+		remoteViews.setOnClickPendingIntent(R.id.button_refresh, WidgetUtils.getUpdatePendingIntent(context, widgetId, true));
 	}
 
 	/**
-	 * Set all click handlers for the widgets buttons.
+	 * Update animation states for all buttons on the widget.
 	 */
 	private void updateButtons(Context context, RemoteViews remoteViews) {
-		// Update refresh button
+		// Update refresh button animation.
 		if (refreshBtnIsLoading) {
 			remoteViews.setViewVisibility(R.id.button_refresh, View.INVISIBLE);
 			remoteViews.setViewVisibility(R.id.progressBar, View.VISIBLE);
@@ -144,12 +161,19 @@ public class WidgetObject implements Serializable {
 			remoteViews.setViewVisibility(R.id.progressBar, View.INVISIBLE);
 		}
 
+		// Update power button animation.
+		if(powerBtnIsLoading) {
+			remoteViews.setViewVisibility(R.id.button_on_off, View.GONE);
+			remoteViews.setViewVisibility(R.id.progress_on_off, View.VISIBLE);
+		} else {
+			remoteViews.setViewVisibility(R.id.button_on_off, View.VISIBLE);
+			remoteViews.setViewVisibility(R.id.progress_on_off, View.GONE);
+		}
+
 		// Get currently selected / predicted comfort feedback
 		String predictedComfortTag = deviceStatus.getComfortPrediction().levelAsTag(context);
 
 		// Update comfort feedback buttons
-
-
 		ArrayList<String> buttonsTags =  new ArrayList<>();
 		buttonsTags.add(context.getString(R.string.too_warm_tag));
 		buttonsTags.add(context.getString(R.string.bit_warm_tag));
@@ -158,7 +182,7 @@ public class WidgetObject implements Serializable {
 		buttonsTags.add(context.getString(R.string.too_cold_tag));
 
 		for (int i = 0; i < buttonsTags.size(); i++) {
-			updateComfortButtons(remoteViews, buttonsTags.get(i), predictedComfortTag);
+			updateFeedbackButtons(remoteViews, buttonsTags.get(i), predictedComfortTag);
 		}
 	}
 
@@ -166,7 +190,7 @@ public class WidgetObject implements Serializable {
 	 * Display loading animation and border when the user presses a feedback button.
 	 * @param comfortTag
 	 */
-	private void updateComfortButtons(RemoteViews remoteViews, String comfortTag, String predictedComfortTag) {
+	private void updateFeedbackButtons(RemoteViews remoteViews, String comfortTag, String predictedComfortTag) {
 
 		//TODO: Only update the comfort prediction border when device is in comfort mode
 

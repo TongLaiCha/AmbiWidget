@@ -64,9 +64,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
             }
         }
 
-//        WidgetUtils.remoteUpdateWidget(this.getContext(), null);
         //TODO: Update the right widget.
         WidgetUtils.remoteUpdateAllWidgets(this.getContext());
+
     }
 
     private void createDeviceListPreference(final PreferenceScreen screen) {

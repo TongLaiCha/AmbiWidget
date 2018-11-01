@@ -3,16 +3,12 @@ package brandonmilan.tonglaicha.ambiwidget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
-import android.widget.RemoteViews;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
-import brandonmilan.tonglaicha.ambiwidget.objects.DeviceStatusObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
-import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
@@ -60,18 +56,24 @@ public class WidgetContentManager {
 				widgetObject.deviceStatus = result.deviceStatusObject;
 
 				// Disable refresh button loading
-				widgetObject.refreshBtnIsLoading = false;
+				widgetObject.setRefreshBtnIsLoading(false);
 
 				// Save new widgetObject
-				widgetObject.saveToFile(context);
-        
-				// Tell android to update the widget
-				AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, widgetObject.getRemoteViews(context));
+				widgetObject.saveAndUpdate(context);
 			}
 
 			@Override
 			public void onFailure(ReturnObject result) {
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+
+				// Get widget object
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+
+				// Disable refresh button loading
+				widgetObject.setRefreshBtnIsLoading(false);
+
+				// Save new widgetObject
+				widgetObject.saveAndUpdate(context);
 			}
 		}, deviceObject).execute();
 	}

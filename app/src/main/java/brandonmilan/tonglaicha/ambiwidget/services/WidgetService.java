@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
@@ -13,8 +12,6 @@ import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
-import brandonmilan.tonglaicha.ambiwidget.objects.DeviceStatusObject;
-import brandonmilan.tonglaicha.ambiwidget.objects.ModeObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
@@ -60,7 +57,7 @@ public class WidgetService extends JobIntentService {
 				}
 			}
 
-			//Display loading animation on feedback buttons.
+			// Display loading animation on feedback buttons.
 			if(WidgetService.ACTION_GIVE_FEEDBACK.equals(action)){
 				String feedbackGiven = intent.getStringExtra(WidgetService.EXTRA_FEEDBACK_TAG);
 				Integer appWidgetId = intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0);
@@ -68,19 +65,20 @@ public class WidgetService extends JobIntentService {
 				// Get widget object
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 
-				// Update loading animation state of clicked button
+				// Update loading animation state of clicked feedback button
 				widgetObject.setFeedbackBtnLoadingState(feedbackGiven, true);
-				widgetObject.saveToFile(context);
+				widgetObject.saveAndUpdate(context);
 
-				//Partially update the widget.
-				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-				appWidgetManager.updateAppWidget(appWidgetId, widgetObject.getRemoteViews(context));
-
-			} else if(WidgetService.ACTION_SWITCH_ON_OFF.equals(action)) {
+			} // Display loading animation on power button.
+			else if(WidgetService.ACTION_SWITCH_ON_OFF.equals(action)) {
 				Integer appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 
-				//Display loading animation on/off button.
-				//TODO: WidgetContentManager.updatePowerButtonAnimation(context, appWidgetId, true);
+				// Get widget object.
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+
+				//Update loading animation state of power button.
+				widgetObject.setPowerBtnIsLoading(true);
+				widgetObject.saveAndUpdate(context);
 			}
 
 			WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
@@ -102,8 +100,7 @@ public class WidgetService extends JobIntentService {
 			} else if(ACTION_UPDATE_WIDGET.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				final Boolean UpdateByUser = intent.getBooleanExtra(EXTRA_UPDATE_BY_USER, false);
-				final String feedbackGiven = intent.getStringExtra(EXTRA_FEEDBACK_GIVEN);
-				handleActionUpdateWidget(appWidgetId, UpdateByUser, feedbackGiven);
+				handleActionUpdateWidget(appWidgetId, UpdateByUser);
 			} else if(ACTION_SWITCH_ON_OFF.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				handleActionSwitchOnOff(appWidgetId);
@@ -155,12 +152,7 @@ public class WidgetService extends JobIntentService {
 
 				// Disable loading animation of all comfort buttons
 				widgetObject.setFeedbackBtnLoadingState("ALL", false);
-
-				widgetObject.saveToFile(getApplicationContext());
-
-				//Partially update the widget.
-				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-				appWidgetManager.updateAppWidget(appWidgetId, widgetObject.getRemoteViews(getApplicationContext()));
+				widgetObject.saveAndUpdate(getApplicationContext());
 
 				WidgetService.busy = false;
 			}
@@ -169,8 +161,13 @@ public class WidgetService extends JobIntentService {
 			public void onFailure(ReturnObject result) {
 				Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
-        
-        // TODO: Disable power button loading
+
+				// Get widget object.
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
+
+				// Disable loading animation of all comfort buttons
+				widgetObject.setFeedbackBtnLoadingState("ALL", false);
+				widgetObject.saveAndUpdate(getApplicationContext());
         
 				WidgetService.busy = false;
 			}
@@ -181,13 +178,8 @@ public class WidgetService extends JobIntentService {
 	/**
 	 * Handle action UpdateWidget in the provided background threat.
 	 */
-	private void handleActionUpdateWidget(int appWidgetId, Boolean updateByUser, String feedbackGiven) {
-
+	private void handleActionUpdateWidget(int appWidgetId, Boolean updateByUser) {
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-
-//		int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
-//		WidgetProvider.updateAllWidgets(this, appWidgetManager, appWidgetIds, updateByUser);
-
 		WidgetProvider.updateWidget(this, appWidgetManager, appWidgetId, updateByUser);
 	}
 
@@ -218,13 +210,9 @@ public class WidgetService extends JobIntentService {
 		Log.d(TAG, "modeName: "+modeName);
 		Log.d(TAG, "power: "+power);
 
-		// Disable loading animation of all comfort buttons
-		widgetObject.refreshBtnIsLoading = true;
-		widgetObject.saveToFile(getApplicationContext());
-
-		//Partially update the widget.
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-		appWidgetManager.updateAppWidget(appWidgetId, widgetObject.getRemoteViews(getApplicationContext()));
+		// Enable loading animation of power button
+		widgetObject.setPowerBtnIsLoading(true);
+		widgetObject.saveAndUpdate(getApplicationContext());
 
 		// If AC is off
 		if (modeName.equals("Off") || (modeName.equals("Manual")) && power.equals("Off")) {
@@ -253,12 +241,11 @@ public class WidgetService extends JobIntentService {
 				// Change mode icon
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 				widgetObject.deviceStatus.getMode().setModeName("Off");
-				widgetObject.saveToFile(context);
-        
-        // TODO: Disable power button loading
 
-				// Tell android to update the widget
-				AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, widgetObject.getRemoteViews(context));
+				//Disable loading animation of power button.
+				widgetObject.setPowerBtnIsLoading(false);
+
+				widgetObject.saveAndUpdate(context);
 
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
 
@@ -267,10 +254,15 @@ public class WidgetService extends JobIntentService {
 
 			@Override
 			public void onFailure(ReturnObject result) {
-//                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
 
-        // TODO: Disable power button loading
+				//Update loading animation state of power button.
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+				widgetObject.setPowerBtnIsLoading(false);
+
+				widgetObject.saveAndUpdate(context);
+
 				WidgetService.busy = false;
 			}
 		}, preferredDevice).execute();
@@ -293,12 +285,11 @@ public class WidgetService extends JobIntentService {
 				// Change mode icon
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 				widgetObject.deviceStatus.getMode().setModeName("Comfort");
-				widgetObject.saveToFile(context);
-        
-        // TODO: Disable power button loading
 
-				// Tell android to update the widget
-				AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, widgetObject.getRemoteViews(context));
+				//Disable loading animation of power button.
+				widgetObject.setPowerBtnIsLoading(false);
+
+				widgetObject.saveAndUpdate(context);
 
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
 
@@ -307,10 +298,13 @@ public class WidgetService extends JobIntentService {
 
 			@Override
 			public void onFailure(ReturnObject result) {
-//                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
 
-        // TODO: Disable power button loading
+				//Disable loading animation of power button.
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+				widgetObject.setPowerBtnIsLoading(false);
+				widgetObject.saveAndUpdate(context);
         
 				WidgetService.busy = false;
 			}

@@ -29,6 +29,10 @@
     <string name="on_state">On</string>
     <string name="button_on_off">On/Off</string>
 
+    <!--Switch device tags-->
+    <string name="btn_previous_tag">previous</string>
+    <string name="btn_next_tag">next</string>
+
     <!--Preferences-->
 
     <!--Temperature scale list-->

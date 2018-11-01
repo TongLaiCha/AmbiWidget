@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.view.View;
 import android.widget.RemoteViews;
 
 import java.util.HashMap;
@@ -41,8 +40,8 @@ public class WidgetProvider extends AppWidgetProvider {
 
 			// Display loading animation when the user clicks the refresh button.
 			if(updateFromUser){
-				widgetObject.refreshBtnIsLoading = true;
-				widgetObject.saveToFile(context);
+				widgetObject.setRefreshBtnIsLoading(true);
+				widgetObject.saveAndUpdate(context);
 
 				// Instruct the widget manager to update the widget
 				appWidgetManager.updateAppWidget(appWidgetId, widgetObject.getRemoteViews(context));
@@ -74,7 +73,7 @@ public class WidgetProvider extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		Log.d(TAG, "onUpdate: Executed...");
 		for (int appWidgetId : appWidgetIds) {
-			WidgetUtils.remoteUpdateWidget(context, appWidgetId, null);
+			WidgetUtils.remoteUpdateWidget(context, appWidgetId);
 		}
 	}
 

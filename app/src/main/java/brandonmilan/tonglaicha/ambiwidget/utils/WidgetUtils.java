@@ -1,6 +1,8 @@
 package brandonmilan.tonglaicha.ambiwidget.utils;
 
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -56,7 +58,7 @@ public final class WidgetUtils {
      *
      * @return PendingIntent
      */
-    public static PendingIntent getUpdatePendingIntent(Context context, int appWidgetId, Boolean updateByUser, String feedbackGiven) {
+    public static PendingIntent getUpdatePendingIntent(Context context, int appWidgetId, Boolean updateByUser) {
         Intent intent = new Intent(context, WidgetProvider.class);
         intent.setAction(WidgetService.ACTION_UPDATE_WIDGET);
         intent.putExtra(WidgetService.EXTRA_UPDATE_BY_USER, updateByUser);
@@ -85,8 +87,8 @@ public final class WidgetUtils {
      * Helper function for updating a widget by its ID.
      * A background service takes care of updating the widgets UI.
      */
-    public static void remoteUpdateWidget(Context context, int appWidgetId, String feedbackGiven) {
-        PendingIntent pendingIntent = WidgetUtils.getUpdatePendingIntent(context, appWidgetId, false, feedbackGiven);
+    public static void remoteUpdateWidget(Context context, int appWidgetId) {
+        PendingIntent pendingIntent = WidgetUtils.getUpdatePendingIntent(context, appWidgetId, false);
         try {
             pendingIntent.send();
         } catch (PendingIntent.CanceledException e) {
@@ -99,15 +101,11 @@ public final class WidgetUtils {
      * A background service takes care of updating the widgets UI.
      */
     public static void remoteUpdateAllWidgets(Context context){
-        Intent intent = new Intent(context, WidgetProvider.class);
-        intent.setAction(WidgetService.ACTION_UPDATE_WIDGET);
-        intent.putExtra(WidgetService.EXTRA_UPDATE_BY_USER, false);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        try {
-            pendingIntent.send();
-        } catch (PendingIntent.CanceledException e) {
-            e.printStackTrace();
+        for (int appWidgetId : appWidgetIds) {
+            remoteUpdateWidget(context, appWidgetId);
         }
     }
 

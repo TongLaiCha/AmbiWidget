@@ -5,19 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
-import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
-import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
 
 public final class WidgetUtils {
@@ -51,6 +46,7 @@ public final class WidgetUtils {
     public static PendingIntent getSwitchPowerPendingIntent(Context context, int appWidgetId) {
         Intent intent = new Intent(context, WidgetProvider.class);
         intent.setAction(WidgetService.ACTION_SWITCH_ON_OFF);
+		intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
 
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -65,6 +61,7 @@ public final class WidgetUtils {
         Intent intent = new Intent(context, WidgetProvider.class);
         intent.setAction(WidgetService.ACTION_UPDATE_WIDGET);
         intent.putExtra(WidgetService.EXTRA_UPDATE_BY_USER, updateByUser);
+		intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
 
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -99,37 +96,7 @@ public final class WidgetUtils {
         }
     }
 
-    public static void updateRefreshAnimation(Boolean showAnimation, RemoteViews views) {
-        if (showAnimation) {
-            views.setViewVisibility(R.id.button_refresh, View.INVISIBLE);
-            views.setViewVisibility(R.id.progressBar, View.VISIBLE);
-        } else {
-            views.setViewVisibility(R.id.button_refresh, View.VISIBLE);
-            views.setViewVisibility(R.id.progressBar, View.INVISIBLE);
-        }
-    }
-
-    /**
-     * Helper function to get the remoteViews object matching the given widgetId.
-     * @return remoteViewFromArray
-     */
-    public static RemoteViews getRemoteViewsByWidgetId(int appWidgetId) {
-        RemoteViews remoteViewsFromArray = null;
-        for (int i = 0; i < WidgetProvider.remoteViewsByWidgetIds.size(); i++) {
-            Integer key = WidgetProvider.remoteViewsByWidgetIds.keyAt(i);
-            if(key.equals(appWidgetId)){
-                remoteViewsFromArray = WidgetProvider.remoteViewsByWidgetIds.valueAt(i);
-            }
-        }
-
-        if (remoteViewsFromArray == null){
-            Log.e(TAG, "ERROR: viewFromArray = null.", new Exception("ERROR_REMOTEVIEW_NOT_FOUND"));
-        }
-
-        return remoteViewsFromArray;
-    }
-
-    /**
+	/**
      * Returns the device that the widget will use by default.
      * @return DeviceObject
      */
@@ -166,13 +133,5 @@ public final class WidgetUtils {
         String defaultValue = context.getString(R.string.pref_tempScale_value_celsius);
 
         return sharedPreferences.getString(prefKey, defaultValue);
-    }
-
-    public static double convertToFahrenheit(double temperatureCelsius) {
-        return (temperatureCelsius * 1.8) + 32;
-    }
-
-    public static double roundOneDecimal(double number) {
-        return Math.round(number * 10) / 10.0;
     }
 }

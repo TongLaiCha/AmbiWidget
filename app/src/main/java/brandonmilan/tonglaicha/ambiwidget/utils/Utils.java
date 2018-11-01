@@ -1,5 +1,6 @@
 package brandonmilan.tonglaicha.ambiwidget.utils;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -7,10 +8,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 
 public class Utils {
 
@@ -59,6 +66,14 @@ public class Utils {
 			}
 		}
 		return true;
+	}
+
+	public static double convertToFahrenheit(double temperatureCelsius) {
+		return (temperatureCelsius * 1.8) + 32;
+	}
+
+	public static double roundOneDecimal(double number) {
+		return Math.round(number * 10) / 10.0;
 	}
 }
 

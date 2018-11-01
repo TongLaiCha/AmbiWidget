@@ -150,7 +150,7 @@
                     android:fontFamily="@font/avenir_next_medium"
                     android:textStyle="bold"
                     android:contentDescription="@string/too_warm"
-                    android:src="@drawable/ic_fire"
+                    android:src="@drawable/ic_sad"
                     android:padding="12dp"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
@@ -183,8 +183,8 @@
                     android:fontFamily="@font/avenir"
                     android:textStyle="bold"
                     android:contentDescription="@string/bit_warm"
-                    android:src="@drawable/ic_flame"
-                    android:padding="14dp"
+                    android:src="@drawable/ic_indifferent"
+                    android:padding="12dp"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
 
@@ -216,7 +216,7 @@
                     android:fontFamily="@font/avenir"
                     android:textStyle="bold"
                     android:contentDescription="@string/comfy"
-                    android:src="@drawable/ic_smile"
+                    android:src="@drawable/ic_happiness"
                     android:padding="12dp"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
@@ -249,8 +249,8 @@
                     android:fontFamily="@font/avenir"
                     android:textStyle="bold"
                     android:contentDescription="@string/bit_cold"
-                    android:src="@drawable/ic_snowflake_small"
-                    android:padding="14dp"
+                    android:src="@drawable/ic_indifferent"
+                    android:padding="12dp"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
 
@@ -282,7 +282,7 @@
                     android:fontFamily="@font/avenir"
                     android:textStyle="bold"
                     android:contentDescription="@string/too_cold"
-                    android:src="@drawable/ic_snowflake_big"
+                    android:src="@drawable/ic_sad"
                     android:padding="12dp"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"/>
@@ -296,7 +296,7 @@
 
             </LinearLayout>
 
-            <!--Button power on/off-->
+            <!--Button getPower on/off-->
             <ImageButton
                 android:id="@+id/button_on_off"
                 android:layout_width="0dp"

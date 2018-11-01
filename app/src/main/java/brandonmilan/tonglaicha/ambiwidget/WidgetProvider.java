@@ -5,15 +5,16 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import java.util.HashMap;
+
 import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
 import brandonmilan.tonglaicha.ambiwidget.activities.AuthActivity;
-import brandonmilan.tonglaicha.ambiwidget.activities.SettingsActivity;
 import brandonmilan.tonglaicha.ambiwidget.activities.WidgetConfigureActivity;
+import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
@@ -23,14 +24,8 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
  * @author Milan Sosef
  */
 public class WidgetProvider extends AppWidgetProvider {
-	private static final String TAG = "WidgetProvider";
-	private static final String TooColdTag = "too_cold";
-	private static final String LittleColdTag = "bit_cold";
-	private static final String ComfyTag = "comfortable";
-	private static final String LittleWarmTag = "bit_warm";
-	private static final String TooWarmTag = "too_warm";
+	private static final String TAG = WidgetProvider.class.getSimpleName();
 	private static final Integer JOB_ID = 10;
-	public static ArrayMap<Integer, RemoteViews> remoteViewsByWidgetIds = new ArrayMap<>();
 
 	/**
 	 * Instruct the appWidgetManager to load the widgets view and its components.
@@ -40,24 +35,22 @@ public class WidgetProvider extends AppWidgetProvider {
 		String refreshToken = TokenManager.getRefreshToken(context).value();
 
 		// Check if the user has authorized the widget to access his Ambi account.
-		if(refreshToken != null){
-			// Construct the RemoteViews object
-			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.full_widget);
-			remoteViewsByWidgetIds.put(appWidgetId, views);
-            Log.i(TAG, "updateWidget: remoteviews object = " + views);
+		if(refreshToken != null) {
+			// Get the widget object from file storage
+			WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 
 			// Display loading animation when the user clicks the refresh button.
 			if(updateFromUser){
-				WidgetUtils.updateRefreshAnimation(true, views);
+				widgetObject.refreshBtnIsLoading = true;
+				widgetObject.saveToFile(context);
+
+				// Instruct the widget manager to update the widget
+				appWidgetManager.updateAppWidget(appWidgetId, widgetObject.getRemoteViews(context));
 			}
 
-			setButtonClickHandlers(context, appWidgetId, views);
-
-			// Update the temperature, humidity, room name and location name.
+			// ASYNC > Request new data from the API and update the widget
 			WidgetContentManager.updateWidgetContent(context, appWidgetId);
 
-			// Instruct the widget manager to update the widget
-			appWidgetManager.updateAppWidget(appWidgetId, views);
 		} else {
 			createWidgetAuthOverlay(context, appWidgetManager, appWidgetId);
 		}
@@ -76,32 +69,6 @@ public class WidgetProvider extends AppWidgetProvider {
 		appWidgetManager.updateAppWidget(appWidgetId, views);
 	}
 
-	/**
-	 * Set all click handlers for the widgets buttons.
-	 */
-	private static void setButtonClickHandlers(Context context, int appWidgetId, RemoteViews views) {
-		//Set onClickPendingIntents for all the feedback buttons.
-		views.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, TooColdTag));
-		views.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, LittleColdTag));
-		views.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, ComfyTag));
-		views.setOnClickPendingIntent(R.id.button_bit_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, LittleWarmTag));
-		views.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, appWidgetId, views, TooWarmTag));
-
-		//Set onClickPendingIntent for on/off button.
-		views.setOnClickPendingIntent(R.id.button_on_off, WidgetUtils.getSwitchPowerPendingIntent(context, appWidgetId));
-
-		//Set onClickPendingIntent for the settings button.
-		Intent configIntent = new Intent(context, SettingsActivity.class);
-		//WARNING: Include the widget ID with the pendingIntent, or the configuration activity will not be opened.
-		configIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-		PendingIntent configPendingIntent = PendingIntent.getActivity(context, appWidgetId, configIntent, 0);
-		views.setOnClickPendingIntent(R.id.button_settings, configPendingIntent);
-
-		//Set onClickPendingIntent for the refresh button.
-		views.setOnClickPendingIntent(R.id.button_refresh,
-				WidgetUtils.getUpdatePendingIntent(context, appWidgetId, true, null));
-	}
-
 	//TODO: Make onUpdate only execute after the configuration is done.
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -115,8 +82,6 @@ public class WidgetProvider extends AppWidgetProvider {
 	 * Update all widgets currently active on the screen.
 	 */
 	public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Boolean updateFromUser) {
-		Log.d(TAG, "updateAllWidgets: Executed. ALL WIDGET ID'S= " + appWidgetIds);
-
 		// There may be multiple widgets active, so update all of them
 		for (int appWidgetId : appWidgetIds) {
 			updateWidget(context, appWidgetManager, appWidgetId, updateFromUser);
@@ -134,84 +99,19 @@ public class WidgetProvider extends AppWidgetProvider {
 		WidgetService.preEnqueueWork(context, JOB_ID, intent);
 	}
 
-	/**
-	 * Display loading animation and border when the user presses a feedback button.
-	 * @param feedbackGiven
-	 */
-	public static void displayFeedbackButtonConfirmation(Context context, Integer appWidgetId, String feedbackGiven, Boolean enabled) {
-		RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
-
-		//Reset all button drawables to have no border.
-		remoteViewsFromArray.setInt(R.id.container_btn_too_cold, "setBackgroundResource", R.drawable.button_selector_too_cold);
-		remoteViewsFromArray.setInt(R.id.container_btn_bit_cold, "setBackgroundResource", R.drawable.button_selector_bit_cold);
-		remoteViewsFromArray.setInt(R.id.container_btn_comfy, "setBackgroundResource", R.drawable.button_selector_comfy);
-		remoteViewsFromArray.setInt(R.id.container_btn_bit_warm, "setBackgroundResource", R.drawable.button_selector_bit_warm);
-		remoteViewsFromArray.setInt(R.id.container_btn_too_warm, "setBackgroundResource", R.drawable.button_selector_too_warm);
-
-		if(feedbackGiven != null){
-			switch (feedbackGiven){
-				case "too_warm":
-					if (enabled) {
-						remoteViewsFromArray.setViewVisibility(R.id.button_too_warm, View.GONE);
-						remoteViewsFromArray.setViewVisibility(R.id.progress_too_warm, View.VISIBLE);
-					} else {
-						remoteViewsFromArray.setViewVisibility(R.id.button_too_warm, View.VISIBLE);
-						remoteViewsFromArray.setViewVisibility(R.id.progress_too_warm, View.GONE);
-						remoteViewsFromArray.setInt(R.id.container_btn_too_warm, "setBackgroundResource", R.drawable.button_too_warm_border);
-					}
-					break;
-				case "bit_warm":
-					if (enabled) {
-						remoteViewsFromArray.setViewVisibility(R.id.button_bit_warm, View.GONE);
-						remoteViewsFromArray.setViewVisibility(R.id.progress_bit_warm, View.VISIBLE);
-					} else {
-						remoteViewsFromArray.setViewVisibility(R.id.button_bit_warm, View.VISIBLE);
-						remoteViewsFromArray.setViewVisibility(R.id.progress_bit_warm, View.GONE);
-						remoteViewsFromArray.setInt(R.id.container_btn_bit_warm, "setBackgroundResource", R.drawable.button_bit_warm_border);
-					}
-					break;
-				case "comfortable":
-					if (enabled) {
-						remoteViewsFromArray.setViewVisibility(R.id.button_comfy, View.GONE);
-						remoteViewsFromArray.setViewVisibility(R.id.progress_comfy, View.VISIBLE);
-					} else {
-						remoteViewsFromArray.setViewVisibility(R.id.button_comfy, View.VISIBLE);
-						remoteViewsFromArray.setViewVisibility(R.id.progress_comfy, View.GONE);
-						remoteViewsFromArray.setInt(R.id.container_btn_comfy, "setBackgroundResource", R.drawable.button_comfy_border);
-					}
-					break;
-				case "bit_cold":
-					if (enabled) {
-						remoteViewsFromArray.setViewVisibility(R.id.button_bit_cold, View.GONE);
-						remoteViewsFromArray.setViewVisibility(R.id.progress_bit_cold, View.VISIBLE);
-					} else {
-						remoteViewsFromArray.setViewVisibility(R.id.button_bit_cold, View.VISIBLE);
-						remoteViewsFromArray.setViewVisibility(R.id.progress_bit_cold, View.GONE);
-						remoteViewsFromArray.setInt(R.id.container_btn_bit_cold, "setBackgroundResource", R.drawable.button_bit_cold_border);
-					}
-					break;
-				case "too_cold":
-					if (enabled) {
-						remoteViewsFromArray.setViewVisibility(R.id.button_too_cold, View.GONE);
-						remoteViewsFromArray.setViewVisibility(R.id.progress_too_cold, View.VISIBLE);
-					} else {
-						remoteViewsFromArray.setViewVisibility(R.id.button_too_cold, View.VISIBLE);
-						remoteViewsFromArray.setViewVisibility(R.id.progress_too_cold, View.GONE);
-						remoteViewsFromArray.setInt(R.id.container_btn_too_cold, "setBackgroundResource", R.drawable.button_too_cold_border);
-					}
-					break;
-			}
-		} else {
-			Log.e(TAG, "ERROR: in displayFeedbackButtonConfirmation, feedbackgiven = null", new Exception("ERROR_FEEDBACKGIVEN_IS_NULL"));
-		}
-	}
-
+	// When the user deletes the widget, delete the saved data associated with it.
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
-		// When the user deletes the widget, delete the preference associated with it.
+		// Load the widget object HashMap from file
+		HashMap<Integer, WidgetObject> widgetObjectsArray = WidgetStorageManager.loadWidgetObjectsHashMap(context);
+
+		// Remove all widgetObjects from the array by appWidgetId that are deleted by the user
 		for (int appWidgetId : appWidgetIds) {
-			remoteViewsByWidgetIds.remove(appWidgetId);
+			widgetObjectsArray.remove(appWidgetId); //TODO: Handle on delete
 		}
+
+		// Save the changed array to a file again
+		WidgetStorageManager.saveWidgetObjectsHashMap(context, widgetObjectsArray);
 	}
 
 	@Override

@@ -11,13 +11,14 @@ import android.widget.Toast;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
-import brandonmilan.tonglaicha.ambiwidget.WidgetContentManager;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
+import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.DeviceStatusObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.ModeObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
-
-import static brandonmilan.tonglaicha.ambiwidget.WidgetProvider.displayFeedbackButtonConfirmation;
 
 /**
  * Class for handling tasks in a background thread.
@@ -64,14 +65,17 @@ public class WidgetService extends JobIntentService {
 			if(WidgetService.ACTION_GIVE_FEEDBACK.equals(action)){
 				String feedbackGiven = intent.getStringExtra(WidgetService.EXTRA_FEEDBACK_TAG);
 				Integer appWidgetId = intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0);
-				displayFeedbackButtonConfirmation(context, appWidgetId, feedbackGiven, true);
 
-				// Get removeViews object
-				RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
+				// Get widget object
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+
+				// Update loading animation state of clicked button
+				widgetObject.setFeedbackBtnLoadingState(feedbackGiven, true);
+				widgetObject.saveToFile(context);
 
 				//Partially update the widget.
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-				appWidgetManager.updateAppWidget(appWidgetId, remoteViewsFromArray);
+				appWidgetManager.updateAppWidget(appWidgetId, widgetObject.getRemoteViews(context));
 			}
 			WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
 		} else {
@@ -131,15 +135,23 @@ public class WidgetService extends JobIntentService {
 				String confirmToast = "Feedback given: " + feedbackMsg + ".";
 				Toast.makeText(getApplicationContext(), confirmToast, Toast.LENGTH_LONG).show();
 
-				WidgetContentManager.updateModeIcon(appWidgetId, "Comfort", null);
-				displayFeedbackButtonConfirmation(getApplicationContext(), appWidgetId, feedbackTag,false);
+				// Get the widget object from file storage
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
-				// Get removeViews object
-				RemoteViews remoteViewsFromArray = WidgetUtils.getRemoteViewsByWidgetId(appWidgetId);
+				// Update the mode in the widgetObject to Comfort mode
+				widgetObject.deviceStatus.getMode().setModeName("Comfort");
+
+				// Update the prediction object in the widgetObject to Comfort level (for border update)
+				widgetObject.deviceStatus.getComfortPrediction().setLevelByTag(feedbackTag);
+
+				// Disable loading animation of all comfort buttons
+				widgetObject.setFeedbackBtnLoadingState("ALL", false);
+
+				widgetObject.saveToFile(getApplicationContext());
 
 				//Partially update the widget.
 				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-				appWidgetManager.updateAppWidget(appWidgetId, remoteViewsFromArray);
+				appWidgetManager.updateAppWidget(appWidgetId, widgetObject.getRemoteViews(getApplicationContext()));
 
 				WidgetService.busy = false;
 			}
@@ -173,31 +185,37 @@ public class WidgetService extends JobIntentService {
 	 */
 	// TODO: Do ON/OFF feedback based on what the USER SEES (local data from last update) and NOT doing a new update.
 	private void handleActionSwitchOnOff(final int appWidgetId) {
-		//Get the current device.
-		final DeviceObject preferredDevice = WidgetUtils.getPreferredDevice(getApplicationContext());
+		//Get the widget object.
+		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
-		//Get the current mode of the device.
-		new DataManager.GetModeTask(getApplicationContext(), new OnProcessFinish<ReturnObject>() {
-			@Override
-			public void onSuccess(ReturnObject result) {
-				Log.d(TAG, "Current Mode: result.modeObject.mode() = " + result.modeObject.mode());
+		if (widgetObject.deviceStatus == null) {
+			Log.e(TAG, "handleActionSwitchOnOff: widgetObject.deviceStatus == null");
+			WidgetService.busy = false;
+			return;
+		}
 
-				// If AC is off
-				if (result.modeObject.mode().equals("Off") || (result.modeObject.mode().equals("Manual")) && result.applianceStateObject.power().equals("Off")) {
-					//Set the the device to Comfort mode.
-					setDeviceToComfort(getApplicationContext(), appWidgetId, preferredDevice);
-				} else {
-					//Turn off the AC.
-					turnDeviceOff(getApplicationContext(), appWidgetId, preferredDevice);
-				}
-				WidgetService.busy = false;
-			}
-			@Override
-			public void onFailure(ReturnObject result) {
-				Log.d(TAG, result.errorMessage + ": " + result.exception);
-				WidgetService.busy = false;
-			}
-		}, preferredDevice).execute();
+		String modeName = widgetObject.deviceStatus.getMode().getModeName();
+		String power = widgetObject.deviceStatus.getApplianceState().getPower();
+		Log.d(TAG, "modeName: "+modeName);
+		Log.d(TAG, "power: "+power);
+
+		// Disable loading animation of all comfort buttons
+		widgetObject.refreshBtnIsLoading = true;
+		widgetObject.saveToFile(getApplicationContext());
+
+		//Partially update the widget.
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+		appWidgetManager.updateAppWidget(appWidgetId, widgetObject.getRemoteViews(getApplicationContext()));
+
+		// If AC is off
+		if (modeName.equals("Off") || (modeName.equals("Manual")) && power.equals("Off")) {
+			//Set the the device to Comfort mode.
+			setDeviceToComfort(getApplicationContext(), appWidgetId, widgetObject.device);
+			Log.d(TAG, "setDeviceToComfort: ");
+		} else {
+			//Turn off the AC.
+			turnDeviceOff(getApplicationContext(), appWidgetId, widgetObject.device);
+		}
 	}
 
 	/**
@@ -212,14 +230,26 @@ public class WidgetService extends JobIntentService {
 			public void onSuccess(ReturnObject result) {
 				String confirmToast = "Device is now in off mode.";
 				Log.d(TAG, confirmToast);
-				WidgetUtils.remoteUpdateWidget(context, appWidgetId, null);
+
+				// Change mode icon
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+				widgetObject.deviceStatus.getMode().setModeName("Off");
+				widgetObject.saveToFile(context);
+
+				// Tell android to update the widget
+				AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, widgetObject.getRemoteViews(context));
+
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
+
+				WidgetService.busy = false;
 			}
 
 			@Override
 			public void onFailure(ReturnObject result) {
 //                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+
+				WidgetService.busy = false;
 			}
 		}, preferredDevice).execute();
 
@@ -237,14 +267,26 @@ public class WidgetService extends JobIntentService {
 			public void onSuccess(ReturnObject result) {
 				String confirmToast = "Device is now in comfort mode.";
 				Log.d(TAG, confirmToast);
-				WidgetUtils.remoteUpdateWidget(context, appWidgetId, null);
+
+				// Change mode icon
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+				widgetObject.deviceStatus.getMode().setModeName("Comfort");
+				widgetObject.saveToFile(context);
+
+				// Tell android to update the widget
+				AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, widgetObject.getRemoteViews(context));
+
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
+
+				WidgetService.busy = false;
 			}
 
 			@Override
 			public void onFailure(ReturnObject result) {
 //                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+
+				WidgetService.busy = false;
 			}
 		}, preferredDevice, "comfort", null, false).execute();
 

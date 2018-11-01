@@ -1,13 +1,15 @@
 package brandonmilan.tonglaicha.ambiwidget.objects;
 
-public class SensorDataObject {
+import java.io.Serializable;
+
+public class SensorDataObject implements Serializable {
 	private double temperature;
 	private double humidity;
 
 	public double getTemperature() {
 		return temperature;
 	}
-	public double getHumdiity() {
+	public double getHumidity() {
 		return humidity;
 	}
 

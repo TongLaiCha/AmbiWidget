@@ -76,5 +76,7 @@ public class WidgetContentManager {
 				widgetObject.saveAndUpdate(context);
 			}
 		}, deviceObject).execute();
+
+
 	}
 }

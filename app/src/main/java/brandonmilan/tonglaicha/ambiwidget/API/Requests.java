@@ -375,7 +375,7 @@ public class Requests {
 
 		try {
 			// Create URL for Temperature request
-			String url = 	"https://api.ambiclimate.com/api/v1/device/sensor/temperature";
+			String url = 	"https://api.ambiclimate.com/api/v1/device/sensor/getTemperature";
 			String roomName = URLEncoder.encode(deviceObject.roomName(), "UTF-8");
 			String locationName = URLEncoder.encode(deviceObject.locationName(), "UTF-8");
 			String uri = url + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName;
@@ -413,7 +413,7 @@ public class Requests {
 			}
 
 		} catch (Exception e) {
-			return new ReturnObject(e, "Could not get temperature");
+			return new ReturnObject(e, "Could not get getTemperature");
 		}
 
 		return new ReturnObject(resultAsJsonObject, temperature);
@@ -482,7 +482,7 @@ public class Requests {
 
 			String uri = url + "?access_token="+accessToken+"&room_name="+roomName+"&location_name="+locationName+"&value="+feedback;
 
-			// Retrieve temperature
+			// Retrieve getTemperature
 			String json = Utils.getJSONStringFromUrl(uri);
 			Object result = new JSONTokener(json).nextValue();
 

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.view.View;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -46,7 +47,6 @@ public final class WidgetUtils {
         Intent intent = new Intent(context, WidgetProvider.class);
         intent.setAction(WidgetService.ACTION_SWITCH_ON_OFF);
         intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
-
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -168,13 +168,5 @@ public final class WidgetUtils {
         String defaultValue = context.getString(R.string.pref_tempScale_value_celsius);
 
         return sharedPreferences.getString(prefKey, defaultValue);
-    }
-
-    public static double convertToFahrenheit(double temperatureCelsius) {
-        return (temperatureCelsius * 1.8) + 32;
-    }
-
-    public static double roundOneDecimal(double number) {
-        return Math.round(number * 10) / 10.0;
     }
 }

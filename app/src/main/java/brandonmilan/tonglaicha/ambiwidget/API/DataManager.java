@@ -53,7 +53,7 @@ public class DataManager {
 	/**
 	 * Returns consolidated data about the status of an ambi device (inc. humidity, temp, mode, appliance state)
 	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
-	 * @return temperature
+	 * @return getTemperature
 	 */
 	public static ReturnObject getDeviceStatus(Context context, DeviceObject deviceObject) {
 
@@ -88,9 +88,9 @@ public class DataManager {
 
 
 	/**
-	 * Returns the temperature reading of a device.
+	 * Returns the getTemperature reading of a device.
 	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
-	 * @return temperature
+	 * @return getTemperature
 	 */
 	public static ReturnObject getTemperature(Context context, DeviceObject deviceObject) {
 
@@ -125,9 +125,9 @@ public class DataManager {
 
 
 	/**
-	 * Returns the temperature reading of a device.
+	 * Returns the getTemperature reading of a device.
 	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
-	 * @return temperature
+	 * @return getTemperature
 	 */
 	public static ReturnObject getHumidity(Context context, DeviceObject deviceObject) {
 
@@ -161,9 +161,9 @@ public class DataManager {
 	}
 
 	/**
-	 * Returns the temperature reading of a device.
+	 * Returns the getTemperature reading of a device.
 	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
-	 * @return temperature
+	 * @return getTemperature
 	 */
 	public static ReturnObject updateComfort(Context context, DeviceObject deviceObject, String feedback) {
 		// Check if feedback string is allowed
@@ -212,7 +212,7 @@ public class DataManager {
 	/**
 	 * Returns the current mode of the ambi device and also checks the last appliance state to determine Manual Mode as ON / OFF.
 	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
-	 * @return temperature
+	 * @return getTemperature
 	 */
 	public static ReturnObject getMode(Context context, DeviceObject deviceObject) {
 
@@ -233,7 +233,7 @@ public class DataManager {
 		}
 
 		// If mode is Manual, need an additional appliance state call to check if it's on or off.
-		if (getModeResult.modeObject.mode().equals("Manual")) {
+		if (getModeResult.modeObject.getModeName().equals("Manual")) {
 
 			// Request last appliance state
 			ReturnObject getLastApplianceStateResult = Requests.getLastApplianceState(getAccessTokenResult.value, deviceObject);
@@ -268,9 +268,9 @@ public class DataManager {
 	}
 
 	/**
-	 * Returns the temperature reading of a device.
+	 * Returns the getTemperature reading of a device.
 	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.
-	 * @return temperature
+	 * @return getTemperature
 	 */
 	public static ReturnObject getLastApplianceState(Context context, DeviceObject deviceObject) {
 
@@ -304,9 +304,9 @@ public class DataManager {
 	}
 
 	/**
-	 * Returns the temperature reading of a device.
+	 * Returns the getTemperature reading of a device.
 	 * Can ONLY be used inside async tasks. Use DataManager.GetTemperatureTask() for a custom AsyncTask with callbacks for sync-code.
-	 * @return temperature
+	 * @return getTemperature
 	 */
 	public static ReturnObject powerOff(Context context, DeviceObject deviceObject) {
 
@@ -341,9 +341,9 @@ public class DataManager {
 	}
 
 	/**
-	 * Returns the temperature reading of a device.
+	 * Returns the getTemperature reading of a device.
 	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.ho
-	 * @return temperature
+	 * @return getTemperature
 	 */
 	public static ReturnObject updateMode(Context context, DeviceObject deviceObject, String mode, String value, Boolean multiple) {
 
@@ -352,7 +352,7 @@ public class DataManager {
 				mode.equals("away_temperature_lower") ||
 				mode.equals("away_temperature_upper") ||
 				mode.equals("away_humidity_upper") ||
-				mode.equals("temperature"))) {
+				mode.equals("getTemperature"))) {
 			// Given feedback value is not allowed.
 			return new ReturnObject(new Exception("ERROR_INVALID_MODE_STRING"), "Invalid mode name.");
 		}

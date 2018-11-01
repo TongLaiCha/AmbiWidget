@@ -1,18 +1,29 @@
 package brandonmilan.tonglaicha.ambiwidget.objects;
 
-public class ModeObject {
-	private String mMode;
-	private String mValue;
+import java.io.Serializable;
 
-	public String mode() {
-		return mMode;
+public class ModeObject implements Serializable {
+	private String modeName;
+	private String value;
+
+	public String getModeName() {
+		return modeName;
 	}
-	public String value() {
-		return mValue;
+
+	public void setModeName(String modeName) {
+		this.modeName = modeName;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	public ModeObject (String mode, String value) {
-		this.mMode = mode;
-		this.mValue = value;
+		this.modeName = mode;
+		this.value = value;
 	}
 }

@@ -1,29 +1,31 @@
 package brandonmilan.tonglaicha.ambiwidget.objects;
 
-public class DeviceStatusObject {
-	private ModeObject modeObject;
-	private ApplianceStateObject applianceStateObject;
-	private ComfortPredictionObject comfortPredictionObject;
-	private SensorDataObject sensorDataObject;
+import java.io.Serializable;
 
-	public ModeObject getModeObject() {
-		return modeObject;
+public class DeviceStatusObject implements Serializable {
+	private ModeObject mode;
+	private ApplianceStateObject applianceState;
+	private ComfortPredictionObject comfortPrediction;
+	private SensorDataObject sensorData;
+
+	public ModeObject getMode() {
+		return mode;
 	}
-	public ApplianceStateObject getApplianceStateObject() {
-		return applianceStateObject;
+	public ApplianceStateObject getApplianceState() {
+		return applianceState;
 	}
-	public ComfortPredictionObject getComfortPredictionObject() {
-		return comfortPredictionObject;
+	public ComfortPredictionObject getComfortPrediction() {
+		return comfortPrediction;
 	}
-	public SensorDataObject getSensorDataObject() {
-		return sensorDataObject;
+	public SensorDataObject getSensorData() {
+		return sensorData;
 	}
 
-	public DeviceStatusObject (ModeObject modeObject, ApplianceStateObject applianceStateObject,
-			ComfortPredictionObject comfortPredictionObject, SensorDataObject sensorDataObject) {
-		this.modeObject = modeObject;
-		this.applianceStateObject = applianceStateObject;
-		this.comfortPredictionObject = comfortPredictionObject;
-		this.sensorDataObject = sensorDataObject;
+	public DeviceStatusObject (ModeObject mode, ApplianceStateObject applianceStateObject,
+							   ComfortPredictionObject comfortPredictionObject, SensorDataObject sensorDataObject) {
+		this.mode = mode;
+		this.applianceState = applianceStateObject;
+		this.comfortPrediction = comfortPredictionObject;
+		this.sensorData = sensorDataObject;
 	}
 }

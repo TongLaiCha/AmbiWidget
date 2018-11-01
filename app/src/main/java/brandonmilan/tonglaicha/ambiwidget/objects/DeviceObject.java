@@ -1,6 +1,8 @@
 package brandonmilan.tonglaicha.ambiwidget.objects;
 
-public class DeviceObject {
+import java.io.Serializable;
+
+public class DeviceObject implements Serializable {
 	private String mDeviceId;
 	private String mRoomName;
 	private String mLocationName;

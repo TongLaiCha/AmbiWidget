@@ -1,33 +1,35 @@
 package brandonmilan.tonglaicha.ambiwidget.objects;
 
-public class ApplianceStateObject {
-	private String mFan;
-	private String mAcMode;
-	private String mPower;
-	private String mSwing;
-	private String mTemperature;
+import java.io.Serializable;
 
-	public String fan() {
-		return mFan;
+public class ApplianceStateObject implements Serializable {
+	private String fan;
+	private String acMode;
+	private String power;
+	private String swing;
+	private String temperature;
+
+	public String getFan() {
+		return fan;
 	}
-	public String acMode() {
-		return mAcMode;
+	public String getAcMode() {
+		return acMode;
 	}
-	public String power() {
-		return mPower;
+	public String getPower() {
+		return power;
 	}
-	public String swing() {
-		return mSwing;
+	public String getSwing() {
+		return swing;
 	}
-	public String temperature() {
-		return mTemperature;
+	public String getTemperature() {
+		return temperature;
 	}
 
 	public ApplianceStateObject (String fan, String acMode, String power, String swing, String temperature) {
-		this.mFan = fan;
-		this.mAcMode = acMode;
-		this.mPower = power;
-		this.mSwing = swing;
-		this.mTemperature = temperature;
+		this.fan = fan;
+		this.acMode = acMode;
+		this.power = power;
+		this.swing = swing;
+		this.temperature = temperature;
 	}
 }

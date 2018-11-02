@@ -66,7 +66,11 @@ public class WidgetObject implements Serializable {
 		// TODO: Check & update device data (name, loc)
 
 		// Device Name
-		remoteViews.setTextViewText(R.id.device_name, device.roomName());
+		String deviceName = device.roomName();
+		if (deviceName.length() > 20) {
+			deviceName = deviceName.substring(0, 20) + "\u2026";
+		}
+		remoteViews.setTextViewText(R.id.device_name, deviceName);
 
 		// Temperature
 		String prefTempScale = WidgetUtils.getTempScalePreference(context);

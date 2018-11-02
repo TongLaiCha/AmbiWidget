@@ -183,32 +183,32 @@ public class WidgetService extends JobIntentService {
 	private void handleActionSwitchDevice(int appWidgetId, String switchDirection) {
 		Log.d(TAG, "handleActionSwitchDevice: switching to the " + switchDirection + " device.");
 
-		List<DeviceObject> deviceObjecsList = WidgetStorageManager.getDeviceObjectsList(getApplicationContext());
-		Log.d(TAG, "SwitchDevice: deviceObjecsList size = " + deviceObjecsList.size());
+		List<DeviceObject> deviceObjectsList = WidgetStorageManager.getDeviceObjectsList(getApplicationContext());
+		Log.d(TAG, "SwitchDevice: deviceObjecsList size = " + deviceObjectsList.size());
 
 		// Get widget object
 		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
 		// Check if deviceObjecsList exists
-		if (deviceObjecsList == null) {
+		if (deviceObjectsList == null) {
 			return;
 		}
 
 		// Check if deviceObjecsList is empty
-		if (deviceObjecsList.size() == 0) {
+		if (deviceObjectsList.size() == 0) {
 			Log.e(TAG, "deviceObjecsList.size == 0: ", new Exception());
 			return;
 		}
 
 		// Check if a device has been removed
-		if (deviceObjecsList.size() -1 < widgetObject.deviceIndex) {
+		if (deviceObjectsList.size() -1 < widgetObject.deviceIndex) {
 			widgetObject.deviceIndex = 0;
 		}
 
 		// Move to the next or previous device in the deviceList.
 		if (switchDirection.equals(getApplicationContext().getString(R.string.btn_next_tag))) {
 			// Add 1 to deviceIndex
-			if (widgetObject.deviceIndex + 1 > deviceObjecsList.size() - 1){
+			if (widgetObject.deviceIndex + 1 > deviceObjectsList.size() - 1){
 				widgetObject.deviceIndex = 0;
 			} else {
 				widgetObject.deviceIndex++;
@@ -216,7 +216,7 @@ public class WidgetService extends JobIntentService {
 		} else {
 			// Add -1 to deviceIndex
 			if (widgetObject.deviceIndex - 1 < 0) {
-				widgetObject.deviceIndex = deviceObjecsList.size() - 1;
+				widgetObject.deviceIndex = deviceObjectsList.size() - 1;
 			} else {
 				widgetObject.deviceIndex--;
 			}
@@ -226,8 +226,6 @@ public class WidgetService extends JobIntentService {
 		widgetObject.saveToFile(getApplicationContext());
 
 		WidgetContentManager.updateWidgetContent(getApplicationContext(), appWidgetId);
-
-		WidgetService.busy = false;
 	}
 
 	/**

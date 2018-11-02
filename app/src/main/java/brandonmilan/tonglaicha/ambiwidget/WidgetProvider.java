@@ -35,18 +35,6 @@ public class WidgetProvider extends AppWidgetProvider {
 
 		// Check if the user has authorized the widget to access his Ambi account.
 		if(refreshToken != null) {
-			// Get the widget object from file storage
-			WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
-
-			// Display loading animation when the user clicks the refresh button.
-			if(updateFromUser){
-				widgetObject.setRefreshBtnIsLoading(true);
-				widgetObject.saveAndUpdate(context);
-
-				// Instruct the widget manager to update the widget
-				appWidgetManager.updateAppWidget(appWidgetId, widgetObject.getRemoteViews(context));
-			}
-
 			// ASYNC > Request new data from the API and update the widget
 			WidgetContentManager.updateWidgetContent(context, appWidgetId);
 

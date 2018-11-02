@@ -17,6 +17,7 @@ import java.util.List;
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.R;
+import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
@@ -74,37 +75,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
             @Override
             public void onSuccess(ReturnObject result) {
-                List<DeviceObject> deviceList = result.deviceList;
-                List<String> deviceRoomNames = new ArrayList<String>();
-                List<String> deviceListGson = new ArrayList<>();
 
-                DeviceObject preferredDevice = WidgetUtils.getPreferredDevice(screen.getContext());
-
-                for (DeviceObject deviceObject: deviceList) {
-                    deviceRoomNames.add(deviceObject.roomName());
-
-                    Gson gson = new Gson();
-                    String deviceObjectGson = gson.toJson(deviceObject);
-                    deviceListGson.add(deviceObjectGson);
-                }
-
-                ListPreference listPreference = new ListPreference(screen.getContext());
-                listPreference.setKey(String.valueOf(R.string.pref_preferredDevice_key));
-                listPreference.setTitle(R.string.pref_preferredDevice_label);
-                listPreference.setIcon(R.drawable.ic_icn_nav_device_resize);
-                listPreference.setEntries(deviceRoomNames.toArray(new CharSequence[deviceRoomNames.size()]));
-                listPreference.setEntryValues(deviceListGson.toArray(new CharSequence[deviceListGson.size()]));
-
-                //TODO: Needs to be the same as default device saved in shared pref.
-                listPreference.setDefaultValue(deviceListGson.get(0));
-
-                if(preferredDevice == null) {
-                    listPreference.setSummary("Default");
-                } else {
-                    listPreference.setSummary(preferredDevice.roomName());
-                }
-
-                screen.addPreference(listPreference);
+                // Set device list for the first time
+                WidgetStorageManager.setDeviceList(getContext(), result.deviceList);
+                WidgetUtils.remoteUpdateAllWidgets(getContext());
             }
 
             @Override

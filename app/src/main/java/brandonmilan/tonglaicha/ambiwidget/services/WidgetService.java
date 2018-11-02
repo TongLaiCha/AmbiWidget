@@ -7,8 +7,12 @@ import android.support.v4.app.JobIntentService;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.List;
+
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
+import brandonmilan.tonglaicha.ambiwidget.R;
+import brandonmilan.tonglaicha.ambiwidget.WidgetContentManager;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
@@ -188,7 +192,51 @@ public class WidgetService extends JobIntentService {
 	 */
 	private void handleActionSwitchDevice(int appWidgetId, String switchDirection) {
 		Log.d(TAG, "handleActionSwitchDevice: switching to the " + switchDirection + " device.");
-		//TODO: Write functionality to iterate over the device list and switch device.
+
+		List<DeviceObject> deviceObjecsList = WidgetStorageManager.getDeviceObjectsList(getApplicationContext());
+		Log.d(TAG, "SwitchDevice: deviceObjecsList size = " + deviceObjecsList.size());
+
+		// Get widget object
+		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
+
+		// Check if deviceObjecsList exists
+		if (deviceObjecsList == null) {
+			return;
+		}
+
+		// Check if deviceObjecsList is empty
+		if (deviceObjecsList.size() == 0) {
+			Log.e(TAG, "deviceObjecsList.size == 0: ", new Exception());
+			return;
+		}
+
+		// Check if a device has been removed
+		if (deviceObjecsList.size() -1 < widgetObject.deviceIndex) {
+			widgetObject.deviceIndex = 0;
+		}
+
+		if (switchDirection.equals(getApplicationContext().getString(R.string.btn_next_tag))) {
+			// Add 1 to deviceIndex
+			if (widgetObject.deviceIndex + 1 > deviceObjecsList.size() - 1){
+				widgetObject.deviceIndex = 0;
+			} else {
+				widgetObject.deviceIndex++;
+			}
+			Log.d(TAG, "SwitchDevice: deviceIndex = " + widgetObject.deviceIndex);
+		} else {
+			// Add -1 to deviceIndex
+			if (widgetObject.deviceIndex - 1 < 0) {
+				widgetObject.deviceIndex = deviceObjecsList.size() - 1;
+			} else {
+				widgetObject.deviceIndex--;
+			}
+			Log.d(TAG, "SwitchDevice: deviceIndex = " + widgetObject.deviceIndex);
+		}
+
+		// Save and update the widgetObject
+		widgetObject.saveToFile(getApplicationContext());
+
+		WidgetContentManager.updateWidgetContent(getApplicationContext(), appWidgetId);
 	}
 
 	/**

@@ -23,6 +23,7 @@ public class WidgetObject implements Serializable {
 	private static final String TAG = WidgetObject.class.getSimpleName();
 	private int widgetId;
 	public DeviceObject device;
+	public int deviceIndex = 0;
 	public DeviceStatusObject deviceStatus;
 	private Boolean refreshBtnIsLoading = false;
 	private Boolean tooWarmBtnIsLoading = false;
@@ -38,8 +39,13 @@ public class WidgetObject implements Serializable {
 		this.deviceStatus = deviceStatusObject;
 	}
 
-	public void saveAndUpdate(Context context) {
+	public void saveToFile(Context context) {
 		WidgetStorageManager.setWidgetObjectByWidgetId(context, widgetId, this);
+
+	}
+
+	public void saveAndUpdate(Context context) {
+		this.saveToFile(context);
 
 		//Partially update the widget.
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);

@@ -1,11 +1,9 @@
 package brandonmilan.tonglaicha.ambiwidget;
 
-import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
@@ -13,7 +11,6 @@ import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
-import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
  * (CONTROLLER)
@@ -21,7 +18,6 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
  */
 public class WidgetContentManager {
 	private static final String TAG = "WidgetContentManager";
-	private static String prefTempScale;
 
 	private WidgetContentManager(){
 	}
@@ -30,20 +26,29 @@ public class WidgetContentManager {
 	 * Updates the the widget remoteView object with NEW data.
 	 */
 	public static void updateWidgetContent(final Context context, final int appWidgetId) {
-		final DeviceObject deviceObject;
-		final DeviceObject defaultDeviceObject = WidgetUtils.getDefaultDevice(context);
-		final DeviceObject preferredDeviceObject = WidgetUtils.getPreferredDevice(context);
-		WidgetContentManager.prefTempScale = WidgetUtils.getTempScalePreference(context);
+		List<DeviceObject> deviceObjecsList = WidgetStorageManager.getDeviceObjectsList(context);
 
-		//Use default device if no preferred device is selected.
-		if (preferredDeviceObject == null){
-			if (defaultDeviceObject == null){
-				return;
-			}
-			deviceObject = defaultDeviceObject;
-		} else {
-			deviceObject = preferredDeviceObject;
+		// Get widget object
+		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+
+		// Check if deviceObjecsList exists
+		if (deviceObjecsList == null) {
+			return;
 		}
+
+		// Check if deviceObjecsList is empty
+		if (deviceObjecsList.size() == 0) {
+			Log.e(TAG, "deviceObjecsList.size == 0: ", new Exception());
+			return;
+		}
+
+		// Check if a device has been removed
+		if (deviceObjecsList.size() -1 < widgetObject.deviceIndex) {
+			widgetObject.deviceIndex = 0;
+		}
+
+		final DeviceObject deviceObject = deviceObjecsList.get(widgetObject.deviceIndex);
+//		final DeviceObject deviceObject = widgetObject.device;
 
 		// Get the device status data
 		new DataManager.GetDeviceStatusTask(context, new OnProcessFinish<ReturnObject>() {
@@ -89,10 +94,8 @@ public class WidgetContentManager {
 			public void onSuccess(ReturnObject result) {
 				List<DeviceObject> deviceList = result.deviceList;
 
-				// Get widget object
-				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
-
-				// TODO: Save device to file.
+				// Save the device list to a file
+				WidgetStorageManager.setDeviceList(context, deviceList);
 
 //				DeviceObject preferredDevice = WidgetUtils.getPreferredDevice(context);
 			}

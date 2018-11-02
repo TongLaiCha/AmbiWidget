@@ -24,7 +24,7 @@ public class WidgetStorageManager {
 	/**
 	 * Saves a HashMap of widget objects to a file.
 	 */
-	private static void saveWidgetObjectsHashMap(Context context, HashMap<Integer, WidgetObject> widgetObjectsHashMap) {
+	public static void saveWidgetObjectsHashMap(Context context, HashMap<Integer, WidgetObject> widgetObjectsHashMap) {
 		try {
 			FileOutputStream fos = context.openFileOutput(widgetObjectsHashMapFileName, Context.MODE_PRIVATE);
 			ObjectOutputStream os = new ObjectOutputStream(fos);
@@ -40,13 +40,13 @@ public class WidgetStorageManager {
 	/**
 	 * Loads and returns a HashMap with widget objects
 	 */
-	private static HashMap<Integer, WidgetObject> loadWidgetObjectsHashMap(Context context) {
+	public static HashMap<Integer, WidgetObject> loadWidgetObjectsHashMap(Context context) {
 		HashMap<Integer, WidgetObject> widgetObjectHashMap = null;
 
 		File file = new File(widgetObjectsHashMapFileName);
 
 		// If file does exist
-		if(file.exists()) {
+		if(true) {
 			// Try to load the file
 			try {
 				FileInputStream fis = context.openFileInput(widgetObjectsHashMapFileName);
@@ -57,6 +57,11 @@ public class WidgetStorageManager {
 				Log.d(TAG, "Loaded File: "+ widgetObjectsHashMapFileName);
 			} catch (Exception e) {
 				Log.e(TAG, "Could not load file: "+ widgetObjectsHashMapFileName, e);
+
+				// Create new WidgetObjectArray
+				HashMap<Integer, WidgetObject> newWidgetObjectHashMap = new HashMap<Integer, WidgetObject>();
+				saveWidgetObjectsHashMap(context, newWidgetObjectHashMap);
+				widgetObjectHashMap = newWidgetObjectHashMap;
 			}
 		}
 
@@ -116,7 +121,7 @@ public class WidgetStorageManager {
 	public static WidgetObject getWidgetObjectByWidgetId(Context context, int widgetId) {
 		// Get widgetObjectArray
 		HashMap<Integer, WidgetObject> widgetObjectsArray = loadWidgetObjectsHashMap(context);
-		Log.i(TAG, "Loaded Widget with ID: "+widgetId);
+		Log.i(TAG, "Loading Widget with ID: "+widgetId);
 		return getWidgetObjectFromHashMap(context, widgetObjectsArray, widgetId);
 	}
 
@@ -138,30 +143,21 @@ public class WidgetStorageManager {
 
 	/**
 	 * Loads and returns the device objects list from file.
+	 * @return List<DeviceObject>
 	 */
 	private static List<DeviceObject> loadDeviceObjectsList(Context context) {
 		List<DeviceObject> deviceObjectList = null;
 
-		File file = new File(deviceObjectsListFileName);
-
-		// If file does exist
-		if(file.exists()) {
-			// Try to load the file
-			try {
-				FileInputStream fis = context.openFileInput(deviceObjectsListFileName);
-				ObjectInputStream is = new ObjectInputStream(fis);
-				deviceObjectList = (List<DeviceObject>) is.readObject();
-				is.close();
-				fis.close();
-				Log.d(TAG, "Loaded File: "+ deviceObjectsListFileName);
-			} catch (Exception e) {
-				Log.e(TAG, "Could not load file: "+ deviceObjectsListFileName, e);
-			}
-		}
-
-		// If file does not exist, create a new empty widgetObject array
-		else {
-			Log.e(TAG, "File not found: "+ deviceObjectsListFileName, new FileNotFoundException());
+		// Try to load the file
+		try {
+			FileInputStream fis = context.openFileInput(deviceObjectsListFileName);
+			ObjectInputStream is = new ObjectInputStream(fis);
+			deviceObjectList = (List<DeviceObject>) is.readObject();
+			is.close();
+			fis.close();
+			Log.d(TAG, "Loaded File: "+ deviceObjectsListFileName);
+		} catch (Exception e) {
+			Log.e(TAG, "Could not load file: "+ deviceObjectsListFileName, e);
 		}
 
 		return deviceObjectList;
@@ -184,10 +180,13 @@ public class WidgetStorageManager {
 	}
 
 	/**
-	 * Retrieves a list of deviceobjecys
-	 * @return List<DeviceObject>
+	 * Update the device objects list
 	 */
 	public static void setDeviceList(Context context, List<DeviceObject> deviceObjectList) {
 		saveDeviceObjectsList(context, deviceObjectList);
+	}
+
+	public static List<DeviceObject> getDeviceObjectsList(Context context) {
+		return loadDeviceObjectsList(context);
 	}
 }

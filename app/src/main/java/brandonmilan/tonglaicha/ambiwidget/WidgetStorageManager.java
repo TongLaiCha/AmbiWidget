@@ -193,8 +193,4 @@ public class WidgetStorageManager {
 	public static void setDeviceList(Context context, List<DeviceObject> deviceObjectList) {
 		saveDeviceObjectsList(context, deviceObjectList);
 	}
-
-	public static List<DeviceObject> getDeviceObjectsList(Context context) {
-		return loadDeviceObjectsList(context);
-	}
 }

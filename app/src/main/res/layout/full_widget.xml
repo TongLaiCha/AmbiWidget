@@ -34,7 +34,8 @@
                 android:layout_toEndOf="@+id/button_settings"
                 android:layout_marginStart="20dp"
                 android:background="@color/white"
-                android:src="@drawable/ic_icn_arrow_next"/>
+                android:src="@drawable/ic_icn_arrow_next"
+                android:rotation="180"/>
 
             <!--Device name-->
             <TextView

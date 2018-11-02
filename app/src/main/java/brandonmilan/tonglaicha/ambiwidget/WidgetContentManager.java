@@ -48,7 +48,6 @@ public class WidgetContentManager {
 		}
 
 		final DeviceObject deviceObject = deviceObjecsList.get(widgetObject.deviceIndex);
-//		final DeviceObject deviceObject = widgetObject.device;
 
 		// Get the device status data
 		new DataManager.GetDeviceStatusTask(context, new OnProcessFinish<ReturnObject>() {

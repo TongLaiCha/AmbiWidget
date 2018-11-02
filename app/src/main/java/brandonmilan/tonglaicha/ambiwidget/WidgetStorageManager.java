@@ -16,7 +16,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import brandonmilan.tonglaicha.ambiwidget.objects.ApplianceStateObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.ComfortPredictionObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.DeviceStatusObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.ModeObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 
 public class WidgetStorageManager {
@@ -103,7 +107,8 @@ public class WidgetStorageManager {
 			Log.e(TAG, "widgetObject by ID ("+widgetId+") does not exist.");
 			Log.i(TAG, "Creating new widgetObject for that widgetId...");
 
-			widgetObject = new WidgetObject(widgetId, null, null, null);
+			// Create new widgetObject which is EMPTY
+			widgetObject = new WidgetObject(widgetId, null, null);
 
 			//Add new widgetObject to HashMap
 			widgetObjectsHashMap.put(widgetId, widgetObject);

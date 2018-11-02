@@ -33,7 +33,7 @@ public class WidgetObject implements Serializable {
 	private Boolean tooColdBtnIsLoading = false;
 	private Boolean powerBtnIsLoading = false;
 
-	public WidgetObject(int widgetId, RemoteViews remoteViews, DeviceObject deviceObject, DeviceStatusObject deviceStatusObject) {
+	public WidgetObject(int widgetId, DeviceObject deviceObject, DeviceStatusObject deviceStatusObject) {
 		this.widgetId = widgetId;
 		this.device = deviceObject;
 		this.deviceStatus = deviceStatusObject;
@@ -59,11 +59,14 @@ public class WidgetObject implements Serializable {
 		// Add listeners to buttons
 		setButtonClickHandlers(context, remoteViews);
 
+		// If this widgetObject does not contain a device and / or devicestatus object yet, return plain remoteview.
+		if (this.device == null || this.deviceStatus == null) {
+			return remoteViews;
+		}
+
 		// Check & update refresh animation of refresh button
 		// Check & update feedback button loading animations
 		updateButtons(context, remoteViews);
-
-		// TODO: Check & update device data (name, loc)
 
 		// Device Name
 		String deviceName = device.roomName();

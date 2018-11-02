@@ -164,6 +164,14 @@ public class WidgetStorageManager {
 	}
 
 	/**
+	 * Retrieves a list of deviceobjects
+	 * @return List<DeviceObject>
+	 */
+	public static List<DeviceObject> getDeviceObjectsList(Context context) {
+		return loadDeviceObjectsList(context);
+	}
+
+	/**
 	 * Saves a device objects list to file.
 	 */
 	private static void saveDeviceObjectsList(Context context, List<DeviceObject> deviceObjectList) {

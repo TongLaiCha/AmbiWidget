@@ -21,7 +21,7 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 public class WidgetObject implements Serializable {
 
 	private static final String TAG = WidgetObject.class.getSimpleName();
-	private int widgetId;
+	public int widgetId;
 	public DeviceObject device;
 	public int deviceIndex = 0;
 	public DeviceStatusObject deviceStatus;
@@ -129,6 +129,8 @@ public class WidgetObject implements Serializable {
 	 * Set all click handlers for the widgets buttons.
 	 */
 	private void setButtonClickHandlers(Context context, RemoteViews remoteViews) {
+
+		Log.i(TAG, "setButtonClickHandlers: setting listeners for widget id " + widgetId);
 		// Set onClickPendingIntents for all the feedback buttons.
 		remoteViews.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_cold_tag)));
 		remoteViews.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.bit_cold_tag)));

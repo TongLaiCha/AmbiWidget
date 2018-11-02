@@ -53,7 +53,7 @@ public class WidgetService extends JobIntentService {
 
 		if (action != null) {
 			// Prevent button spam
-			if (action.equals(ACTION_GIVE_FEEDBACK) || action.equals(ACTION_SWITCH_ON_OFF))  {
+			if (action.equals(ACTION_GIVE_FEEDBACK) || action.equals(ACTION_SWITCH_ON_OFF) || action.equals(ACTION_SWITCH_DEVICE)) {
 				if (WidgetService.busy) {
 					return;
 				} else {
@@ -123,18 +123,8 @@ public class WidgetService extends JobIntentService {
 		//Call class for API handling and giving feedback to the Ai.
 		Log.d(TAG, "handleActionGiveFeedback: Giving feedback: It is " + feedbackTag + " to the Ai.");
 
-		DeviceObject deviceObject;
-		final DeviceObject defaultDeviceObject = WidgetUtils.getDefaultDevice(getApplicationContext());
-		final DeviceObject preferredDeviceObject = WidgetUtils.getPreferredDevice(getApplicationContext());
-
-		//Use default device if no preferred device is selected.
-		if (preferredDeviceObject == null){
-			deviceObject = defaultDeviceObject;
-			Log.d(TAG, "handleActionGiveFeedback: No preferred device selected! Using default.");
-		} else {
-			deviceObject = preferredDeviceObject;
-			Log.d(TAG, "handleActionGiveFeedback: Using prefered device!");
-		}
+		// Get widget object
+		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
 		// Send comfort feedback to API
 		new DataManager.UpdateComfortTask(getApplicationContext(), new OnProcessFinish<ReturnObject>() {
@@ -175,7 +165,7 @@ public class WidgetService extends JobIntentService {
         
 				WidgetService.busy = false;
 			}
-		}, deviceObject, feedbackTag).execute();
+		}, widgetObject.device, feedbackTag).execute();
 	}
 
 
@@ -215,6 +205,7 @@ public class WidgetService extends JobIntentService {
 			widgetObject.deviceIndex = 0;
 		}
 
+		// Move to the next or previous device in the deviceList.
 		if (switchDirection.equals(getApplicationContext().getString(R.string.btn_next_tag))) {
 			// Add 1 to deviceIndex
 			if (widgetObject.deviceIndex + 1 > deviceObjecsList.size() - 1){
@@ -222,7 +213,6 @@ public class WidgetService extends JobIntentService {
 			} else {
 				widgetObject.deviceIndex++;
 			}
-			Log.d(TAG, "SwitchDevice: deviceIndex = " + widgetObject.deviceIndex);
 		} else {
 			// Add -1 to deviceIndex
 			if (widgetObject.deviceIndex - 1 < 0) {
@@ -230,13 +220,14 @@ public class WidgetService extends JobIntentService {
 			} else {
 				widgetObject.deviceIndex--;
 			}
-			Log.d(TAG, "SwitchDevice: deviceIndex = " + widgetObject.deviceIndex);
 		}
 
 		// Save and update the widgetObject
 		widgetObject.saveToFile(getApplicationContext());
 
 		WidgetContentManager.updateWidgetContent(getApplicationContext(), appWidgetId);
+
+		WidgetService.busy = false;
 	}
 
 	/**
@@ -255,8 +246,6 @@ public class WidgetService extends JobIntentService {
 
 		String modeName = widgetObject.deviceStatus.getMode().getModeName();
 		String power = widgetObject.deviceStatus.getApplianceState().getPower();
-		Log.d(TAG, "modeName: "+modeName);
-		Log.d(TAG, "power: "+power);
 
 		// Enable loading animation of power button
 		widgetObject.setPowerBtnIsLoading(true);
@@ -266,7 +255,6 @@ public class WidgetService extends JobIntentService {
 		if (modeName.equals("Off") || (modeName.equals("Manual")) && power.equals("Off")) {
 			//Set the the device to Comfort mode.
 			setDeviceToComfort(getApplicationContext(), appWidgetId, widgetObject.device);
-			Log.d(TAG, "setDeviceToComfort: ");
 		} else {
 			//Turn off the AC.
 			turnDeviceOff(getApplicationContext(), appWidgetId, widgetObject.device);

@@ -3,6 +3,8 @@ package brandonmilan.tonglaicha.ambiwidget;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
@@ -84,16 +87,20 @@ public class WidgetStorageManager {
 	 * @return WidgetObject
 	 */
 	private static WidgetObject getWidgetObjectFromHashMap(Context context, HashMap<Integer, WidgetObject> widgetObjectsHashMap, int widgetId) {
-		WidgetObject widgetObject = null;
-
 		// Get the widgetObject by widgetId from the HashMap
-		for (int i = 0; i < widgetObjectsHashMap.size(); i++) {
-			widgetObject = widgetObjectsHashMap.get(widgetId);
-		}
+		WidgetObject widgetObject = widgetObjectsHashMap.get(widgetId);
+
+		// Load new widgetobjectarray test
+		HashMap<Integer, WidgetObject> hashMap = loadWidgetObjectsHashMap(context);
+		Gson gson = new Gson();
+
+		Log.d(TAG, "hashMap loaded from file: " + gson.toJson(hashMap));
+
+		Log.d(TAG, "hashMap loaded from file: "+hashMap);
 
 		//If the widgetObject does not exist, create a new one.
 		if (widgetObject == null) {
-			Log.e(TAG, "widgetObject by ID ("+widgetId+") does not exist.", new NullPointerException());
+			Log.e(TAG, "widgetObject by ID ("+widgetId+") does not exist.");
 			Log.i(TAG, "Creating new widgetObject for that widgetId...");
 
 			widgetObject = new WidgetObject(widgetId, null, null, null);
@@ -103,10 +110,6 @@ public class WidgetStorageManager {
 
 			// Save updated HashMap
 			saveWidgetObjectsHashMap(context, widgetObjectsHashMap);
-
-			// Load new widgetobjectarray test
-			HashMap<Integer, WidgetObject> hashMap = loadWidgetObjectsHashMap(context);
-			Log.d(TAG, "hashMap loaded from file: "+hashMap);
 		}
 
 		Log.d(TAG, "getWidgetObjectFromHashMap: widgetObject = "+widgetObject);
@@ -121,7 +124,9 @@ public class WidgetStorageManager {
 	public static WidgetObject getWidgetObjectByWidgetId(Context context, int widgetId) {
 		// Get widgetObjectArray
 		HashMap<Integer, WidgetObject> widgetObjectsArray = loadWidgetObjectsHashMap(context);
-		Log.i(TAG, "Loading Widget with ID: "+widgetId);
+		Log.i(TAG, "------------Loading Widget with ID: "+widgetId);
+		WidgetObject widgetObject = getWidgetObjectFromHashMap(context, widgetObjectsArray, widgetId);
+		Log.i(TAG, "------------Loaded Widget with ID: "+widgetObject.widgetId);
 		return getWidgetObjectFromHashMap(context, widgetObjectsArray, widgetId);
 	}
 

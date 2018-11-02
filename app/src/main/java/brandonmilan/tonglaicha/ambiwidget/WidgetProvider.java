@@ -94,7 +94,7 @@ public class WidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context, intent);
-		Log.d(TAG, "onReceive()" + intent.getAction());
+		Log.d(TAG, "onReceive()" + intent.getAction() + "widgetId = " + intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0));
 		WidgetService.preEnqueueWork(context, JOB_ID, intent);
 	}
 

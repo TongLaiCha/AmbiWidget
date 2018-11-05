@@ -34,12 +34,15 @@ public class WidgetContentManager {
 
 		// Check if deviceObjecsList exists
 		if (deviceObjectsList == null) {
+			Log.e(TAG, "Device list does not exist, can't update widget content.");
+			updateDeviceList(context);
 			return;
 		}
 
 		// Check if deviceObjecsList is empty
 		if (deviceObjectsList.size() == 0) {
-			Log.e(TAG, "deviceObjecsList.size == 0: ", new Exception());
+			Log.e(TAG, "Device list is empty, can't update widget content.");
+			updateDeviceList(context);
 			return;
 		}
 
@@ -52,7 +55,7 @@ public class WidgetContentManager {
 
 		widgetObject.setRefreshBtnIsLoading(true);
 
-		// Save and update to display loading
+		// Save and update to display loading animation
 		widgetObject.saveAndUpdate(context);
 
 		final DeviceObject deviceObject = deviceObjectsList.get(widgetObject.deviceIndex);
@@ -63,6 +66,17 @@ public class WidgetContentManager {
 			@Override
 			public void onSuccess(ReturnObject result) {
 				Log.d(TAG, "GetDeviceStatusTask success: "+result.deviceStatusObject);
+			}
+
+			@Override
+			public void onFailure(ReturnObject result) {
+				Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+				Log.d(TAG, result.errorMessage + ": " + result.exception);
+			}
+
+			@Override
+			public void onFinish(ReturnObject result) {
+
 				// Get widget object
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 
@@ -70,7 +84,9 @@ public class WidgetContentManager {
 				widgetObject.device = deviceObject;
 
 				// Device status
-				widgetObject.deviceStatus = result.deviceStatusObject;
+				if (result.deviceStatusObject != null) {
+					widgetObject.deviceStatus = result.deviceStatusObject;
+				}
 
 				// Disable refresh button loading
 				widgetObject.setRefreshBtnIsLoading(false);
@@ -81,22 +97,16 @@ public class WidgetContentManager {
 				WidgetService.busy = false;
 			}
 
-			@Override
-			public void onFailure(ReturnObject result) {
-				Log.d(TAG, result.errorMessage + ": " + result.exception);
-
-				// Get widget object
-				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
-
-				// Disable refresh button loading
-				widgetObject.setRefreshBtnIsLoading(false);
-
-				// Save new widgetObject
-				widgetObject.saveAndUpdate(context);
-
-				WidgetService.busy = false;
-			}
 		}, deviceObject).execute();
+	}
+
+	/**
+	 * Updates the device list and save it as file.
+	 * Should be called regularly to keep device list up-to-date.
+	 */
+	public static void updateDeviceList(final Context context) {
+
+		Log.d(TAG, "updateDeviceList: Updating device list..");
 
 		// Get the device list.
 		new DataManager.GetDeviceListTask(context, new OnProcessFinish<ReturnObject>() {
@@ -107,15 +117,49 @@ public class WidgetContentManager {
 
 				// Save the device list to a file
 				WidgetStorageManager.setDeviceList(context, deviceList);
-
-//				DeviceObject preferredDevice = WidgetUtils.getPreferredDevice(context);
 			}
 
 			@Override
 			public void onFailure(ReturnObject result) {
-                Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+				Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
 			}
+
+			@Override
+			public void onFinish(ReturnObject result) {}
+
+		}).execute();
+	}
+
+	/**
+	 * Updates the device list and also update all widgets.
+	 * NOTE: This should only be used on first time setup when there is no deviceList yet.
+	 */
+	public static void updateDeviceListAndAllWidgets(final Context context) {
+
+		Log.d(TAG, "updateDeviceList: Updating device list..");
+
+		// Get the device list.
+		new DataManager.GetDeviceListTask(context, new OnProcessFinish<ReturnObject>() {
+
+			@Override
+			public void onSuccess(ReturnObject result) {
+				List<DeviceObject> deviceList = result.deviceList;
+
+				// Save the device list to a file
+				WidgetStorageManager.setDeviceList(context, deviceList);
+				WidgetProvider.updateAllWidgets(context);
+			}
+
+			@Override
+			public void onFailure(ReturnObject result) {
+				Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+				Log.d(TAG, result.errorMessage + ": " + result.exception);
+			}
+
+			@Override
+			public void onFinish(ReturnObject result) {}
+
 		}).execute();
 	}
 }

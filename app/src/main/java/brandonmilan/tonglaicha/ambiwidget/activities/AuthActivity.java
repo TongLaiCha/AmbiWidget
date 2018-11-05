@@ -13,10 +13,13 @@ import android.widget.Toast;
 import net.smartam.leeloo.client.request.OAuthClientRequest;
 import net.smartam.leeloo.common.exception.OAuthSystemException;
 
+import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
 import brandonmilan.tonglaicha.ambiwidget.R;
+import brandonmilan.tonglaicha.ambiwidget.WidgetContentManager;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
+import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 
 /**
@@ -32,12 +35,10 @@ public class AuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-		// Redirect to settings activity if refresh token is already set. (No authentication needed)
+		// (deprecated) Redirect to settings activity if refresh token is already set. (No authentication needed)
+		// Close activity if user has already authenticated
 		if (TokenManager.getRefreshToken(AuthActivity.this).value() != null) {
-			Intent i = new Intent(AuthActivity.this, SettingsActivity.class);
-			AuthActivity.this.startActivity(i);
 			finish();
-			return;
 		}
 
 		// Read intent data if set (User returning from the browser with params)
@@ -112,8 +113,8 @@ public class AuthActivity extends AppCompatActivity {
 			public void onSuccess(ReturnObject result) {
 				Toast.makeText(getApplicationContext(), "Authentication successful!", Toast.LENGTH_LONG).show();
 
-				// Update all widgets
-                WidgetProvider.updateAllWidgets(getApplicationContext());
+				// Get new device list and update all widgets
+				WidgetContentManager.updateDeviceListAndAllWidgets(getApplicationContext());
 
 				// Go to settings activity
 				Intent i = new Intent(AuthActivity.this, SettingsActivity.class);
@@ -128,6 +129,10 @@ public class AuthActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, "Authenthication failed!");
 			}
+
+			@Override
+			public void onFinish(ReturnObject result) {}
+
 		}, authCode).execute();
 	}
 }

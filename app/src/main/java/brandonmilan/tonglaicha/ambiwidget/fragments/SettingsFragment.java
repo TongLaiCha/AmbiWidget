@@ -34,9 +34,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
                 setPreferenceSummary(p, value);
             }
         }
-        //TODO: Add divider between preferences.
-
-        createDeviceListPreference(prefscreen);
     }
 
     private void setPreferenceSummary(Preference preference, String value) {
@@ -62,25 +59,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         //TODO: Update the right widget.
         WidgetProvider.updateAllWidgets(this.getContext());
 
-    }
-
-    private void createDeviceListPreference(final PreferenceScreen screen) {
-        new DataManager.GetDeviceListTask(screen.getContext(), new OnProcessFinish<ReturnObject>() {
-
-            @Override
-            public void onSuccess(ReturnObject result) {
-
-                // Set device list for the first time
-                WidgetStorageManager.setDeviceList(getContext(), result.deviceList);
-                WidgetProvider.updateAllWidgets(getContext());
-            }
-
-            @Override
-            public void onFailure(ReturnObject result) {
-//                Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
-                Log.d(TAG, result.errorMessage + ": " + result.exception);
-            }
-        }).execute();
     }
 
     @Override

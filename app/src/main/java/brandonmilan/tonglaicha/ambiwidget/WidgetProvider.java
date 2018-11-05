@@ -64,6 +64,9 @@ public class WidgetProvider extends AppWidgetProvider {
 			WidgetService.startActionUpdateWidget(context, appWidgetId);
 		}
 
+		// Update the device list
+		WidgetContentManager.updateDeviceList(context);
+
 	}
 
 	/**

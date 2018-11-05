@@ -154,27 +154,27 @@ public class WidgetService extends JobIntentService {
 				// Update the prediction object in the widgetObject to Comfort level (for border update)
 				widgetObject.deviceStatus.getComfortPrediction().setLevelByTag(feedbackTag);
 
-				// Disable loading animation of all comfort buttons
-				widgetObject.setFeedbackBtnLoadingState("ALL", false);
 				widgetObject.saveAndUpdate(getApplicationContext());
-
-				WidgetService.busy = false;
 			}
 
 			@Override
 			public void onFailure(ReturnObject result) {
 				Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+			}
 
+			@Override
+			public void onFinish(ReturnObject result) {
 				// Get widget object.
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
 				// Disable loading animation of all comfort buttons
 				widgetObject.setFeedbackBtnLoadingState("ALL", false);
 				widgetObject.saveAndUpdate(getApplicationContext());
-        
+
 				WidgetService.busy = false;
 			}
+
 		}, widgetObject.device, feedbackTag).execute();
 	}
 
@@ -286,29 +286,30 @@ public class WidgetService extends JobIntentService {
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 				widgetObject.deviceStatus.getMode().setModeName("Off");
 
-				//Disable loading animation of power button.
-				widgetObject.setPowerBtnIsLoading(false);
-
 				widgetObject.saveAndUpdate(context);
 
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
-
-				WidgetService.busy = false;
 			}
 
 			@Override
 			public void onFailure(ReturnObject result) {
                 Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+			}
+
+			@Override
+			public void onFinish(ReturnObject result) {
+				// Get widget object.
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
 				//Update loading animation state of power button.
-				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 				widgetObject.setPowerBtnIsLoading(false);
 
 				widgetObject.saveAndUpdate(context);
 
 				WidgetService.busy = false;
 			}
+
 		}, preferredDevice).execute();
 
 	}
@@ -344,14 +345,21 @@ public class WidgetService extends JobIntentService {
 			public void onFailure(ReturnObject result) {
                 Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+			}
 
-				//Disable loading animation of power button.
-				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+			@Override
+			public void onFinish(ReturnObject result) {
+				// Get widget object.
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
+
+				//Update loading animation state of power button.
 				widgetObject.setPowerBtnIsLoading(false);
+
 				widgetObject.saveAndUpdate(context);
-        
+
 				WidgetService.busy = false;
 			}
+
 		}, preferredDevice, "comfort", null, false).execute();
 
 	}

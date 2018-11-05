@@ -67,6 +67,9 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Return
 
 				mCallBack.onFailure(result);
 			}
+
+			// Call on finish
+			mCallBack.onFinish(result);
 		}
 	}
 }

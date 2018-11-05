@@ -23,7 +23,7 @@ public class SettingsActivity extends AppCompatActivity {
 		// Load content
         setContentView(R.layout.activity_settings);
 
-		// Initialize listener for authorization button
+		// Initialize listener for ok button
 		Button doneBtn = (Button) findViewById(R.id.button_settings_done);
 		doneBtn.setOnClickListener(new View.OnClickListener() {
 			@Override

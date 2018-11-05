@@ -78,6 +78,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
 		// There may be multiple widgets active, so update all of them
 		for (int appWidgetId : appWidgetIds) {
+			Log.d(TAG, "updateAllWidgets: with id's: " + appWidgetId);
 			updateWidget(context, appWidgetManager, appWidgetId);
 		}
 	}

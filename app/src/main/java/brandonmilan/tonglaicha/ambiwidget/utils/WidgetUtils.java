@@ -28,7 +28,7 @@ public final class WidgetUtils {
         intent.putExtra(WidgetService.EXTRA_FEEDBACK_TAG, FeedbackTag);
         intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
 
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
@@ -41,7 +41,7 @@ public final class WidgetUtils {
         Intent intent = new Intent(context, WidgetProvider.class);
         intent.setAction(WidgetService.ACTION_SWITCH_ON_OFF);
         intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
@@ -55,7 +55,7 @@ public final class WidgetUtils {
         intent.setAction(WidgetService.ACTION_UPDATE_WIDGET);
         intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
 
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
@@ -71,7 +71,7 @@ public final class WidgetUtils {
         intent.putExtra(WidgetService.EXTRA_DEVICE_SWITCH_DIRECTION, switchDirection);
         intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
 
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**

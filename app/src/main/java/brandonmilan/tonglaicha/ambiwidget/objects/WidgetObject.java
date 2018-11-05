@@ -196,8 +196,8 @@ public class WidgetObject implements Serializable {
 		buttonsTags.add(context.getString(R.string.bit_cold_tag));
 		buttonsTags.add(context.getString(R.string.too_cold_tag));
 
-		for (int i = 0; i < buttonsTags.size(); i++) {
-			updateFeedbackButtons(remoteViews, buttonsTags.get(i), predictedComfortTag);
+		for(String buttonTag : buttonsTags){
+			updateFeedbackButtons(remoteViews, buttonTag, predictedComfortTag);
 		}
 	}
 

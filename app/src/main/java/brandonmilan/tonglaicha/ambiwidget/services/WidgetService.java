@@ -45,6 +45,19 @@ public class WidgetService extends JobIntentService {
 
 	public static Boolean busy = false;
 
+	/**
+	 * Starts this service to perform UpdateWidget action with the given parameters.
+	 * If the service is already performing a task, this action will be queued.
+	 */
+	public static void startActionUpdateWidget(Context context, int appWidgetId) {
+		PendingIntent pendingIntent = WidgetUtils.getUpdatePendingIntent(context, appWidgetId);
+		try {
+			pendingIntent.send();
+		} catch (PendingIntent.CanceledException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void preEnqueueWork(Context context, int JOB_ID, Intent intent) {
 		String action = intent.getAction();
 
@@ -86,20 +99,6 @@ public class WidgetService extends JobIntentService {
 		} else {
 			Log.e(TAG, "preEnqueueWork: Unable to enqueue work, action is null.", new Exception("ERROR_ACTION_IS_NULL"));
 		}
-	}
-
-	/**
-	 * Starts this service to perform UpdateWidget action with the given parameters.
-	 * If the service is already performing a task, this action will be queued.
-	 */
-	public static void startActionUpdateWidget(Context context, int appWidgetId) {
-		PendingIntent pendingIntent = WidgetUtils.getUpdatePendingIntent(context, appWidgetId);
-		try {
-			pendingIntent.send();
-		} catch (PendingIntent.CanceledException e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	/**

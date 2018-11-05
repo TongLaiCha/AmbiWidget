@@ -107,8 +107,6 @@ public class WidgetContentManager {
 
 				// Save the device list to a file
 				WidgetStorageManager.setDeviceList(context, deviceList);
-
-//				DeviceObject preferredDevice = WidgetUtils.getPreferredDevice(context);
 			}
 
 			@Override

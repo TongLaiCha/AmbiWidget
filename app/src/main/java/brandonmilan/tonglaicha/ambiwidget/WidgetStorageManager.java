@@ -33,7 +33,7 @@ public class WidgetStorageManager {
 			os.writeObject(widgetObjectsHashMap);
 			os.close();
 			fos.close();
-			Log.d(TAG, "Saved File: "+ widgetObjectsHashMapFileName);
+//			Log.d(TAG, "Saved File: "+ widgetObjectsHashMapFileName);
 		} catch(IOException e) {
 			Log.e(TAG, "Error while trying to save object to file:", e);
 		}
@@ -56,7 +56,7 @@ public class WidgetStorageManager {
 				widgetObjectHashMap = (HashMap<Integer, WidgetObject>) is.readObject();
 				is.close();
 				fis.close();
-				Log.d(TAG, "Loaded File: "+ widgetObjectsHashMapFileName);
+//				Log.d(TAG, "Loaded File: "+ widgetObjectsHashMapFileName);
 			} catch (Exception e) {
 				Log.e(TAG, "Could not load file: "+ widgetObjectsHashMapFileName, e);
 
@@ -93,9 +93,9 @@ public class WidgetStorageManager {
 		HashMap<Integer, WidgetObject> hashMap = loadWidgetObjectsHashMap(context);
 		Gson gson = new Gson();
 
-		Log.d(TAG, "hashMap loaded from file: " + gson.toJson(hashMap));
+//		Log.d(TAG, "hashMap loaded from file: " + gson.toJson(hashMap));
 
-		Log.d(TAG, "hashMap loaded from file: "+hashMap);
+//		Log.d(TAG, "hashMap loaded from file: "+hashMap);
 
 		//If the widgetObject does not exist, create a new one.
 		if (widgetObject == null) {
@@ -124,7 +124,7 @@ public class WidgetStorageManager {
 	public static WidgetObject getWidgetObjectByWidgetId(Context context, int widgetId) {
 		// Get widgetObjectArray
 		HashMap<Integer, WidgetObject> widgetObjectsArray = loadWidgetObjectsHashMap(context);
-		Log.i(TAG, "------------Loading Widget with ID: "+widgetId);
+//		Log.i(TAG, "------------Loading Widget with ID: "+widgetId);
 		WidgetObject widgetObject = getWidgetObjectFromHashMap(context, widgetObjectsArray, widgetId);
 		Log.i(TAG, "------------Loaded Widget with ID: "+widgetObject.widgetId);
 		return getWidgetObjectFromHashMap(context, widgetObjectsArray, widgetId);

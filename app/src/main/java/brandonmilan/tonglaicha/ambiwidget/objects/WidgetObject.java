@@ -10,7 +10,6 @@ import android.widget.RemoteViews;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
@@ -161,7 +160,7 @@ public class WidgetObject implements Serializable {
 		remoteViews.setOnClickPendingIntent(R.id.button_settings, configPendingIntent);
 
 		// Set onClickPendingIntent for the refresh button.
-		remoteViews.setOnClickPendingIntent(R.id.button_refresh, WidgetUtils.getUpdatePendingIntent(context, widgetId, true));
+		remoteViews.setOnClickPendingIntent(R.id.button_refresh, WidgetUtils.getUpdatePendingIntent(context, widgetId));
 	}
 
 	/**

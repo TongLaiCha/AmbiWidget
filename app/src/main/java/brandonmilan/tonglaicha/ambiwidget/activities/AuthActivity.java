@@ -1,11 +1,9 @@
 package brandonmilan.tonglaicha.ambiwidget.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,7 +18,6 @@ import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
 import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
-import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
  * A login screen that offers login via email/password.
@@ -115,9 +112,8 @@ public class AuthActivity extends AppCompatActivity {
 			public void onSuccess(ReturnObject result) {
 				Toast.makeText(getApplicationContext(), "Authentication successful!", Toast.LENGTH_LONG).show();
 
-				// Update the widget
-//                WidgetUtils.remoteUpdateWidget(getApplicationContext(), null);
-                WidgetUtils.remoteUpdateAllWidgets(getApplicationContext());
+				// Update all widgets
+                WidgetProvider.updateAllWidgets(getApplicationContext());
 
 				// Go to settings activity
 				Intent i = new Intent(AuthActivity.this, SettingsActivity.class);
@@ -127,8 +123,8 @@ public class AuthActivity extends AppCompatActivity {
 
 			@Override
 			public void onFailure(ReturnObject result) {
-//                WidgetUtils.remoteUpdateWidget(getApplicationContext(), null);
-				WidgetUtils.remoteUpdateAllWidgets(getApplicationContext());
+				// Update all widgets
+				WidgetProvider.updateAllWidgets(getApplicationContext());
                 Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, "Authenthication failed!");
 			}

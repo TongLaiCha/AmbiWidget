@@ -1,20 +1,12 @@
 package brandonmilan.tonglaicha.ambiwidget.activities;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
 
-import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
-import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
-import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
  * The configuration screen for the {@link WidgetProvider WidgetProvider} AppWidget.

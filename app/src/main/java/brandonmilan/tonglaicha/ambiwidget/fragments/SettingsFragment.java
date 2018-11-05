@@ -9,18 +9,12 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.util.Log;
 
-import com.google.gson.Gson;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.R;
+import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
-import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
-import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
     private final static String TAG = "SettingsFragment";
@@ -66,7 +60,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         }
 
         //TODO: Update the right widget.
-        WidgetUtils.remoteUpdateAllWidgets(this.getContext());
+        WidgetProvider.updateAllWidgets(this.getContext());
 
     }
 
@@ -78,7 +72,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
                 // Set device list for the first time
                 WidgetStorageManager.setDeviceList(getContext(), result.deviceList);
-                WidgetUtils.remoteUpdateAllWidgets(getContext());
+                WidgetProvider.updateAllWidgets(getContext());
             }
 
             @Override

@@ -13,14 +13,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
-import brandonmilan.tonglaicha.ambiwidget.objects.ApplianceStateObject;
-import brandonmilan.tonglaicha.ambiwidget.objects.ComfortPredictionObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
-import brandonmilan.tonglaicha.ambiwidget.objects.DeviceStatusObject;
-import brandonmilan.tonglaicha.ambiwidget.objects.ModeObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 
 public class WidgetStorageManager {

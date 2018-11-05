@@ -1,6 +1,5 @@
 package brandonmilan.tonglaicha.ambiwidget.API;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -62,9 +61,7 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Return
 						TokenManager.deleteToken(mContext.get(), "REFRESH_TOKEN");
 
 						//update widget state with auth button
-//						WidgetUtils.remoteUpdateWidget(mContext.get(), null);
-						//TODO: Only update the widget that needs to be updated.
-						WidgetUtils.remoteUpdateAllWidgets(mContext.get());
+						WidgetProvider.updateAllWidgets(mContext.get());
 						break;
 				}
 

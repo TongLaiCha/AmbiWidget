@@ -1,5 +1,6 @@
 package brandonmilan.tonglaicha.ambiwidget.services;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
@@ -33,10 +34,6 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.extra.ACTION_TAG";
 	public static final String ACTION_UPDATE_WIDGET =
 			"brandonmilan.tonglaicha.ambiwidget.action.update_widget";
-	public static final String EXTRA_UPDATE_BY_USER =
-			"brandonmilan.tonglaicha.ambiwidget.extra.update_by_user";
-	public static final String EXTRA_FEEDBACK_GIVEN =
-			"brandonmilan.tonglaicha.ambiwidget.extra.feedback_given";
 	public static final String ACTION_SWITCH_ON_OFF =
 			"brandonmilan.tonglaicha.ambiwidget.action.switch_on_off";
 	public static final String EXTRA_WIDGET_ID =
@@ -92,6 +89,20 @@ public class WidgetService extends JobIntentService {
 	}
 
 	/**
+	 * Starts this service to perform UpdateWidget action with the given parameters.
+	 * If the service is already performing a task, this action will be queued.
+	 */
+	public static void startActionUpdateWidget(Context context, int appWidgetId) {
+		PendingIntent pendingIntent = WidgetUtils.getUpdatePendingIntent(context, appWidgetId);
+		try {
+			pendingIntent.send();
+		} catch (PendingIntent.CanceledException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
 	 * Handle the incoming job intent in a background thread.
 	 */
 	@Override
@@ -103,8 +114,7 @@ public class WidgetService extends JobIntentService {
 				handleActionGiveFeedback(appWidgetId, feedbackTag);
 			} else if(ACTION_UPDATE_WIDGET.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
-				final Boolean UpdateByUser = intent.getBooleanExtra(EXTRA_UPDATE_BY_USER, false);
-				handleActionUpdateWidget(appWidgetId, UpdateByUser);
+				handleActionUpdateWidget(appWidgetId);
 			} else if(ACTION_SWITCH_ON_OFF.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				handleActionSwitchOnOff(appWidgetId);
@@ -172,9 +182,9 @@ public class WidgetService extends JobIntentService {
 	/**
 	 * Handle action UpdateWidget in the provided background threat.
 	 */
-	private void handleActionUpdateWidget(int appWidgetId, Boolean updateByUser) {
+	private void handleActionUpdateWidget(int appWidgetId) {
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-		WidgetProvider.updateWidget(this, appWidgetManager, appWidgetId, updateByUser);
+		WidgetProvider.updateWidget(this, appWidgetManager, appWidgetId);
 	}
 
 	/**

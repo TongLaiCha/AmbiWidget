@@ -3,6 +3,7 @@ package brandonmilan.tonglaicha.ambiwidget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -15,7 +16,6 @@ import brandonmilan.tonglaicha.ambiwidget.activities.AuthActivity;
 import brandonmilan.tonglaicha.ambiwidget.activities.WidgetConfigureActivity;
 import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
-import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
  * Implementation of App Widget functionality.
@@ -29,7 +29,7 @@ public class WidgetProvider extends AppWidgetProvider {
 	/**
 	 * Instruct the appWidgetManager to load the widgets view and its components.
 	 */
-	public static void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Boolean updateFromUser) {
+	public static void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 		Log.d(TAG, "UPDATING WIDGET WITH ID = "+appWidgetId);
 		String refreshToken = TokenManager.getRefreshToken(context).value();
 
@@ -61,17 +61,21 @@ public class WidgetProvider extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		Log.d(TAG, "onUpdate: Executed...");
 		for (int appWidgetId : appWidgetIds) {
-			WidgetUtils.remoteUpdateWidget(context, appWidgetId);
+			WidgetService.startActionUpdateWidget(context, appWidgetId);
 		}
+
 	}
 
 	/**
 	 * Update all widgets currently active on the screen.
 	 */
-	public static void updateAllWidgets(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, Boolean updateFromUser) {
+	public static void updateAllWidgets(Context context) {
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
+
 		// There may be multiple widgets active, so update all of them
 		for (int appWidgetId : appWidgetIds) {
-			updateWidget(context, appWidgetManager, appWidgetId, updateFromUser);
+			updateWidget(context, appWidgetManager, appWidgetId);
 		}
 	}
 

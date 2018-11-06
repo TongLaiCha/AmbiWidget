@@ -314,13 +314,14 @@
                 android:layout_weight="1"
                 tools:ignore="Suspicious0dp">
 
-                <ImageButton
+                <Button
                     android:id="@+id/button_mode"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/button_selector_on_off"
-                    android:src="@drawable/ic_icn_acmode_mode"/>
+                    android:text="MODE"
+                    android:textColor="@color/white"/>
 
                 <ProgressBar
                     android:id="@+id/progress_mode"

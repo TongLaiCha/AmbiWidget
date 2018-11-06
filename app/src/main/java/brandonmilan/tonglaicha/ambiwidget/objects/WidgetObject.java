@@ -31,6 +31,12 @@ public class WidgetObject implements Serializable {
 	private Boolean bitColdBtnIsLoading = false;
 	private Boolean tooColdBtnIsLoading = false;
 	private Boolean powerBtnIsLoading = false;
+	private Boolean showModeSelectionOverlay = false;
+
+	public void showModeSelectionOverlay(Context context, Boolean state) {
+		Log.d(TAG, "showModeSelectionOverlay: " + state);
+		this.showModeSelectionOverlay = state;
+	}
 
 	public WidgetObject(int widgetId, DeviceObject deviceObject, DeviceStatusObject deviceStatusObject) {
 		this.widgetId = widgetId;
@@ -52,16 +58,23 @@ public class WidgetObject implements Serializable {
 	}
 
 	public RemoteViews getRemoteViews(Context context) {
-		// Create new remoteViews from widget layout
-		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.full_widget);
-
-		// Add listeners to buttons
-		setButtonClickHandlers(context, remoteViews);
+		// Set loading overlay as default layout
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_loading_overlay);
 
 		// If this widgetObject does not contain a device and / or devicestatus object yet, return plain remoteview.
 		if (this.device == null || this.deviceStatus == null) {
 			return remoteViews;
 		}
+
+		// Create new remoteViews from widget layout
+		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus)) {
+			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_mode_selection);
+		} else {
+			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_comfort_mode);
+		}
+
+		// Add listeners to buttons
+		setButtonClickHandlers(context, remoteViews);
 
 		// Check & update refresh animation of refresh button
 		// Check & update feedback button loading animations
@@ -90,8 +103,8 @@ public class WidgetObject implements Serializable {
 		remoteViews.setTextViewText(R.id.humidity, humidity + "%");
 
 		// Mode
-		String mode = deviceStatus.getMode().getModeName();
-		updateModeIcon(mode, deviceStatus, remoteViews);
+		String modeName = deviceStatus.getMode().getModeName();
+		updateModeIcon(modeName, deviceStatus, remoteViews);
 
 		return remoteViews;
 	}
@@ -135,17 +148,24 @@ public class WidgetObject implements Serializable {
 	 * Set all click handlers for the widgets buttons.
 	 */
 	private void setButtonClickHandlers(Context context, RemoteViews remoteViews) {
-
 		Log.i(TAG, "setButtonClickHandlers: setting listeners for widget id " + widgetId);
-		// Set onClickPendingIntents for all the feedback buttons.
-		remoteViews.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_cold_tag)));
-		remoteViews.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.bit_cold_tag)));
-		remoteViews.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.comfy_tag)));
-		remoteViews.setOnClickPendingIntent(R.id.button_bit_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.bit_warm_tag)));
-		remoteViews.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_warm_tag)));
+		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus)) {
+			// Set onClickPendingIntent for on/off button.
+			remoteViews.setOnClickPendingIntent(R.id.button_comfort_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "Comfort"));
+			remoteViews.setOnClickPendingIntent(R.id.button_temperature_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "Temperature"));
+			remoteViews.setOnClickPendingIntent(R.id.button_manual_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "Manual"));
+			remoteViews.setOnClickPendingIntent(R.id.button_on_off, WidgetUtils.getSwitchPowerPendingIntent(context, widgetId));
+		} else {
+			// Set onClickPendingIntents for all the feedback buttons.
+			remoteViews.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_cold_tag)));
+			remoteViews.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.bit_cold_tag)));
+			remoteViews.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.comfy_tag)));
+			remoteViews.setOnClickPendingIntent(R.id.button_bit_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.bit_warm_tag)));
+			remoteViews.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_warm_tag)));
+		}
 
-		// Set onClickPendingIntent for on/off button.
-		remoteViews.setOnClickPendingIntent(R.id.button_on_off, WidgetUtils.getSwitchPowerPendingIntent(context, widgetId));
+		//Set onClickPendingIntent for mode button.
+		remoteViews.setOnClickPendingIntent(R.id.button_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "modeSelection"));
 
 		// Set onClickPendingIntent for prev/next device buttons.
 		remoteViews.setOnClickPendingIntent(R.id.device_previous, WidgetUtils.getSwitchDevicePendingIntent(context, widgetId, context.getString(R.string.btn_previous_tag)));
@@ -176,6 +196,7 @@ public class WidgetObject implements Serializable {
 			remoteViews.setViewVisibility(R.id.progressBar, View.INVISIBLE);
 		}
 
+		//TODO: This should be in mode selection screen
 		// Update power button animation.
 		if(powerBtnIsLoading) {
 			remoteViews.setViewVisibility(R.id.button_on_off, View.GONE);

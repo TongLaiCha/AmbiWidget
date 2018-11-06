@@ -42,6 +42,10 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.action.switch_device";
 	public static final String EXTRA_DEVICE_SWITCH_DIRECTION =
 			"brandonmilan.tonglaicha.ambiwidget.extra.device_switch_direction";
+	public static final String ACTION_SWITCH_MODE =
+			"brandonmilan.tonglaicha.ambiwidget.action.switch_mode";
+	public static final String EXTRA_NEW_MODE =
+			"brandonmilan.tonglaicha.ambiwidget.extra.new_mode";
 
 	public static Boolean busy = false;
 
@@ -121,7 +125,52 @@ public class WidgetService extends JobIntentService {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				final String switchDirection = intent.getStringExtra(EXTRA_DEVICE_SWITCH_DIRECTION);
 				handleActionSwitchDevice(appWidgetId, switchDirection);
+			} else if (ACTION_SWITCH_MODE.equals(action)) {
+				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
+				final String newMode = intent.getStringExtra(EXTRA_NEW_MODE);
+				handleActionSwitchMode(appWidgetId, newMode);
 			}
+	}
+
+	/**
+	 * Handle action SwitchMode in the provided background threat.
+	 */
+	private void handleActionSwitchMode(int appWidgetId, String newMode) {
+		// Get widget object
+		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
+		
+		switch (newMode) {
+			case "modeSelection":
+				widgetObject.showModeSelectionOverlay(getApplicationContext(), true);
+				widgetObject.saveAndUpdate(getApplicationContext());
+				break;
+			case "Comfort":
+				Log.d(TAG, "handleActionSwitchMode: Switching to comfort mode.");
+
+				// If device is not already in comfort mode, switch to comfort mode.
+				if (!widgetObject.deviceStatus.getMode().getModeName().equals("Comfort")) {
+                    //TODO: switch to comfort mode
+					this.setDeviceToComfort(getApplicationContext(), appWidgetId, widgetObject.device);
+                }
+
+                widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
+				widgetObject.saveAndUpdate(getApplicationContext());
+				break;
+			case "Temperature":
+				Log.d(TAG, "handleActionSwitchMode: Switching to temperature mode.");
+				//TODO: switch to temperature mode
+
+				widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
+				widgetObject.saveAndUpdate(getApplicationContext());
+				break;
+			case "Manual":
+				Log.d(TAG, "handleActionSwitchMode: Switching to manual mode.");
+				//TODO: switch to manual mode
+
+				widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
+				widgetObject.saveAndUpdate(getApplicationContext());
+				break;
+		}
 	}
 
 	/**
@@ -231,6 +280,10 @@ public class WidgetService extends JobIntentService {
 			}
 		}
 
+		//TODO: Do we want this?
+		// Show comfort mode by default after switching device
+		widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
+
 		// Save and update the widgetObject
 		widgetObject.saveToFile(getApplicationContext());
 
@@ -259,7 +312,7 @@ public class WidgetService extends JobIntentService {
 		widgetObject.saveAndUpdate(getApplicationContext());
 
 		// If AC is off
-		if (modeName.equals("Off") || (modeName.equals("Manual")) && power.equals("Off")) {
+		if (WidgetUtils.checkIsModeOff(widgetObject.deviceStatus)) {
 			//Set the the device to Comfort mode.
 			setDeviceToComfort(getApplicationContext(), appWidgetId, widgetObject.device);
 		} else {

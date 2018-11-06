@@ -8,6 +8,8 @@ import android.preference.PreferenceManager;
 
 import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
+import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.DeviceStatusObject;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
 
 public final class WidgetUtils {
@@ -75,6 +77,22 @@ public final class WidgetUtils {
     }
 
     /**
+     * Helper function for creating a pendingIntent to switch to the previous or next device.
+     * The broadcast pendingIntent is send to the {@link WidgetProvider onReceive} method.
+     *
+     * @return PendingIntent
+     */
+    public static PendingIntent getSwitchModePendingIntent(Context context, int appWidgetId, String newMode) {
+        Intent intent = new Intent(context, WidgetProvider.class);
+        intent.setAction(WidgetService.ACTION_SWITCH_MODE);
+        intent.putExtra(WidgetService.EXTRA_NEW_MODE, newMode);
+        intent.addCategory(newMode);
+        intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
+
+        return PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    /**
      * @return preferred temperature scale.
      */
     public static String getTempScalePreference(Context context) {
@@ -83,5 +101,12 @@ public final class WidgetUtils {
         String defaultValue = context.getString(R.string.pref_tempScale_value_celsius);
 
         return sharedPreferences.getString(prefKey, defaultValue);
+    }
+
+    public static Boolean checkIsModeOff(DeviceStatusObject deviceStatusObject){
+        String modeName = deviceStatusObject.getMode().getModeName();
+        String power = deviceStatusObject.getApplianceState().getPower();
+
+        return modeName.equals("Off") || (modeName.equals("Manual")) && power.equals("Off");
     }
 }

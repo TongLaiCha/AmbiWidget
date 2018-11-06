@@ -19,4 +19,6 @@
     <color name="alert_red">#FF3B30</color>
     <color name="ok_green">#87BE3D</color>
 
+    <color name="light_grey">#77b6b3b3</color>
+
 </resources>

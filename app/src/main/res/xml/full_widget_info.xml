@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:configure="brandonmilan.tonglaicha.ambiwidget.activities.WidgetConfigureActivity"
-    android:initialKeyguardLayout="@layout/full_widget"
-    android:initialLayout="@layout/full_widget"
+    android:initialKeyguardLayout="@layout/widget_comfort_mode"
+    android:initialLayout="@layout/widget_comfort_mode"
     android:resizeMode="vertical|horizontal"
     android:minHeight="55dp"
     android:minWidth="250dp"

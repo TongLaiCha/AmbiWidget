@@ -53,12 +53,14 @@
 
     <string name="button_settings_done">Done</string>
 
-
     <!-- Login / Authentication -->
     <string name="label_authorize">Authentication required</string>
     <string name="text_authorize">This app needs permission from the Ambi Climate Cloud to control and read your Ambi devices.</string>
     <string name="button_authorize">Authorize</string>
     <string name="label_authorize_progress">Authenticating…</string>
+
+    <!--Loading overlay-->
+    <string name="loading_text">Loading…</string>
 
     <!-- defaultSharedPreferences keys -->
     <string name="saved_refresh_token_key">RefreshToken</string>

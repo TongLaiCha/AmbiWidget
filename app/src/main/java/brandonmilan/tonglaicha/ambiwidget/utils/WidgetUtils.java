@@ -107,6 +107,6 @@ public final class WidgetUtils {
         String modeName = deviceStatusObject.getMode().getModeName();
         String power = deviceStatusObject.getApplianceState().getPower();
 
-        return modeName.equals("Off") || (modeName.equals("Manual")) && power.equals("Off");
+        return modeName.equals("off") || (modeName.equals("manual")) && power.equals("off");
     }
 }

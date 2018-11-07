@@ -233,7 +233,7 @@ public class DataManager {
 		}
 
 		// If mode is Manual, need an additional appliance state call to check if it's on or off.
-		if (getModeResult.modeObject.getModeName().equals("Manual")) {
+		if (getModeResult.modeObject.getModeName().equals("manual")) {
 
 			// Request last appliance state
 			ReturnObject getLastApplianceStateResult = Requests.getLastApplianceState(getAccessTokenResult.value, deviceObject);

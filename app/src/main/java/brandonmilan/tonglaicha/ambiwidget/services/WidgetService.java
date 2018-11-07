@@ -93,10 +93,14 @@ public class WidgetService extends JobIntentService {
 
 				// Get widget object.
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+				Boolean deviceIsOff = WidgetUtils.checkIsModeOff(widgetObject.deviceStatus);
 
-				//Update loading animation state of power button.
-				widgetObject.setPowerBtnIsLoading(true);
-				widgetObject.saveAndUpdate(context);
+				//TODO: Only if device not off
+//				if (!deviceIsOff){
+					//Update loading animation state of power button.
+					widgetObject.setPowerBtnIsLoading(true);
+					widgetObject.saveAndUpdate(context);
+//				}
 			}
 
 			WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
@@ -120,7 +124,7 @@ public class WidgetService extends JobIntentService {
 				handleActionUpdateWidget(appWidgetId);
 			} else if(ACTION_SWITCH_ON_OFF.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
-				handleActionSwitchOnOff(appWidgetId);
+				handleActionSwitchOff(appWidgetId);
 			} else if (ACTION_SWITCH_DEVICE.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				final String switchDirection = intent.getStringExtra(EXTRA_DEVICE_SWITCH_DIRECTION);
@@ -130,47 +134,6 @@ public class WidgetService extends JobIntentService {
 				final String newMode = intent.getStringExtra(EXTRA_NEW_MODE);
 				handleActionSwitchMode(appWidgetId, newMode);
 			}
-	}
-
-	/**
-	 * Handle action SwitchMode in the provided background threat.
-	 */
-	private void handleActionSwitchMode(int appWidgetId, String newMode) {
-		// Get widget object
-		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
-		
-		switch (newMode) {
-			case "modeSelection":
-				widgetObject.showModeSelectionOverlay(getApplicationContext(), true);
-				widgetObject.saveAndUpdate(getApplicationContext());
-				break;
-			case "Comfort":
-				Log.d(TAG, "handleActionSwitchMode: Switching to comfort mode.");
-
-				// If device is not already in comfort mode, switch to comfort mode.
-				if (!widgetObject.deviceStatus.getMode().getModeName().equals("Comfort")) {
-                    //TODO: switch to comfort mode
-					this.setDeviceToComfort(getApplicationContext(), appWidgetId, widgetObject.device);
-                }
-
-                widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
-				widgetObject.saveAndUpdate(getApplicationContext());
-				break;
-			case "Temperature":
-				Log.d(TAG, "handleActionSwitchMode: Switching to temperature mode.");
-				//TODO: switch to temperature mode
-
-				widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
-				widgetObject.saveAndUpdate(getApplicationContext());
-				break;
-			case "Manual":
-				Log.d(TAG, "handleActionSwitchMode: Switching to manual mode.");
-				//TODO: switch to manual mode
-
-				widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
-				widgetObject.saveAndUpdate(getApplicationContext());
-				break;
-		}
 	}
 
 	/**
@@ -197,7 +160,7 @@ public class WidgetService extends JobIntentService {
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
 				// Update the mode in the widgetObject to Comfort mode
-				widgetObject.deviceStatus.getMode().setModeName("Comfort");
+				widgetObject.deviceStatus.getMode().setModeName("comfort");
 
 				// Update the prediction object in the widgetObject to Comfort level (for border update)
 				widgetObject.deviceStatus.getComfortPrediction().setLevelByTag(feedbackTag);
@@ -281,7 +244,7 @@ public class WidgetService extends JobIntentService {
 		}
 
 		//TODO: Do we want this?
-		// Show comfort mode by default after switching device
+		// Show mode selection screen by default after switching device
 		widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
 
 		// Save and update the widgetObject
@@ -291,34 +254,28 @@ public class WidgetService extends JobIntentService {
 	}
 
 	/**
-	 * Handle action SwitchOnOff in provided background threat.
+	 * Handle action SwitchOff in provided background threat.
 	 */
-	// TODO: Do ON/OFF feedback based on what the USER SEES (local data from last update) and NOT doing a new update.
-	private void handleActionSwitchOnOff(final int appWidgetId) {
+	private void handleActionSwitchOff(final int appWidgetId) {
 		//Get the widget object.
 		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
+		Boolean deviceIsOff = WidgetUtils.checkIsModeOff(widgetObject.deviceStatus);
 
 		if (widgetObject.deviceStatus == null) {
-			Log.e(TAG, "handleActionSwitchOnOff: widgetObject.deviceStatus == null");
+			Log.e(TAG, "handleActionSwitchOff: widgetObject.deviceStatus == null");
 			WidgetService.busy = false;
 			return;
 		}
 
-		String modeName = widgetObject.deviceStatus.getMode().getModeName();
-		String power = widgetObject.deviceStatus.getApplianceState().getPower();
+		//TODO: do not turn device off if already off
+		// Check if AC is already off
+//		if (deviceIsOff) {
+//			Log.d(TAG, "handleActionSwitchOff: device is already off!");
+//			return;
+//		}
 
-		// Enable loading animation of power button
-		widgetObject.setPowerBtnIsLoading(true);
-		widgetObject.saveAndUpdate(getApplicationContext());
-
-		// If AC is off
-		if (WidgetUtils.checkIsModeOff(widgetObject.deviceStatus)) {
-			//Set the the device to Comfort mode.
-			setDeviceToComfort(getApplicationContext(), appWidgetId, widgetObject.device);
-		} else {
-			//Turn off the AC.
-			turnDeviceOff(getApplicationContext(), appWidgetId, widgetObject.device);
-		}
+		//Turn off the AC.
+		turnDeviceOff(getApplicationContext(), appWidgetId, widgetObject.device);
 	}
 
 	/**
@@ -336,7 +293,7 @@ public class WidgetService extends JobIntentService {
 
 				// Change mode icon
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
-				widgetObject.deviceStatus.getMode().setModeName("Off");
+				widgetObject.deviceStatus.getMode().setModeName("off");
 
 				widgetObject.saveAndUpdate(context);
 
@@ -367,21 +324,45 @@ public class WidgetService extends JobIntentService {
 	}
 
 	/**
-	 * Set a device in "Comfort" mode.
+	 * Handle action SwitchMode in the provided background threat.
+	 */
+	private void handleActionSwitchMode(int appWidgetId, String newMode) {
+		// Get widget object.
+		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
+
+		if (newMode.equals("modeSelection")){
+			// Show mode selection overlay.
+			widgetObject.showModeSelectionOverlay(getApplicationContext(), true);
+			widgetObject.saveAndUpdate(getApplicationContext());
+
+		} else if (newMode.equals("comfort") || newMode.equals("temperature")){
+			// If device is not already in the same mode, switch to new mode.
+			if (!widgetObject.deviceStatus.getMode().getModeName().equals(newMode)) {
+				this.updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, newMode);
+			}
+
+			// Disable mode selection overlay.
+			widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
+			widgetObject.saveAndUpdate(getApplicationContext());
+		}
+	}
+
+	/**
+	 * Update the device mode.
 	 * @param preferredDevice
 	 */
-	private void setDeviceToComfort(final Context context, final int appWidgetId, DeviceObject preferredDevice) {
+	private void updateDeviceMode(final Context context, final int appWidgetId, DeviceObject preferredDevice, final String mode) {
 
 		new DataManager.UpdateModeTask(context, new OnProcessFinish<ReturnObject>() {
 
 			@Override
 			public void onSuccess(ReturnObject result) {
-				String confirmToast = "Device is now in comfort mode.";
+				String confirmToast = "Device is now in " + mode + " mode.";
 				Log.d(TAG, confirmToast);
 
 				// Change mode icon
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
-				widgetObject.deviceStatus.getMode().setModeName("Comfort");
+				widgetObject.deviceStatus.getMode().setModeName(mode);
 
 				//Disable loading animation of power button.
 				widgetObject.setPowerBtnIsLoading(false);
@@ -412,7 +393,7 @@ public class WidgetService extends JobIntentService {
 				WidgetService.busy = false;
 			}
 
-		}, preferredDevice, "comfort", 0, false).execute();
+		}, preferredDevice, mode, 0, false).execute();
 
 	}
 }

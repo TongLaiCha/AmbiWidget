@@ -215,7 +215,7 @@ public class Requests {
 				String value = applianceControlTarget.getString("value");
 
 				// Create modeObject
-				ModeObject modeObject = new ModeObject(mode, value);
+				ModeObject modeObject = new ModeObject(mode.toLowerCase(), value);
 
 				// Retrieve appliance state data
 				JSONObject applianceState = jsonObject.getJSONObject("appliance_state");
@@ -295,7 +295,7 @@ public class Requests {
 				String value = jsonObject.getString("value");
 
 				// Create mode object
-				modeObject = new ModeObject(mode, value);
+				modeObject = new ModeObject(mode.toLowerCase(), value);
 			}
 			// If json is an jsonArray
 			else if (result instanceof JSONArray) {

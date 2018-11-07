@@ -148,12 +148,11 @@ public class WidgetObject implements Serializable {
 	 * Set all click handlers for the widgets buttons.
 	 */
 	private void setButtonClickHandlers(Context context, RemoteViews remoteViews) {
-		Log.i(TAG, "setButtonClickHandlers: setting listeners for widget id " + widgetId);
 		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus)) {
 			// Set onClickPendingIntent for on/off button.
-			remoteViews.setOnClickPendingIntent(R.id.button_comfort_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "Comfort"));
-			remoteViews.setOnClickPendingIntent(R.id.button_temperature_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "Temperature"));
-			remoteViews.setOnClickPendingIntent(R.id.button_manual_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "Manual"));
+			remoteViews.setOnClickPendingIntent(R.id.button_comfort_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "comfort"));
+			remoteViews.setOnClickPendingIntent(R.id.button_temperature_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "temperature"));
+			remoteViews.setOnClickPendingIntent(R.id.button_manual_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "manual"));
 			remoteViews.setOnClickPendingIntent(R.id.button_on_off, WidgetUtils.getSwitchPowerPendingIntent(context, widgetId));
 		} else {
 			// Set onClickPendingIntents for all the feedback buttons.
@@ -314,10 +313,10 @@ public class WidgetObject implements Serializable {
 	}
 
 	private static void updateModeIcon(String mode, DeviceStatusObject deviceStatusObject, RemoteViews remoteViews) {
-
 		switch (mode) {
-			case "Manual":
+			case "manual":
 				// Check if AC is ON/OFF
+				// DO NOT MAKE "Off" LOWERCASE!
 				if (deviceStatusObject.getApplianceState().getPower().equals("Off")) {
 					// Show OFF Icon
 					remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_off);
@@ -329,35 +328,35 @@ public class WidgetObject implements Serializable {
 				}
 				break;
 
-			case "Comfort":
+			case "comfort":
 				// Show COMFORT Icon
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_comfort);
 				// TODO: Check current comfort mode AI predicted feedback and update comfort button states.
 				break;
 
-			case "Off":
+			case "off":
 				// Show OFF Icon
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_off);
 				break;
 
-			case "Temperature":
+			case "temperature":
 				// Show TEMPERATURE Icon
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_temperature);
 				break;
 
-			case "Away_Humidity_Upper":
+			case "away_Humidity_Upper":
 				// Show AWAY Icon
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_away);
 				// TODO: Read result.modeObject.value and update corresponding textview
 				break;
 
-			case "Away_Temperature_Lower":
+			case "away_Temperature_Lower":
 				// Show AWAY Icon
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_away);
 				// TODO: Read result.modeObject.value and update corresponding textview
 				break;
 
-			case "Away_Temperature_Upper":
+			case "away_Temperature_Upper":
 				// Show AWAY Icon
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_away);
 				// TODO: Read result.modeObject.value and update corresponding textview

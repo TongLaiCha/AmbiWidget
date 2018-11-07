@@ -412,7 +412,7 @@ public class WidgetService extends JobIntentService {
 				WidgetService.busy = false;
 			}
 
-		}, preferredDevice, "comfort", null, false).execute();
+		}, preferredDevice, "comfort", 0, false).execute();
 
 	}
 }

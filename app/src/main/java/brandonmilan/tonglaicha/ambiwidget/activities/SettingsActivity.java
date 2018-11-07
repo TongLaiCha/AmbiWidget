@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -23,18 +27,9 @@ public class SettingsActivity extends AppCompatActivity {
 		// Load content
         setContentView(R.layout.activity_settings);
 
-		// Initialize listener for ok button
-		Button doneBtn = (Button) findViewById(R.id.button_settings_done);
-		doneBtn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Intent startMain = new Intent(Intent.ACTION_MAIN);
-				startMain.addCategory(Intent.CATEGORY_HOME);
-				startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(startMain);
-				finish();
-			}
-		});
+		// Initiate the toolbar
+		Toolbar myToolbar = findViewById(R.id.toolbar_settings);
+		setSupportActionBar(myToolbar);
     }
 
 	@Override
@@ -43,7 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
 		authPageCheck();
 	}
 
-    private void authPageCheck() {
+	private void authPageCheck() {
 		String refreshToken = TokenManager.getRefreshToken(SettingsActivity.this).value();
 		// Redirect to auth activity if refresh token is not set. (Authentication needed)
 		if (refreshToken == null) {
@@ -51,5 +46,31 @@ public class SettingsActivity extends AppCompatActivity {
 			SettingsActivity.this.startActivity(i);
 			finish();
 		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_settings, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+
+		// Exit Settings Activity to home screen
+		if (id == R.id.action_done) {
+			Intent startMain = new Intent(Intent.ACTION_MAIN);
+			startMain.addCategory(Intent.CATEGORY_HOME);
+			startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(startMain);
+			finish();
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 }

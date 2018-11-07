@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Ambi Widget</string>
-    <string name="app_version">v1.0.3</string>
     <string name="activity_label_settings">Widget Settings</string>
     <string name="activity_label_auth">Widget Authorization</string>
     <string name="appwidget_text">Ambi Widget</string>
@@ -51,8 +50,17 @@
     <string name="pref_preferredDevice_label">Preferred Device</string>
     <string name="pref_preferredDevice_key" translatable="false">preferred_device</string>
 
-    <string name="button_settings_done">Done</string>
+    <!-- Toolbar -->
+    <string name="action_settings_done">Done</string>
+    <string name="action_settings">Settings</string>
 
+    <!-- Main Page -->
+    <string name="label_intro">Widget</string>
+    <string name="text_intro">With this app you can create Widgets to control your Ambi Climate Device.</string>
+
+    <!-- Instructions -->
+    <string name="label_intructions">How to add a Widget:</string>
+    <string name="text_instructions">1. Go to one of your Home Screens. \n2. Press and hold on empty space. \n3. Press \"Widgets\". \n4. Look for the \"Ambi Widget\". \n5. Drag the Widget to a desired place. \n6. Done!</string>
 
     <!-- Login / Authentication -->
     <string name="label_authorize">Authentication required</string>

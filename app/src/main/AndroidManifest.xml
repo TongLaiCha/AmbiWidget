@@ -11,9 +11,24 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Ambi">
+
+        <!--Widget Main Activity-->
+        <activity android:name=".activities.MainActivity"
+            android:label="Ambi Widget"
+            android:theme="@style/Ambi.main">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <!--Widget Auth Activity-->
         <activity
             android:name=".activities.AuthActivity"
-            android:exported="true">
+            android:exported="true"
+            android:label="Ambi Widget">
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -32,23 +47,20 @@
 
         </activity>
 
+        <!--Widget Configure Activity-->
         <activity android:name=".activities.WidgetConfigureActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
 
+        <!--Settings Activity-->
         <activity android:name=".activities.SettingsActivity"
             android:label="@string/app_name"
             android:theme="@style/Ambi.settings">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
         </activity>
 
+        <!--Widget Provider Receiver-->
         <receiver android:name=".WidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -59,6 +71,7 @@
                 android:resource="@xml/full_widget_info" />
         </receiver>
 
+        <!--Widget Service-->
         <service android:name=".services.WidgetService"
             android:permission="android.permission.BIND_JOB_SERVICE">
         </service>

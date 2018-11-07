@@ -11,8 +11,19 @@
         <item name="android:textColor">@color/colorPrimaryDark</item>
     </style>
 
-    <!-- Base application theme. -->
-    <style name="Ambi.settings">
+    <!-- Main activity theme. -->
+    <style name="Ambi.main" parent = "@style/Theme.AppCompat.Light.NoActionBar">
+        <!-- Color scheme -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <!-- Default text style -->
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+    </style>
+
+    <!-- Settings theme. -->
+    <style name="Ambi.settings" parent = "@style/Theme.AppCompat.Light.NoActionBar">
         <!-- Settings text style -->
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/black</item>

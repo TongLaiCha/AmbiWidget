@@ -43,6 +43,7 @@ android {
                 def outputFile = output.outputFile
                 if (outputFile != null && outputFile.name.endsWith('.apk')) {
                     outputFileName = new File("../../apk", "${fileNaming}-v${versionName}.apk")
+                    resValue 'string', 'app_version', "v${versionName}"
                 }
             }
         }

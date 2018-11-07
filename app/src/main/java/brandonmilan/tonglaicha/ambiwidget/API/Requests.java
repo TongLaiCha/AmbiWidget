@@ -210,8 +210,8 @@ public class Requests {
 
 				// Retrieve appliance control target (ambi device mode) data
 				JSONObject applianceControlTarget = jsonObject.getJSONObject("appliance_control_target");
-				String mode = applianceControlTarget.getString("quantity");
-				if (mode.equals("Climate")) mode = "Comfort";
+				String mode = applianceControlTarget.getString("quantity").toLowerCase();
+				if (mode.equals("climate")) mode = "comfort";
 				String value = applianceControlTarget.getString("value");
 
 				// Create modeObject
@@ -219,8 +219,8 @@ public class Requests {
 
 				// Retrieve appliance state data
 				JSONObject applianceState = jsonObject.getJSONObject("appliance_state");
-				String acMode = applianceState.getString("mode");
-				String power = applianceState.getString("power");
+				String acMode = applianceState.getString("mode").toLowerCase();
+				String power = applianceState.getString("power").toLowerCase();
 
 				// Create applianceStateObject
 				ApplianceStateObject applianceStateObject = new ApplianceStateObject(null, acMode, power, null, null);

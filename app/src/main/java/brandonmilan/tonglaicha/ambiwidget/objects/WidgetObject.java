@@ -316,8 +316,7 @@ public class WidgetObject implements Serializable {
 		switch (mode) {
 			case "manual":
 				// Check if AC is ON/OFF
-				// DO NOT MAKE "Off" LOWERCASE!
-				if (deviceStatusObject.getApplianceState().getPower().equals("Off")) {
+				if (deviceStatusObject.getApplianceState().getPower().equals("off")) {
 					// Show OFF Icon
 					remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_off);
 				} else {

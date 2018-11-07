@@ -93,14 +93,13 @@ public class WidgetService extends JobIntentService {
 
 				// Get widget object.
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
-				Boolean deviceIsOff = WidgetUtils.checkIsModeOff(widgetObject.deviceStatus);
 
 				//TODO: Only if device not off
-//				if (!deviceIsOff){
-					//Update loading animation state of power button.
+				if (!WidgetUtils.checkIsModeOff(widgetObject.deviceStatus)){
+					// Update loading animation state of power button.
 					widgetObject.setPowerBtnIsLoading(true);
 					widgetObject.saveAndUpdate(context);
-//				}
+				}
 			}
 
 			WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
@@ -269,10 +268,11 @@ public class WidgetService extends JobIntentService {
 
 		//TODO: do not turn device off if already off
 		// Check if AC is already off
-//		if (deviceIsOff) {
-//			Log.d(TAG, "handleActionSwitchOff: device is already off!");
-//			return;
-//		}
+		if (deviceIsOff) {
+			Log.d(TAG, "handleActionSwitchOff: device is already off!");
+			WidgetService.busy = false;
+			return;
+		}
 
 		//Turn off the AC.
 		turnDeviceOff(getApplicationContext(), appWidgetId, widgetObject.device);

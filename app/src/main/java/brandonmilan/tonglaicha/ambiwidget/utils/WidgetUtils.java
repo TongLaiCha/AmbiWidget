@@ -103,6 +103,16 @@ public final class WidgetUtils {
         return sharedPreferences.getString(prefKey, defaultValue);
     }
 
+    /**
+     * @return preferred temperature scale.
+     */
+    public static Boolean getDeviceLocationPreference(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String prefKey = context.getString(R.string.pref_showdevicelocation_key);
+
+        return sharedPreferences.getBoolean(prefKey, false);
+    }
+
     public static Boolean checkIsModeOff(DeviceStatusObject deviceStatusObject){
         String modeName = deviceStatusObject.getMode().getModeName();
         String power = deviceStatusObject.getApplianceState().getPower();

@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -61,16 +62,20 @@ public class WidgetObject implements Serializable {
 		// Set loading overlay as default layout
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_loading_overlay);
 
-		// If this widgetObject does not contain a device and / or devicestatus object yet, return plain remoteview.
+		// If this widgetObject does not contain a device and / or devicestatus object yet, return loading overlay remoteview.
 		if (this.device == null || this.deviceStatus == null) {
 			return remoteViews;
 		}
 
+		String modeName = deviceStatus.getMode().getModeName();
+
 		// Create new remoteViews from widget layout
 		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus)) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_mode_selection);
-		} else {
+		} else if (modeName.equals("comfort")) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_comfort_mode);
+		} else if (modeName.equals("temperature")) {
+			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_temperature_mode);
 		}
 
 		// Add listeners to buttons
@@ -83,9 +88,24 @@ public class WidgetObject implements Serializable {
 		// Device Name
 		String deviceName = device.roomName();
 		if (deviceName.length() > 20) {
-			deviceName = deviceName.substring(0, 20) + "\u2026";
+			deviceName = deviceName.substring(0, 20).trim() + "\u2026";
 		}
-		remoteViews.setTextViewText(R.id.device_name, deviceName);
+		String deviceTitle = deviceName;
+
+		// Device showing both Name + Location setting is true
+		if (WidgetUtils.getDeviceLocationPreference(context)) {
+
+			if (deviceName.length() > 11) {
+				deviceName = deviceName.substring(0, 11).trim();
+			}
+
+			String deviceLocation = device.locationName();
+			if (deviceLocation.length() > 8) {
+				deviceLocation = deviceLocation.substring(0, 8).trim();
+			}
+			deviceTitle = deviceName+" @"+deviceLocation;
+		}
+		remoteViews.setTextViewText(R.id.device_title, deviceTitle);
 
 		// Temperature
 		String prefTempScale = WidgetUtils.getTempScalePreference(context);
@@ -103,7 +123,6 @@ public class WidgetObject implements Serializable {
 		remoteViews.setTextViewText(R.id.humidity, humidity + "%");
 
 		// Mode
-		String modeName = deviceStatus.getMode().getModeName();
 		updateModeIcon(modeName, deviceStatus, remoteViews);
 
 		return remoteViews;

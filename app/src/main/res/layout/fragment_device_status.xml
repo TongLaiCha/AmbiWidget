@@ -75,7 +75,7 @@
     </RelativeLayout>
 
 
-    <!--Divider 0.25-->
+    <!--Divider-->
     <LinearLayout
         android:id="@+id/divider2"
         android:layout_width="0dp"

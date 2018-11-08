@@ -34,8 +34,8 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.extra.ACTION_TAG";
 	public static final String ACTION_UPDATE_WIDGET =
 			"brandonmilan.tonglaicha.ambiwidget.action.update_widget";
-	public static final String ACTION_SWITCH_ON_OFF =
-			"brandonmilan.tonglaicha.ambiwidget.action.switch_on_off";
+	public static final String ACTION_SWITCH_OFF =
+			"brandonmilan.tonglaicha.ambiwidget.action.switch_off";
 	public static final String EXTRA_WIDGET_ID =
 			"brandonmilan.tonglaicha.ambiwidget.extra.widget_id";
 	public static final String ACTION_SWITCH_DEVICE =
@@ -46,6 +46,10 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.action.switch_mode";
 	public static final String EXTRA_NEW_MODE =
 			"brandonmilan.tonglaicha.ambiwidget.extra.new_mode";
+	public static final String ACTION_ADJUST_TEMPERATURE =
+			"brandonmilan.tonglaicha.ambiwidget.action.adjust_temperature";
+	public static final String EXTRA_ADJUST_TYPE =
+			"brandonmilan.tonglaicha.ambiwidget.extra.adjust_type";
 
 	public static Boolean busy = false;
 
@@ -67,7 +71,7 @@ public class WidgetService extends JobIntentService {
 
 		if (action != null) {
 			// Prevent button spam
-			if (action.equals(ACTION_GIVE_FEEDBACK) || action.equals(ACTION_SWITCH_ON_OFF) || action.equals(ACTION_SWITCH_DEVICE)) {
+			if (action.equals(ACTION_GIVE_FEEDBACK) || action.equals(ACTION_SWITCH_OFF) || action.equals(ACTION_SWITCH_DEVICE) || action.equals(ACTION_ADJUST_TEMPERATURE)) {
 				if (WidgetService.busy) {
 					return;
 				} else {
@@ -88,7 +92,7 @@ public class WidgetService extends JobIntentService {
 				widgetObject.saveAndUpdate(context);
 
 			} // Display loading animation on power button.
-			else if(WidgetService.ACTION_SWITCH_ON_OFF.equals(action)) {
+			else if(WidgetService.ACTION_SWITCH_OFF.equals(action)) {
 				Integer appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 
 				// Get widget object.
@@ -121,7 +125,7 @@ public class WidgetService extends JobIntentService {
 			} else if(ACTION_UPDATE_WIDGET.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				handleActionUpdateWidget(appWidgetId);
-			} else if(ACTION_SWITCH_ON_OFF.equals(action)) {
+			} else if(ACTION_SWITCH_OFF.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				handleActionSwitchOff(appWidgetId);
 			} else if (ACTION_SWITCH_DEVICE.equals(action)) {
@@ -132,6 +136,11 @@ public class WidgetService extends JobIntentService {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				final String newMode = intent.getStringExtra(EXTRA_NEW_MODE);
 				handleActionSwitchMode(appWidgetId, newMode);
+			} else if (ACTION_ADJUST_TEMPERATURE.equals(action)) {
+				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
+				final String adjustType = intent.getStringExtra(EXTRA_ADJUST_TYPE);
+				handleActionAdjustTemperature(appWidgetId, adjustType);
+
 			}
 	}
 
@@ -344,6 +353,28 @@ public class WidgetService extends JobIntentService {
 			// Disable mode selection overlay.
 			widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
 			widgetObject.saveAndUpdate(getApplicationContext());
+		}
+	}
+
+	/**
+	 * Handle action AdjustTemperature in the provided background threat.
+	 */
+	private void handleActionAdjustTemperature(int appWidgetId, String adjustType) {
+		// Get widget object.
+		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
+		
+		// Get current preferred device temp
+		
+		
+		if (adjustType.equals("add")) {
+			Log.d(TAG, "handleActionAdjustTemperature: add temperature");
+			// Add temp
+			// Update preferred device temp
+		} else if (adjustType.equals("decrease")) {
+			Log.d(TAG, "handleActionAdjustTemperature: decrease temperature");
+			// Decrease temp
+			// Update preferred device temp
+			
 		}
 	}
 

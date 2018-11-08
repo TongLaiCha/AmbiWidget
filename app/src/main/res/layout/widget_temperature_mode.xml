@@ -157,15 +157,14 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/button_empty"
-                android:gravity="center"
                 android:orientation="horizontal"
                 tools:ignore="Suspicious0dp">
 
             </LinearLayout>
 
-            <!--Comfort mode-->
+            <!--Decrease desired temperature-->
             <LinearLayout
-                android:id="@+id/container_btn_comfort_mode"
+                android:id="@+id/container_btn_decrease_temperature"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -175,7 +174,7 @@
                 tools:ignore="Suspicious0dp">
 
                 <ImageButton
-                    android:id="@+id/button_comfort_mode"
+                    android:id="@+id/button_decrease_temperature"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:adjustViewBounds="true"
@@ -183,10 +182,10 @@
                     android:contentDescription="@string/comfy"
                     android:padding="12dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_icn_dashboard_mode_comfort" />
+                    android:src="@drawable/ic_icn_minus_small" />
 
                 <ProgressBar
-                    android:id="@+id/progress_comfy"
+                    android:id="@+id/progress_decrease_temperature"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:indeterminateTint="@color/white"
@@ -194,9 +193,30 @@
 
             </LinearLayout>
 
-            <!--Temperature mode-->
+            <!--Desired temperature-->
             <LinearLayout
-                android:id="@+id/container_btn_temperature_mode"
+                android:id="@+id/container_desired_temperature"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button_mode_selector"
+                android:gravity="center"
+                android:orientation="horizontal"
+                tools:ignore="Suspicious0dp">
+
+                <TextView
+                    android:id="@+id/desired_temperature_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="26"
+                    android:background="@android:color/transparent"/>
+
+            </LinearLayout>
+
+            <!--Add desired temperature-->
+            <LinearLayout
+                android:id="@+id/container_btn_add_temperature"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -206,19 +226,17 @@
                 tools:ignore="Suspicious0dp">
 
                 <ImageButton
-                    android:id="@+id/button_temperature_mode"
+                    android:id="@+id/button_add_temperature"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
-                    android:contentDescription="@string/bit_cold"
                     android:padding="12dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_icn_dashboard_mode_temperature"
-                    android:textStyle="bold" />
+                    android:src="@drawable/ic_icn_add_small" />
 
                 <ProgressBar
-                    android:id="@+id/progress_bit_cold"
+                    android:id="@+id/progress_add_temperature"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:indeterminateTint="@color/white"
@@ -226,61 +244,31 @@
 
             </LinearLayout>
 
-            <!--Manual mode-->
+            <!--Button mode selection-->
             <LinearLayout
-                android:id="@+id/container_btn_manual_mode"
+                android:id="@+id/container_btn_mode"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/button_mode_selector"
-                android:gravity="center"
                 android:orientation="horizontal"
-                tools:ignore="Suspicious0dp">
-
-                <ImageButton
-                    android:id="@+id/button_manual_mode"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:adjustViewBounds="true"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="@string/too_cold"
-                    android:padding="12dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_icn_dashboard_mode_manual" />
-
-                <ProgressBar
-                    android:id="@+id/progress_too_cold"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:indeterminateTint="@color/white"
-                    android:visibility="gone" />
-
-            </LinearLayout>
-
-            <!--Button power on/off-->
-            <LinearLayout
-                android:id="@+id/container_btn_on_off"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@drawable/button_selector_on_off"
                 android:gravity="center"
-                android:orientation="horizontal"
+                android:layout_weight="1"
                 tools:ignore="Suspicious0dp">
 
-                <ImageButton
-                    android:id="@+id/button_on_off"
+                <Button
+                    android:id="@+id/button_mode"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/button_selector_on_off"
-                    android:src="@drawable/ic_icn_nav_modes" />
+                    android:text="MODE"
+                    android:textColor="@color/white"/>
 
                 <ProgressBar
-                    android:id="@+id/progress_on_off"
+                    android:id="@+id/progress_mode"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:indeterminateTint="@color/white"
-                    android:visibility="gone" />
+                    android:visibility="gone"/>
 
             </LinearLayout>
 

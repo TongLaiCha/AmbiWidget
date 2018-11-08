@@ -61,16 +61,20 @@ public class WidgetObject implements Serializable {
 		// Set loading overlay as default layout
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_loading_overlay);
 
-		// If this widgetObject does not contain a device and / or devicestatus object yet, return plain remoteview.
+		// If this widgetObject does not contain a device and / or devicestatus object yet, return loading overlay remoteview.
 		if (this.device == null || this.deviceStatus == null) {
 			return remoteViews;
 		}
 
+		String modeName = deviceStatus.getMode().getModeName();
+
 		// Create new remoteViews from widget layout
 		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus)) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_mode_selection);
-		} else {
+		} else if (modeName.equals("comfort")) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_comfort_mode);
+		} else if (modeName.equals("temperature")) {
+			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_temperature_mode);
 		}
 
 		// Add listeners to buttons
@@ -103,7 +107,6 @@ public class WidgetObject implements Serializable {
 		remoteViews.setTextViewText(R.id.humidity, humidity + "%");
 
 		// Mode
-		String modeName = deviceStatus.getMode().getModeName();
 		updateModeIcon(modeName, deviceStatus, remoteViews);
 
 		return remoteViews;

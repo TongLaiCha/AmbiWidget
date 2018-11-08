@@ -6,5 +6,11 @@
         android:entryValues="@array/pref_tempScale_option_values"
         android:key="@string/pref_tempScale_key"
         android:title="@string/pref_tempScale_label"
-        android:icon="@drawable/ic_icn_settings_tempunits"/>
+        android:icon="@drawable/ic_icn_settings_tempunits" />
+    <CheckBoxPreference
+        android:defaultValue="@string/pref_showdevicelocation"
+        android:key="@string/pref_showdevicelocation_key"
+        android:title="@string/pref_showdevicelocation_label"
+        android:summary="@string/pref_showdevicelocation_summary"
+        android:icon="@drawable/ic_icn_nav_device_resize" />
 </PreferenceScreen>

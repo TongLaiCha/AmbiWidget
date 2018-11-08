@@ -35,7 +35,7 @@
 
         <!--Device name-->
         <TextView
-            android:id="@+id/device_name"
+            android:id="@+id/device_title"
             tools:text="Device name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

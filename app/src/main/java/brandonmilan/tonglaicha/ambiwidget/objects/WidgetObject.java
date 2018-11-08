@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -87,9 +88,24 @@ public class WidgetObject implements Serializable {
 		// Device Name
 		String deviceName = device.roomName();
 		if (deviceName.length() > 20) {
-			deviceName = deviceName.substring(0, 20) + "\u2026";
+			deviceName = deviceName.substring(0, 20).trim() + "\u2026";
 		}
-		remoteViews.setTextViewText(R.id.device_name, deviceName);
+		String deviceTitle = deviceName;
+
+		// Device showing both Name + Location setting is true
+		if (WidgetUtils.getDeviceLocationPreference(context)) {
+
+			if (deviceName.length() > 11) {
+				deviceName = deviceName.substring(0, 11).trim();
+			}
+
+			String deviceLocation = device.locationName();
+			if (deviceLocation.length() > 8) {
+				deviceLocation = deviceLocation.substring(0, 8).trim();
+			}
+			deviceTitle = deviceName+" @"+deviceLocation;
+		}
+		remoteViews.setTextViewText(R.id.device_title, deviceTitle);
 
 		// Temperature
 		String prefTempScale = WidgetUtils.getTempScalePreference(context);

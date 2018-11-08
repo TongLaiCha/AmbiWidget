@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
     android:orientation="vertical"
@@ -27,6 +27,7 @@
 
         <fragment
             android:id="@+id/widget_settings"
+            app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"
             android:name="brandonmilan.tonglaicha.ambiwidget.fragments.SettingsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

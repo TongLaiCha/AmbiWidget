@@ -7,15 +7,9 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
-import android.util.Log;
-import android.widget.Toast;
 
-import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
-import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
 import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
-import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
-import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
     private final static String TAG = "SettingsFragment";

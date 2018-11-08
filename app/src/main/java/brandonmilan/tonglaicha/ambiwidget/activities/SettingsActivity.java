@@ -5,11 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
 import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
 import brandonmilan.tonglaicha.ambiwidget.R;
@@ -25,7 +22,8 @@ public class SettingsActivity extends AppCompatActivity {
 		authPageCheck();
 
 		// Load content
-        setContentView(R.layout.activity_settings);
+		setContentView(R.layout.activity_settings);
+
 
 		// Initiate the toolbar
 		Toolbar myToolbar = findViewById(R.id.toolbar_settings);

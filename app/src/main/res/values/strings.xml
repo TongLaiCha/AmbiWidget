@@ -50,6 +50,12 @@
     <string name="pref_preferredDevice_label">Preferred Device</string>
     <string name="pref_preferredDevice_key" translatable="false">preferred_device</string>
 
+    <!--Checkbox show device lcoation-->
+    <string name="pref_showdevicelocation">false</string>
+    <string name="pref_showdevicelocation_key" translatable="false">show_device_location</string>
+    <string name="pref_showdevicelocation_label">Show device location</string>
+    <string name="pref_showdevicelocation_summary">Display device name + location.</string>
+
     <!-- Toolbar -->
     <string name="action_settings_done">Done</string>
     <string name="action_settings">Settings</string>

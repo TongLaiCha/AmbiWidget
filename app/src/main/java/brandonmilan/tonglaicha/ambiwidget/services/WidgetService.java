@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Looper;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
 import android.widget.Toast;
@@ -347,7 +348,7 @@ public class WidgetService extends JobIntentService {
 		} else if (newMode.equals("comfort") || newMode.equals("temperature")){
 			// If device is not already in the same mode, switch to new mode.
 			if (!widgetObject.deviceStatus.getMode().getModeName().equals(newMode)) {
-				this.updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, newMode);
+				this.updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, newMode, 0);
 			}
 
 			// Disable mode selection overlay.
@@ -364,31 +365,55 @@ public class WidgetService extends JobIntentService {
 		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 		
 		// Get current preferred device temp
-		
+//		int preferredTemperature = Integer.parseInt(widgetObject.deviceStatus.getMode().getValue());
+		int preferredTemperature = widgetObject.getPreferredTemperature();
+		int newTemp = preferredTemperature;
 		
 		if (adjustType.equals("add")) {
-			Log.d(TAG, "handleActionAdjustTemperature: add temperature");
-			// Add temp
-			// Update preferred device temp
+			// Check if temp exceeds maximum
+			if (preferredTemperature + 1 > 32) {
+//				Looper.prepare();
+//				Toast.makeText(getApplicationContext(), "Maximum temperature is 32 degrees", Toast.LENGTH_LONG).show();
+				WidgetService.busy = false;
+				return;
+			} else {
+				// Add temp
+				newTemp = preferredTemperature += 1;
+			}
 		} else if (adjustType.equals("decrease")) {
-			Log.d(TAG, "handleActionAdjustTemperature: decrease temperature");
-			// Decrease temp
-			// Update preferred device temp
-			
+			// Check if temp exceeds minimum
+			if (preferredTemperature - 1 < 18) {
+//				Looper.prepare();
+//				Toast.makeText(getApplicationContext(), "Minimum temperature is 18 degrees", Toast.LENGTH_LONG).show();
+				WidgetService.busy = false;
+				return;
+			} else {
+				// Add temp
+				newTemp = preferredTemperature -= 1;
+			}
 		}
+
+		// Update preferred device temp
+		widgetObject.setPreferredTemperature(newTemp);
+		widgetObject.saveAndUpdate(getApplicationContext());
+		updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, "temperature", newTemp);
 	}
 
 	/**
 	 * Update the device mode.
 	 * @param preferredDevice
 	 */
-	private void updateDeviceMode(final Context context, final int appWidgetId, DeviceObject preferredDevice, final String mode) {
+	private void updateDeviceMode(final Context context, final int appWidgetId, final DeviceObject preferredDevice, final String mode, final int preferredTemperature) {
 
 		new DataManager.UpdateModeTask(context, new OnProcessFinish<ReturnObject>() {
 
 			@Override
 			public void onSuccess(ReturnObject result) {
 				String confirmToast = "Device is now in " + mode + " mode.";
+				if (preferredTemperature != 0) {
+					confirmToast = "Desired temperature set to " + preferredTemperature;
+				}
+
 				Log.d(TAG, confirmToast);
 
 				// Change mode icon
@@ -424,7 +449,7 @@ public class WidgetService extends JobIntentService {
 				WidgetService.busy = false;
 			}
 
-		}, preferredDevice, mode, 0, false).execute();
+		}, preferredDevice, mode, preferredTemperature, false).execute();
 
 	}
 }

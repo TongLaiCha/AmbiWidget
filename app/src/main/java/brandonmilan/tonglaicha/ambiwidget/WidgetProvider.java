@@ -22,7 +22,7 @@ import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
  * App Widget Configuration implemented in {@link WidgetConfigureActivity WidgetConfigureActivity}
  * @author Milan Sosef
  */
-public class WidgetProvider extends AppWidgetProvider {
+public class  WidgetProvider extends AppWidgetProvider {
 	private static final String TAG = WidgetProvider.class.getSimpleName();
 	private static final Integer JOB_ID = 10;
 

@@ -10,6 +10,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
@@ -53,6 +55,10 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.extra.adjust_type";
 
 	public static Boolean busy = false;
+	private static int timeRemaining = 0;
+	Timer timer = new Timer();
+	private static Boolean timerHasStarted = false;
+	private static int finalNewTemp;
 
 	/**
 	 * Starts this service to perform UpdateWidget action with the given parameters.
@@ -353,15 +359,15 @@ public class WidgetService extends JobIntentService {
 	/**
 	 * Handle action AdjustTemperature in the provided background threat.
 	 */
-	private void handleActionAdjustTemperature(int appWidgetId, String adjustType) {
+	private void handleActionAdjustTemperature(final int appWidgetId, String adjustType) {
 		// Get widget object.
-		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
-		
+		final WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
+
 		// Get current preferred device temp
 //		int preferredTemperature = Integer.parseInt(widgetObject.deviceStatus.getMode().getValue());
 		int preferredTemperature = widgetObject.getPreferredTemperature();
 		int newTemp = preferredTemperature;
-		
+
 		if (adjustType.equals("add")) {
 			// Check if temp exceeds maximum
 			if (preferredTemperature + 1 > 32) {
@@ -371,7 +377,7 @@ public class WidgetService extends JobIntentService {
 				return;
 			} else {
 				// Add temp
-				newTemp = preferredTemperature + 1;
+				newTemp = preferredTemperature += 1;
 			}
 		} else if (adjustType.equals("decrease")) {
 			// Check if temp exceeds minimum
@@ -381,15 +387,48 @@ public class WidgetService extends JobIntentService {
 				WidgetService.busy = false;
 				return;
 			} else {
-				// Add temp
-				newTemp = preferredTemperature - 1;
+				// Decrease temp
+				newTemp = preferredTemperature -= 1;
 			}
 		}
 
 		// Update preferred device temp
 		widgetObject.setPreferredTemperature(newTemp);
 		widgetObject.saveAndUpdate(getApplicationContext());
-		updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, "temperature", newTemp);
+		WidgetService.busy = false;
+
+		finalNewTemp = newTemp;
+
+		// Reset the timer
+		WidgetService.timeRemaining = 1500;
+
+		if (!timerHasStarted) {
+			startTimerAdjustTemperature(appWidgetId, widgetObject);
+		}
+	}
+
+	/**
+	 * Timer to prevent unnecessary API calls to adjust the temperature.
+	 * The API call to adjust the preferred temperature will only be executed if
+	 * the user has not clicked the buttons for adjusting the preferred temperature in the last 2 seconds.
+	 */
+	private void startTimerAdjustTemperature(final int appWidgetId, final WidgetObject widgetObject) {
+		WidgetService.timerHasStarted = true;
+
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				timeRemaining -= 100;
+				Log.d(TAG, "run: timeremaining = " + timeRemaining);
+				if (timeRemaining <= 0) {
+					updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, "temperature", WidgetService.finalNewTemp);
+					WidgetService.timerHasStarted = false;
+				} else {
+					startTimerAdjustTemperature(appWidgetId, widgetObject);
+				}
+			}
+		}, 100);
+
 	}
 
 	/**

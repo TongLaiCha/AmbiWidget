@@ -91,20 +91,31 @@ public class WidgetService extends JobIntentService {
 				// Update loading animation state of clicked feedback button
 				widgetObject.setFeedbackBtnLoadingState(feedbackGiven, true);
 				widgetObject.saveAndUpdate(context);
+			}
 
-			} // Display loading animation on power button.
+			// Display loading animation on power button.
 			else if(WidgetService.ACTION_SWITCH_OFF.equals(action)) {
 				Integer appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 
 				// Get widget object.
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 
-				//TODO: Only if device not off
-				if (!WidgetUtils.checkIsModeOff(widgetObject.deviceStatus)){
-					// Update loading animation state of power button.
-					widgetObject.setPowerBtnIsLoading(true);
-					widgetObject.saveAndUpdate(context);
-				}
+				// Update loading animation state of power button.
+				widgetObject.setPowerBtnIsLoading(true);
+				widgetObject.saveAndUpdate(context);
+			}
+
+			// Display loading animation on mode button.
+			else if(WidgetService.ACTION_SWITCH_MODE.equals(action)) {
+				Integer appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
+				String newMode = intent.getStringExtra(EXTRA_NEW_MODE);
+
+				// Get widget object.
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+
+				// Update loading animation state of pressed mode button.
+				widgetObject.setModeButtonIsLoading(true, newMode);
+				widgetObject.saveAndUpdate(context);
 			}
 
 			WidgetService.enqueueWork(context, WidgetService.class, JOB_ID, intent);
@@ -268,18 +279,9 @@ public class WidgetService extends JobIntentService {
 	private void handleActionSwitchOff(final int appWidgetId) {
 		//Get the widget object.
 		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
-		Boolean deviceIsOff = WidgetUtils.checkIsModeOff(widgetObject.deviceStatus);
 
 		if (widgetObject.deviceStatus == null) {
 			Log.e(TAG, "handleActionSwitchOff: widgetObject.deviceStatus == null");
-			WidgetService.busy = false;
-			return;
-		}
-
-		//TODO: do not turn device off if already off
-		// Check if AC is already off
-		if (deviceIsOff) {
-			Log.d(TAG, "handleActionSwitchOff: device is already off!");
 			WidgetService.busy = false;
 			return;
 		}
@@ -304,7 +306,6 @@ public class WidgetService extends JobIntentService {
 				// Change mode icon
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 				widgetObject.deviceStatus.getMode().setModeName("off");
-
 				widgetObject.saveAndUpdate(context);
 
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
@@ -323,7 +324,6 @@ public class WidgetService extends JobIntentService {
 
 				//Update loading animation state of power button.
 				widgetObject.setPowerBtnIsLoading(false);
-
 				widgetObject.saveAndUpdate(context);
 
 				WidgetService.busy = false;
@@ -346,14 +346,7 @@ public class WidgetService extends JobIntentService {
 			widgetObject.saveAndUpdate(getApplicationContext());
 
 		} else if (newMode.equals("comfort") || newMode.equals("temperature")){
-			// If device is not already in the same mode, switch to new mode.
-			if (!widgetObject.deviceStatus.getMode().getModeName().equals(newMode)) {
-				this.updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, newMode, 0);
-			}
-
-			// Disable mode selection overlay.
-			widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
-			widgetObject.saveAndUpdate(getApplicationContext());
+			this.updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, newMode, 0);
 		}
 	}
 
@@ -378,7 +371,7 @@ public class WidgetService extends JobIntentService {
 				return;
 			} else {
 				// Add temp
-				newTemp = preferredTemperature += 1;
+				newTemp = preferredTemperature + 1;
 			}
 		} else if (adjustType.equals("decrease")) {
 			// Check if temp exceeds minimum
@@ -389,7 +382,7 @@ public class WidgetService extends JobIntentService {
 				return;
 			} else {
 				// Add temp
-				newTemp = preferredTemperature -= 1;
+				newTemp = preferredTemperature - 1;
 			}
 		}
 
@@ -419,15 +412,9 @@ public class WidgetService extends JobIntentService {
 				// Change mode icon
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 				widgetObject.deviceStatus.getMode().setModeName(mode);
-
-				//Disable loading animation of power button.
-				widgetObject.setPowerBtnIsLoading(false);
-
 				widgetObject.saveAndUpdate(context);
 
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
-
-				WidgetService.busy = false;
 			}
 
 			@Override
@@ -441,9 +428,9 @@ public class WidgetService extends JobIntentService {
 				// Get widget object.
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
-				//Update loading animation state of power button.
-				widgetObject.setPowerBtnIsLoading(false);
-
+				//Update loading animation state of pressed mode button
+				widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
+				widgetObject.setModeButtonIsLoading(false, mode);
 				widgetObject.saveAndUpdate(context);
 
 				WidgetService.busy = false;

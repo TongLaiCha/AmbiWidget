@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 
 import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
-import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceStatusObject;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
 
@@ -41,7 +40,7 @@ public final class WidgetUtils {
      */
     public static PendingIntent getSwitchPowerPendingIntent(Context context, int appWidgetId) {
         Intent intent = new Intent(context, WidgetProvider.class);
-        intent.setAction(WidgetService.ACTION_SWITCH_ON_OFF);
+        intent.setAction(WidgetService.ACTION_SWITCH_OFF);
         intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
         return PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -87,6 +86,22 @@ public final class WidgetUtils {
         intent.setAction(WidgetService.ACTION_SWITCH_MODE);
         intent.putExtra(WidgetService.EXTRA_NEW_MODE, newMode);
         intent.addCategory(newMode);
+        intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
+
+        return PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    /**
+     * Helper function for creating a pendingIntent to adjust the temperature in temperature mode.
+     * The broadcast pendingIntent is send to the {@link WidgetProvider onReceive} method.
+     *
+     * @return PendingIntent
+     */
+    public static PendingIntent getAdjustTemperaturePendingIntent(Context context, int appWidgetId, String adjustType) {
+        Intent intent = new Intent(context, WidgetProvider.class);
+        intent.setAction(WidgetService.ACTION_ADJUST_TEMPERATURE);
+        intent.putExtra(WidgetService.EXTRA_ADJUST_TYPE, adjustType);
+        intent.addCategory(adjustType);
         intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
 
         return PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);

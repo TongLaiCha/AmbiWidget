@@ -36,7 +36,7 @@
             android:id="@+id/container_btn_empty1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:background="@drawable/button_empty"
             android:gravity="center"
             android:orientation="horizontal">
@@ -48,8 +48,8 @@
             android:id="@+id/container_btn_decrease_temperature"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/button_empty"
+            android:layout_weight="2"
+            android:background="@color/warm_red_5"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -58,9 +58,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:background="@android:color/transparent"
+                android:background="@drawable/button_selector"
                 android:contentDescription="@string/comfy"
-                android:padding="12dp"
+                android:padding="10dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_icn_minus_small" />
 
@@ -74,12 +74,11 @@
         </RelativeLayout>
 
         <!--Desired temperature-->
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/container_desired_temperature"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/button_selector"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -87,20 +86,28 @@
                 android:id="@+id/desired_temperature_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@android:color/transparent"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:text="26" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="20"/>
 
-        </LinearLayout>
+            <ProgressBar
+                android:id="@+id/progress_desired_temperature"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminateTint="@color/white"
+                android:padding="10dp"
+                android:visibility="gone" />
+        </RelativeLayout>
 
         <!--Increase desired temperature-->
         <LinearLayout
             android:id="@+id/container_btn_add_temperature"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/button_empty"
+            android:layout_weight="2"
+            android:background="@color/warm_red_5"
             android:gravity="center"
             android:orientation="horizontal"
             android:elevation="100dp"
@@ -111,8 +118,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:background="@android:color/transparent"
-                android:padding="12dp"
+                android:background="@drawable/button_selector"
+                android:padding="10dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_icn_add_small" />
 
@@ -130,7 +137,7 @@
             android:id="@+id/container_btn_empty2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:background="@drawable/button_empty"
             android:orientation="horizontal">
 

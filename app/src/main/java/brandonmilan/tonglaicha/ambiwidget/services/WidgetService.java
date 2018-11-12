@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Looper;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
 import android.widget.Toast;
@@ -34,8 +35,8 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.extra.ACTION_TAG";
 	public static final String ACTION_UPDATE_WIDGET =
 			"brandonmilan.tonglaicha.ambiwidget.action.update_widget";
-	public static final String ACTION_SWITCH_ON_OFF =
-			"brandonmilan.tonglaicha.ambiwidget.action.switch_on_off";
+	public static final String ACTION_SWITCH_OFF =
+			"brandonmilan.tonglaicha.ambiwidget.action.switch_off";
 	public static final String EXTRA_WIDGET_ID =
 			"brandonmilan.tonglaicha.ambiwidget.extra.widget_id";
 	public static final String ACTION_SWITCH_DEVICE =
@@ -46,6 +47,10 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.action.switch_mode";
 	public static final String EXTRA_NEW_MODE =
 			"brandonmilan.tonglaicha.ambiwidget.extra.new_mode";
+	public static final String ACTION_ADJUST_TEMPERATURE =
+			"brandonmilan.tonglaicha.ambiwidget.action.adjust_temperature";
+	public static final String EXTRA_ADJUST_TYPE =
+			"brandonmilan.tonglaicha.ambiwidget.extra.adjust_type";
 
 	public static Boolean busy = false;
 
@@ -67,7 +72,7 @@ public class WidgetService extends JobIntentService {
 
 		if (action != null) {
 			// Prevent button spam
-			if (action.equals(ACTION_GIVE_FEEDBACK) || action.equals(ACTION_SWITCH_ON_OFF) || action.equals(ACTION_SWITCH_DEVICE)) {
+			if (action.equals(ACTION_GIVE_FEEDBACK) || action.equals(ACTION_SWITCH_OFF) || action.equals(ACTION_SWITCH_DEVICE) || action.equals(ACTION_ADJUST_TEMPERATURE)) {
 				if (WidgetService.busy) {
 					return;
 				} else {
@@ -86,11 +91,10 @@ public class WidgetService extends JobIntentService {
 				// Update loading animation state of clicked feedback button
 				widgetObject.setFeedbackBtnLoadingState(feedbackGiven, true);
 				widgetObject.saveAndUpdate(context);
-
 			}
 
 			// Display loading animation on power button.
-			else if(WidgetService.ACTION_SWITCH_ON_OFF.equals(action)) {
+			else if(WidgetService.ACTION_SWITCH_OFF.equals(action)) {
 				Integer appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 
 				// Get widget object.
@@ -133,7 +137,7 @@ public class WidgetService extends JobIntentService {
 			} else if(ACTION_UPDATE_WIDGET.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				handleActionUpdateWidget(appWidgetId);
-			} else if(ACTION_SWITCH_ON_OFF.equals(action)) {
+			} else if(ACTION_SWITCH_OFF.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				handleActionSwitchOff(appWidgetId);
 			} else if (ACTION_SWITCH_DEVICE.equals(action)) {
@@ -144,6 +148,11 @@ public class WidgetService extends JobIntentService {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				final String newMode = intent.getStringExtra(EXTRA_NEW_MODE);
 				handleActionSwitchMode(appWidgetId, newMode);
+			} else if (ACTION_ADJUST_TEMPERATURE.equals(action)) {
+				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
+				final String adjustType = intent.getStringExtra(EXTRA_ADJUST_TYPE);
+				handleActionAdjustTemperature(appWidgetId, adjustType);
+
 			}
 	}
 
@@ -337,21 +346,67 @@ public class WidgetService extends JobIntentService {
 			widgetObject.saveAndUpdate(getApplicationContext());
 
 		} else if (newMode.equals("comfort") || newMode.equals("temperature")){
-			this.updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, newMode);
+			this.updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, newMode, 0);
 		}
+	}
+
+	/**
+	 * Handle action AdjustTemperature in the provided background threat.
+	 */
+	private void handleActionAdjustTemperature(int appWidgetId, String adjustType) {
+		// Get widget object.
+		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
+		
+		// Get current preferred device temp
+//		int preferredTemperature = Integer.parseInt(widgetObject.deviceStatus.getMode().getValue());
+		int preferredTemperature = widgetObject.getPreferredTemperature();
+		int newTemp = preferredTemperature;
+		
+		if (adjustType.equals("add")) {
+			// Check if temp exceeds maximum
+			if (preferredTemperature + 1 > 32) {
+//				Looper.prepare();
+//				Toast.makeText(getApplicationContext(), "Maximum temperature is 32 degrees", Toast.LENGTH_LONG).show();
+				WidgetService.busy = false;
+				return;
+			} else {
+				// Add temp
+				newTemp = preferredTemperature + 1;
+			}
+		} else if (adjustType.equals("decrease")) {
+			// Check if temp exceeds minimum
+			if (preferredTemperature - 1 < 18) {
+//				Looper.prepare();
+//				Toast.makeText(getApplicationContext(), "Minimum temperature is 18 degrees", Toast.LENGTH_LONG).show();
+				WidgetService.busy = false;
+				return;
+			} else {
+				// Add temp
+				newTemp = preferredTemperature - 1;
+			}
+		}
+
+		// Update preferred device temp
+		widgetObject.setPreferredTemperature(newTemp);
+		widgetObject.saveAndUpdate(getApplicationContext());
+		updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, "temperature", newTemp);
 	}
 
 	/**
 	 * Update the device mode.
 	 * @param preferredDevice
 	 */
-	private void updateDeviceMode(final Context context, final int appWidgetId, DeviceObject preferredDevice, final String mode) {
+	private void updateDeviceMode(final Context context, final int appWidgetId, final DeviceObject preferredDevice, final String mode, final int preferredTemperature) {
 
 		new DataManager.UpdateModeTask(context, new OnProcessFinish<ReturnObject>() {
 
 			@Override
 			public void onSuccess(ReturnObject result) {
 				String confirmToast = "Device is now in " + mode + " mode.";
+				if (preferredTemperature != 0) {
+					confirmToast = "Desired temperature set to " + preferredTemperature;
+				}
+
 				Log.d(TAG, confirmToast);
 
 				// Change mode icon
@@ -381,7 +436,7 @@ public class WidgetService extends JobIntentService {
 				WidgetService.busy = false;
 			}
 
-		}, preferredDevice, mode, 0, false).execute();
+		}, preferredDevice, mode, preferredTemperature, false).execute();
 
 	}
 }

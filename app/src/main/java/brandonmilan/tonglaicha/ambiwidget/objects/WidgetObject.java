@@ -34,6 +34,7 @@ public class WidgetObject implements Serializable {
 	private Boolean temperatureModeBtnIsLoading = false;
 	private Boolean powerBtnIsLoading = false;
 	private Boolean showModeSelectionOverlay = false;
+	private int preferredTemperature = 20;
 
 	public void showModeSelectionOverlay(Context context, Boolean state) {
 		Log.d(TAG, "showModeSelectionOverlay: " + state);
@@ -77,14 +78,17 @@ public class WidgetObject implements Serializable {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_comfort_mode);
 		} else if (modeName.equals("temperature")) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_temperature_mode);
+
+			// Set prefered temperature in temperature mode
+			remoteViews.setTextViewText(R.id.desired_temperature_text, String.valueOf(preferredTemperature));
 		}
 
 		// Add listeners to buttons
-		setButtonClickHandlers(context, remoteViews);
+		setButtonClickHandlers(context, remoteViews, modeName);
 
 		// Check & update refresh animation of refresh button
 		// Check & update feedback button loading animations
-		updateButtons(context, remoteViews);
+		updateButtons(context, remoteViews, modeName);
 
 		// Device Name
 		String deviceName = device.roomName();
@@ -178,19 +182,22 @@ public class WidgetObject implements Serializable {
 	/**
 	 * Set all click handlers for the widgets buttons.
 	 */
-	private void setButtonClickHandlers(Context context, RemoteViews remoteViews) {
+	private void setButtonClickHandlers(Context context, RemoteViews remoteViews, String mode) {
 		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus)) {
-			// Set onClickPendingIntent for on/off button.
+			// Set onClickPendingIntent for mode buttons.
 			remoteViews.setOnClickPendingIntent(R.id.button_comfort_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "comfort"));
 			remoteViews.setOnClickPendingIntent(R.id.button_temperature_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "temperature"));
 			remoteViews.setOnClickPendingIntent(R.id.button_off, WidgetUtils.getSwitchPowerPendingIntent(context, widgetId));
-		} else {
+		} else if (mode.equals("comfort")) {
 			// Set onClickPendingIntents for all the feedback buttons.
 			remoteViews.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_cold_tag)));
 			remoteViews.setOnClickPendingIntent(R.id.button_bit_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.bit_cold_tag)));
 			remoteViews.setOnClickPendingIntent(R.id.button_comfy, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.comfy_tag)));
 			remoteViews.setOnClickPendingIntent(R.id.button_bit_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.bit_warm_tag)));
 			remoteViews.setOnClickPendingIntent(R.id.button_too_warm, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_warm_tag)));
+		} else if (mode.equals("temperature")) {
+			remoteViews.setOnClickPendingIntent(R.id.button_add_temperature, WidgetUtils.getAdjustTemperaturePendingIntent(context, widgetId, "add"));
+			remoteViews.setOnClickPendingIntent(R.id.button_decrease_temperature, WidgetUtils.getAdjustTemperaturePendingIntent(context, widgetId, "decrease"));
 		}
 
 		//Set onClickPendingIntent for mode button.
@@ -215,7 +222,7 @@ public class WidgetObject implements Serializable {
 	/**
 	 * Update animation states for all buttons on the widget.
 	 */
-	private void updateButtons(Context context, RemoteViews remoteViews) {
+	private void updateButtons(Context context, RemoteViews remoteViews, String mode) {
 		// Update refresh button animation.
 		if (refreshBtnIsLoading) {
 			remoteViews.setViewVisibility(R.id.button_refresh, View.INVISIBLE);
@@ -253,20 +260,23 @@ public class WidgetObject implements Serializable {
 			remoteViews.setViewVisibility(R.id.progress_on_off, View.GONE);
 		}
 
-		// Get currently selected / predicted comfort feedback
-		String predictedComfortTag = deviceStatus.getComfortPrediction().levelAsTag(context);
+		if (mode.equals("comfort")) {
+			// Get currently selected / predicted comfort feedback
+			String predictedComfortTag = deviceStatus.getComfortPrediction().levelAsTag(context);
 
-		// Update comfort feedback buttons
-		ArrayList<String> buttonsTags =  new ArrayList<>();
-		buttonsTags.add(context.getString(R.string.too_warm_tag));
-		buttonsTags.add(context.getString(R.string.bit_warm_tag));
-		buttonsTags.add(context.getString(R.string.comfy_tag));
-		buttonsTags.add(context.getString(R.string.bit_cold_tag));
-		buttonsTags.add(context.getString(R.string.too_cold_tag));
+			// Update comfort feedback buttons
+			ArrayList<String> buttonsTags =  new ArrayList<>();
+			buttonsTags.add(context.getString(R.string.too_warm_tag));
+			buttonsTags.add(context.getString(R.string.bit_warm_tag));
+			buttonsTags.add(context.getString(R.string.comfy_tag));
+			buttonsTags.add(context.getString(R.string.bit_cold_tag));
+			buttonsTags.add(context.getString(R.string.too_cold_tag));
 
-		for(String buttonTag : buttonsTags){
-			updateFeedbackButtons(remoteViews, buttonTag, predictedComfortTag);
+			for(String buttonTag : buttonsTags){
+				updateFeedbackButtons(remoteViews, buttonTag, predictedComfortTag);
+			}
 		}
+
 	}
 
 	/**
@@ -409,5 +419,13 @@ public class WidgetObject implements Serializable {
 				// TODO: Read result.modeObject.value and update corresponding textview
 				break;
 		}
+	}
+
+	public int getPreferredTemperature() {
+		return preferredTemperature;
+	}
+
+	public void setPreferredTemperature(int preferredTemperature) {
+		this.preferredTemperature = preferredTemperature;
 	}
 }

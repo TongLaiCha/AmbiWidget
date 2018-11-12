@@ -49,7 +49,7 @@
                 android:adjustViewBounds="true"
                 android:background="@drawable/button_selector"
                 android:contentDescription="@string/comfy"
-                android:padding="10dp"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_icn_mode_comfort" />
 
@@ -57,7 +57,7 @@
                 android:id="@+id/progress_mode_comfort"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="10dp"
+                android:padding="8dp"
                 android:indeterminateTint="@color/white"
                 android:visibility="gone" />
 
@@ -80,7 +80,7 @@
                 android:adjustViewBounds="true"
                 android:background="@drawable/button_selector"
                 android:contentDescription="@string/bit_cold"
-                android:padding="10dp"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_icn_mode_temperature"
                 android:textStyle="bold" />
@@ -89,7 +89,7 @@
                 android:id="@+id/progress_mode_temperature"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="10dp"
+                android:padding="8dp"
                 android:indeterminateTint="@color/white"
                 android:visibility="gone" />
 
@@ -112,7 +112,7 @@
                 android:adjustViewBounds="true"
                 android:background="@drawable/button_selector"
                 android:contentDescription="@string/bit_cold"
-                android:padding="10dp"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_icn_mode_off"
                 android:textStyle="bold" />
@@ -121,7 +121,7 @@
                 android:id="@+id/progress_on_off"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="10dp"
+                android:padding="8dp"
                 android:indeterminateTint="@color/white"
                 android:visibility="gone" />
 

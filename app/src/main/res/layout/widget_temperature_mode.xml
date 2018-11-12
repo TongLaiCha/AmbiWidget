@@ -28,20 +28,7 @@
         android:layout_height="match_parent"
         android:layout_alignTop="@+id/divider1"
         android:baselineAligned="false"
-        android:background="@color/warm_red_5"
         android:orientation="horizontal">
-
-        <!--Empty-->
-        <RelativeLayout
-            android:id="@+id/container_btn_empty1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0"
-            android:background="@drawable/button_empty"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-        </RelativeLayout>
 
         <!--Decrease desired temperature-->
         <RelativeLayout
@@ -50,8 +37,7 @@
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:background="@color/warm_red_5"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:gravity="center">
 
             <ImageButton
                 android:id="@+id/button_decrease_temperature"
@@ -59,17 +45,9 @@
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:background="@drawable/button_selector"
-                android:contentDescription="@string/comfy"
-                android:padding="10dp"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_icn_minus_small" />
-
-            <ProgressBar
-                android:id="@+id/progress_decrease_temperature"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:indeterminateTint="@color/white"
-                android:visibility="gone" />
 
         </RelativeLayout>
 
@@ -79,8 +57,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:background="@color/warm_red_5"
+            android:gravity="center">
 
             <TextView
                 android:id="@+id/desired_temperature_text"
@@ -96,21 +74,19 @@
                 android:id="@+id/progress_desired_temperature"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:padding="2dp"
                 android:indeterminateTint="@color/white"
-                android:padding="10dp"
                 android:visibility="gone" />
         </RelativeLayout>
 
         <!--Increase desired temperature-->
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/container_btn_add_temperature"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:background="@color/warm_red_5"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:elevation="100dp"
             tools:ignore="Suspicious0dp">
 
             <ImageButton
@@ -119,39 +95,20 @@
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:background="@drawable/button_selector"
-                android:padding="10dp"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_icn_add_small" />
-
-            <ProgressBar
-                android:id="@+id/progress_add_temperature"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:indeterminateTint="@color/white"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-        <!--Empty-->
-        <RelativeLayout
-            android:id="@+id/container_btn_empty2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0"
-            android:background="@drawable/button_empty"
-            android:orientation="horizontal">
 
         </RelativeLayout>
 
         <!--Button mode selection-->
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/container_btn_mode"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/ambi_grey_5"
             android:gravity="center"
-            android:orientation="horizontal"
             tools:ignore="Suspicious0dp">
 
             <Button
@@ -164,12 +121,12 @@
 
             <ProgressBar
                 android:id="@+id/progress_mode"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
                 android:indeterminateTint="@color/white"
                 android:visibility="gone" />
-
-        </LinearLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 

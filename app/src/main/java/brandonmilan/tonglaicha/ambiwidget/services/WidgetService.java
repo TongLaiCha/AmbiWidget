@@ -419,7 +419,6 @@ public class WidgetService extends JobIntentService {
 			@Override
 			public void run() {
 				timeRemaining -= 100;
-				Log.d(TAG, "run: timeremaining = " + timeRemaining);
 				if (timeRemaining <= 0) {
 					updateDeviceMode(getApplicationContext(), appWidgetId, widgetObject.device, "temperature", WidgetService.finalNewTemp);
 					WidgetService.timerHasStarted = false;
@@ -436,6 +435,15 @@ public class WidgetService extends JobIntentService {
 	 * @param preferredDevice
 	 */
 	private void updateDeviceMode(final Context context, final int appWidgetId, final DeviceObject preferredDevice, final String mode, final int preferredTemperature) {
+
+		// Show loading animation around desired temperature number when updating temperature
+		if (preferredTemperature != 0) {
+			// Change mode icon
+			WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+			widgetObject.setDesiredTemperatureIsLoading(true);
+			widgetObject.saveAndUpdate(context);
+			WidgetService.busy = true;
+		}
 
 		new DataManager.UpdateModeTask(context, new OnProcessFinish<ReturnObject>() {
 
@@ -469,6 +477,7 @@ public class WidgetService extends JobIntentService {
 
 				//Update loading animation state of pressed mode button
 				widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
+				widgetObject.setDesiredTemperatureIsLoading(false);
 				widgetObject.setModeButtonIsLoading(false, mode);
 				widgetObject.saveAndUpdate(context);
 

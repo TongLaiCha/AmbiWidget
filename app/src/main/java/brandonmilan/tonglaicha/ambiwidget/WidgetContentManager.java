@@ -54,6 +54,7 @@ public class WidgetContentManager {
 		widgetObject.device = deviceObjectsList.get(widgetObject.deviceIndex);
 
 		widgetObject.setRefreshBtnIsLoading(true);
+		widgetObject.showModeSelectionOverlay(context, false);
 
 		// Save and update to display loading animation
 		widgetObject.saveAndUpdate(context);

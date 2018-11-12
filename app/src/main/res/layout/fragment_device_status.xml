@@ -4,6 +4,13 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!--Settings button-->
+    <ImageView
+        android:id="@+id/button_settings"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_icn_settings_24px" />
+
     <!--Top row-->
     <RelativeLayout
         android:id="@+id/top_row"
@@ -11,27 +18,22 @@
         android:layout_height="match_parent"
         android:layout_alignBottom="@+id/divider2"
         android:gravity="center"
-        android:orientation="horizontal">
-
-        <!--Settings button-->
-        <ImageButton
-            android:id="@+id/button_settings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:background="@color/white"
-            android:src="@drawable/ic_icn_settings_24px" />
+        android:orientation="horizontal"
+        android:layout_toEndOf="@+id/button_settings"
+        android:layout_toStartOf="@+id/button_refresh"
+        android:layout_marginTop="-10dp"
+        android:layout_marginBottom="-10dp">
 
         <!--Device previous (left)-->
-        <ImageButton
+        <ImageView
             android:id="@+id/device_previous"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_toEndOf="@+id/button_settings"
-            android:background="@color/white"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="10dp"
             android:rotation="180"
-            android:src="@drawable/ic_icn_arrow_next" />
+            android:src="@drawable/ic_icn_arrow_next"/>
 
         <!--Device name-->
         <TextView
@@ -40,39 +42,39 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:padding="2dp"
+            android:layout_centerInParent="true"
             android:textSize="13sp" />
 
         <!--Device next (right)-->
-        <ImageButton
+        <ImageView
             android:id="@+id/device_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:layout_toStartOf="@+id/button_refresh"
-            android:background="@color/white"
-            android:src="@drawable/ic_icn_arrow_next" />
-
-        <!--Refresh button-->
-        <ImageButton
-            android:id="@+id/button_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:background="@color/white"
-            android:src="@drawable/ic_icn_reload_24px" />
-
-        <!--Refresh button progressBar-->
-        <ProgressBar
-            android:id="@+id/progressBar"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_alignParentEnd="true"
-            android:layout_margin="2dp"
-            android:indeterminateTint="@color/black"
-            android:visibility="gone" />
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_icn_arrow_next" />
 
     </RelativeLayout>
+
+    <!--Refresh button-->
+    <ImageView
+        android:id="@+id/button_refresh"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_icn_reload_24px" />
+
+    <!--Refresh button progressBar-->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="2.5dp"
+        android:layout_marginTop="2.5dp"
+        android:layout_alignParentEnd="true"
+        android:indeterminateTint="@color/black"
+        android:visibility="visible" />
 
 
     <!--Divider-->

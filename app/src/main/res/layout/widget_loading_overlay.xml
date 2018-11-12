@@ -10,7 +10,8 @@
 
         <ProgressBar
             android:layout_width="40dp"
-            android:layout_height="40dp" />
+            android:layout_height="40dp"
+            android:indeterminateTint="@color/colorPrimary"/>
 
         <TextView
             android:id="@+id/textView2"

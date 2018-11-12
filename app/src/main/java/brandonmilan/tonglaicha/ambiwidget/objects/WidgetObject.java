@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -31,6 +30,8 @@ public class WidgetObject implements Serializable {
 	private Boolean comfortableBtnIsLoading = false;
 	private Boolean bitColdBtnIsLoading = false;
 	private Boolean tooColdBtnIsLoading = false;
+	private Boolean comfortModeBtnIsLoading = false;
+	private Boolean temperatureModeBtnIsLoading = false;
 	private Boolean powerBtnIsLoading = false;
 	private Boolean showModeSelectionOverlay = false;
 	private int preferredTemperature = 20;
@@ -132,12 +133,23 @@ public class WidgetObject implements Serializable {
 		return remoteViews;
 	}
 
-	public void setPowerBtnIsLoading(Boolean enabled) {
-		this.powerBtnIsLoading = enabled;
+	public void setPowerBtnIsLoading(Boolean value) {
+		this.powerBtnIsLoading = value;
 	}
 
-	public void setRefreshBtnIsLoading(Boolean enabled) {
-		this.refreshBtnIsLoading = enabled;
+	public void setModeButtonIsLoading(Boolean value, String mode) {
+		switch (mode) {
+			case "comfort":
+				this.comfortModeBtnIsLoading = value;
+				break;
+			case "temperature":
+				this.temperatureModeBtnIsLoading = value;
+				break;
+		}
+	}
+
+	public void setRefreshBtnIsLoading(Boolean value) {
+		this.refreshBtnIsLoading = value;
 	}
 
 	public void setFeedbackBtnLoadingState(String feedbackTag, Boolean enabled) {
@@ -175,8 +187,7 @@ public class WidgetObject implements Serializable {
 			// Set onClickPendingIntent for mode buttons.
 			remoteViews.setOnClickPendingIntent(R.id.button_comfort_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "comfort"));
 			remoteViews.setOnClickPendingIntent(R.id.button_temperature_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "temperature"));
-			remoteViews.setOnClickPendingIntent(R.id.button_manual_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "manual"));
-			remoteViews.setOnClickPendingIntent(R.id.button_on_off, WidgetUtils.getSwitchPowerPendingIntent(context, widgetId));
+			remoteViews.setOnClickPendingIntent(R.id.button_off, WidgetUtils.getSwitchPowerPendingIntent(context, widgetId));
 		} else if (mode.equals("comfort")) {
 			// Set onClickPendingIntents for all the feedback buttons.
 			remoteViews.setOnClickPendingIntent(R.id.button_too_cold, WidgetUtils.getGiveFeedbackPendingIntent(context, widgetId, context.getString(R.string.too_cold_tag)));
@@ -221,13 +232,31 @@ public class WidgetObject implements Serializable {
 			remoteViews.setViewVisibility(R.id.progressBar, View.INVISIBLE);
 		}
 
+		// Update comfort mode button animation.
+		if(comfortModeBtnIsLoading) {
+			remoteViews.setViewVisibility(R.id.button_comfort_mode, View.GONE);
+			remoteViews.setViewVisibility(R.id.progress_mode_comfort, View.VISIBLE);
+		} else {
+			remoteViews.setViewVisibility(R.id.button_comfort_mode, View.VISIBLE);
+			remoteViews.setViewVisibility(R.id.progress_mode_comfort, View.GONE);
+		}
+
+		// Update comfort mode button animation.
+		if(temperatureModeBtnIsLoading) {
+			remoteViews.setViewVisibility(R.id.button_temperature_mode, View.GONE);
+			remoteViews.setViewVisibility(R.id.progress_mode_temperature, View.VISIBLE);
+		} else {
+			remoteViews.setViewVisibility(R.id.button_temperature_mode, View.VISIBLE);
+			remoteViews.setViewVisibility(R.id.progress_mode_temperature, View.GONE);
+		}
+
 		//TODO: This should be in mode selection screen
 		// Update power button animation.
 		if(powerBtnIsLoading) {
-			remoteViews.setViewVisibility(R.id.button_on_off, View.GONE);
+			remoteViews.setViewVisibility(R.id.button_off, View.GONE);
 			remoteViews.setViewVisibility(R.id.progress_on_off, View.VISIBLE);
 		} else {
-			remoteViews.setViewVisibility(R.id.button_on_off, View.VISIBLE);
+			remoteViews.setViewVisibility(R.id.button_off, View.VISIBLE);
 			remoteViews.setViewVisibility(R.id.progress_on_off, View.GONE);
 		}
 
@@ -270,9 +299,9 @@ public class WidgetObject implements Serializable {
 					}
 
 					if (comfortTag.equals(predictedComfortTag)) {
-						remoteViews.setInt(R.id.container_btn_too_warm, "setBackgroundResource", R.drawable.button_too_warm_border);
+						remoteViews.setInt(R.id.button_too_warm, "setBackgroundResource", R.drawable.button_selector_border);
 					} else {
-						remoteViews.setInt(R.id.container_btn_too_warm, "setBackgroundResource", R.drawable.button_selector_too_warm);
+						remoteViews.setInt(R.id.button_too_warm, "setBackgroundResource", R.drawable.button_selector);
 					}
 					break;
 				case "bit_warm":
@@ -285,9 +314,9 @@ public class WidgetObject implements Serializable {
 					}
 
 					if (comfortTag.equals(predictedComfortTag)) {
-						remoteViews.setInt(R.id.container_btn_bit_warm, "setBackgroundResource", R.drawable.button_bit_warm_border);
+						remoteViews.setInt(R.id.button_bit_warm, "setBackgroundResource", R.drawable.button_selector_border);
 					} else {
-						remoteViews.setInt(R.id.container_btn_bit_warm, "setBackgroundResource", R.drawable.button_selector_bit_warm);
+						remoteViews.setInt(R.id.button_bit_warm, "setBackgroundResource", R.drawable.button_selector);
 					}
 					break;
 				case "comfortable":
@@ -300,9 +329,9 @@ public class WidgetObject implements Serializable {
 					}
 
 					if (comfortTag.equals(predictedComfortTag)) {
-						remoteViews.setInt(R.id.container_btn_comfy, "setBackgroundResource", R.drawable.button_comfy_border);
+						remoteViews.setInt(R.id.button_comfy, "setBackgroundResource", R.drawable.button_selector_border);
 					} else {
-						remoteViews.setInt(R.id.container_btn_comfy, "setBackgroundResource", R.drawable.button_selector_comfy);
+						remoteViews.setInt(R.id.button_comfy, "setBackgroundResource", R.drawable.button_selector);
 					}
 					break;
 				case "bit_cold":
@@ -315,9 +344,9 @@ public class WidgetObject implements Serializable {
 					}
 
 					if (comfortTag.equals(predictedComfortTag)) {
-						remoteViews.setInt(R.id.container_btn_bit_cold, "setBackgroundResource", R.drawable.button_bit_cold_border);
+						remoteViews.setInt(R.id.button_bit_cold, "setBackgroundResource", R.drawable.button_selector_border);
 					} else {
-						remoteViews.setInt(R.id.container_btn_bit_cold, "setBackgroundResource", R.drawable.button_selector_bit_cold);
+						remoteViews.setInt(R.id.button_bit_cold, "setBackgroundResource", R.drawable.button_selector);
 					}
 					break;
 				case "too_cold":
@@ -330,9 +359,9 @@ public class WidgetObject implements Serializable {
 					}
 
 					if (comfortTag.equals(predictedComfortTag)) {
-						remoteViews.setInt(R.id.container_btn_too_cold, "setBackgroundResource", R.drawable.button_too_cold_border);
+						remoteViews.setInt(R.id.button_too_cold, "setBackgroundResource", R.drawable.button_selector_border);
 					} else {
-						remoteViews.setInt(R.id.container_btn_too_cold, "setBackgroundResource", R.drawable.button_selector_too_cold);
+						remoteViews.setInt(R.id.button_too_cold, "setBackgroundResource", R.drawable.button_selector);
 					}
 					break;
 			}

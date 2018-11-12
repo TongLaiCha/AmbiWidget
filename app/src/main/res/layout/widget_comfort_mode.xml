@@ -31,12 +31,12 @@
         android:orientation="horizontal">
 
         <!--Button too warm-->
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/container_btn_too_warm"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/button_selector_too_warm"
+            android:background="@color/warm_red_4"
             android:gravity="center"
             android:orientation="horizontal"
             tools:ignore="Suspicious0dp">
@@ -46,8 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:adjustViewBounds="true"
-                android:background="@android:color/transparent"
+                android:background="@drawable/button_selector"
                 android:contentDescription="@string/too_warm"
                 android:fontFamily="@font/avenir_next_medium"
                 android:padding="12dp"
@@ -62,7 +61,7 @@
                 android:indeterminateTint="@color/white"
                 android:visibility="gone" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <!--Button bit warm-->
         <LinearLayout
@@ -70,7 +69,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/button_selector_bit_warm"
+            android:background="@color/warm_red_3"
             android:gravity="center"
             android:orientation="horizontal"
             tools:ignore="Suspicious0dp">
@@ -80,7 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:background="@android:color/transparent"
+                android:background="@drawable/button_selector"
                 android:contentDescription="@string/bit_warm"
                 android:fontFamily="@font/avenir"
                 android:padding="12dp"
@@ -103,7 +102,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/button_selector_comfy"
+            android:background="@color/ambi_teal_4"
             android:gravity="center"
             android:orientation="horizontal"
             tools:ignore="Suspicious0dp">
@@ -113,7 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:background="@android:color/transparent"
+                android:background="@drawable/button_selector"
                 android:contentDescription="@string/comfy"
                 android:fontFamily="@font/avenir"
                 android:padding="12dp"
@@ -136,7 +135,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/button_selector_bit_cold"
+            android:background="@color/cool_blue_3"
             android:gravity="center"
             android:orientation="horizontal"
             tools:ignore="Suspicious0dp">
@@ -146,7 +145,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:background="@android:color/transparent"
+                android:background="@drawable/button_selector"
                 android:contentDescription="@string/bit_cold"
                 android:fontFamily="@font/avenir"
                 android:padding="12dp"
@@ -169,7 +168,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/button_selector_too_cold"
+            android:background="@color/cool_blue_5"
             android:gravity="center"
             android:orientation="horizontal"
             tools:ignore="Suspicious0dp">
@@ -179,7 +178,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:background="@android:color/transparent"
+                android:background="@drawable/button_selector"
                 android:contentDescription="@string/too_cold"
                 android:fontFamily="@font/avenir"
                 android:padding="12dp"
@@ -202,7 +201,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/button_selector_on_off"
+            android:background="@color/ambi_grey_5"
             android:gravity="center"
             android:orientation="horizontal"
             tools:ignore="Suspicious0dp">
@@ -211,7 +210,7 @@
                 android:id="@+id/button_mode"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/button_selector_on_off"
+                android:background="@drawable/button_selector"
                 android:text="MODE"
                 android:textColor="@color/white" />
 

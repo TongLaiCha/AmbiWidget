@@ -92,6 +92,7 @@ public class  WidgetProvider extends AppWidgetProvider {
 		super.onReceive(context, intent);
 		Log.d(TAG, "onReceive()" + intent.getAction() + "widgetId = " + intent.getIntExtra(WidgetService.EXTRA_WIDGET_ID, 0));
 		WidgetService.preEnqueueWork(context, JOB_ID, intent);
+		Log.d(TAG, "onReceive: busy = " + WidgetService.busy);
 	}
 
 	// When the user deletes the widget, delete the saved data associated with it.

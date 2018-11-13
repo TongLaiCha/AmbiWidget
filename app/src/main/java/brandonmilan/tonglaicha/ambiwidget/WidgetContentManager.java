@@ -86,7 +86,7 @@ public class WidgetContentManager {
 
 				// Device status
 				if (result.deviceStatusObject != null) {
-					widgetObject.deviceStatus = result.deviceStatusObject;
+					widgetObject.setDeviceStatus(result.deviceStatusObject);
 				}
 
 				// Disable refresh button loading

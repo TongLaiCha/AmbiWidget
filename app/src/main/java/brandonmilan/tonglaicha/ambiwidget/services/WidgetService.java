@@ -186,10 +186,10 @@ public class WidgetService extends JobIntentService {
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
 				// Update the mode in the widgetObject to Comfort mode
-				widgetObject.deviceStatus.getMode().setModeName("comfort");
+				widgetObject.getDeviceStatus().getMode().setModeName("comfort");
 
 				// Update the prediction object in the widgetObject to Comfort level (for border update)
-				widgetObject.deviceStatus.getComfortPrediction().setLevelByTag(feedbackTag);
+				widgetObject.getDeviceStatus().getComfortPrediction().setLevelByTag(feedbackTag);
 
 				widgetObject.saveAndUpdate(getApplicationContext());
 			}
@@ -286,7 +286,7 @@ public class WidgetService extends JobIntentService {
 		//Get the widget object.
 		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
-		if (widgetObject.deviceStatus == null) {
+		if (widgetObject.getDeviceStatus() == null) {
 			Log.e(TAG, "handleActionSwitchOff: widgetObject.deviceStatus == null");
 			WidgetService.busy = false;
 			return;
@@ -311,7 +311,7 @@ public class WidgetService extends JobIntentService {
 
 				// Change mode icon
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
-				widgetObject.deviceStatus.getMode().setModeName("off");
+				widgetObject.getDeviceStatus().getMode().setModeName("off");
 				widgetObject.saveAndUpdate(context);
 
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
@@ -458,7 +458,7 @@ public class WidgetService extends JobIntentService {
 
 				// Change mode icon
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
-				widgetObject.deviceStatus.getMode().setModeName(mode);
+				widgetObject.getDeviceStatus().getMode().setModeName(mode);
 				widgetObject.saveAndUpdate(context);
 
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();

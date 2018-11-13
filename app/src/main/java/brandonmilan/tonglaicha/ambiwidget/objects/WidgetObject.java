@@ -23,7 +23,7 @@ public class WidgetObject implements Serializable {
 	public int widgetId;
 	public DeviceObject device;
 	public int deviceIndex = 0;
-	public DeviceStatusObject deviceStatus;
+	private DeviceStatusObject deviceStatus;
 	private Boolean refreshBtnIsLoading = false;
 	private Boolean tooWarmBtnIsLoading = false;
 	private Boolean bitWarmBtnIsLoading = false;
@@ -36,6 +36,15 @@ public class WidgetObject implements Serializable {
 	private Boolean powerBtnIsLoading = false;
 	private Boolean showModeSelectionOverlay = false;
 	private int preferredTemperature = 20;
+
+	public void setDeviceStatus(DeviceStatusObject deviceStatus) {
+		this.deviceStatus = deviceStatus;
+		this.preferredTemperature = (int) Math.round(Double.parseDouble(deviceStatus.getMode().getValue()));
+	}
+
+	public DeviceStatusObject getDeviceStatus() {
+		return deviceStatus;
+	}
 
 	public void showModeSelectionOverlay(Context context, Boolean state) {
 		Log.d(TAG, "showModeSelectionOverlay: " + state);
@@ -80,7 +89,7 @@ public class WidgetObject implements Serializable {
 		} else if (modeName.equals("temperature")) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_temperature_mode);
 
-			// Set prefered temperature in temperature mode
+			// Set preferred temperature when in temperature mode
 			remoteViews.setTextViewText(R.id.desired_temperature_text, String.valueOf(preferredTemperature));
 		}
 
@@ -130,6 +139,8 @@ public class WidgetObject implements Serializable {
 
 		// Mode
 		updateModeIcon(modeName, deviceStatus, remoteViews);
+
+		// Update temperature
 
 		return remoteViews;
 	}

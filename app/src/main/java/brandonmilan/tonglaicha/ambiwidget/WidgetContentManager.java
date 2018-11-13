@@ -1,5 +1,7 @@
 package brandonmilan.tonglaicha.ambiwidget;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -54,7 +56,7 @@ public class WidgetContentManager {
 		widgetObject.device = deviceObjectsList.get(widgetObject.deviceIndex);
 
 		widgetObject.setRefreshBtnIsLoading(true);
-		widgetObject.showModeSelectionOverlay(context, false);
+		widgetObject.setShowModeSelectionOverlay(false);
 
 		// Save and update to display loading animation
 		widgetObject.saveAndUpdate(context);
@@ -139,6 +141,8 @@ public class WidgetContentManager {
 	public static void updateDeviceListAndAllWidgets(final Context context) {
 
 		Log.d(TAG, "updateDeviceList: Updating device list..");
+		final AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		final int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
 
 		// Get the device list.
 		new DataManager.GetDeviceListTask(context, new OnProcessFinish<ReturnObject>() {
@@ -149,6 +153,14 @@ public class WidgetContentManager {
 
 				// Save the device list to a file
 				WidgetStorageManager.setDeviceList(context, deviceList);
+
+				// There may be multiple widgets active, so update all of them
+				for (int appWidgetId : appWidgetIds) {
+					WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+					widgetObject.setShowNoConnectionOverlay(false);
+					widgetObject.saveAndUpdate(context);
+				}
+
 				WidgetProvider.updateAllWidgets(context);
 			}
 
@@ -156,6 +168,13 @@ public class WidgetContentManager {
 			public void onFailure(ReturnObject result) {
 				Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+
+				// There may be multiple widgets active, so update all of them
+				for (int appWidgetId : appWidgetIds) {
+					WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+					widgetObject.setShowNoConnectionOverlay(true);
+					widgetObject.saveAndUpdate(context);
+				}
 			}
 
 			@Override

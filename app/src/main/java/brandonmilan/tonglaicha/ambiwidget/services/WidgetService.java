@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Looper;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
 import android.widget.Toast;
@@ -37,6 +36,8 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.extra.ACTION_TAG";
 	public static final String ACTION_UPDATE_WIDGET =
 			"brandonmilan.tonglaicha.ambiwidget.action.update_widget";
+	public static final String ACTION_SUPER_UPDATE_WIDGET =
+			"brandonmilan.tonglaicha.ambiwidget.action.super_update_widget";
 	public static final String ACTION_SWITCH_OFF =
 			"brandonmilan.tonglaicha.ambiwidget.action.switch_off";
 	public static final String EXTRA_WIDGET_ID =
@@ -143,6 +144,8 @@ public class WidgetService extends JobIntentService {
 			} else if(ACTION_UPDATE_WIDGET.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				handleActionUpdateWidget(appWidgetId);
+			} else if (ACTION_SUPER_UPDATE_WIDGET.equals(action)) {
+				handleActionSuperUpdateWidget();
 			} else if(ACTION_SWITCH_OFF.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
 				handleActionSwitchOff(appWidgetId);
@@ -225,6 +228,15 @@ public class WidgetService extends JobIntentService {
 	}
 
 	/**
+	 * Handle action superUpdateWidget in the provided background threat.
+	 * Updates the device list and also update all widgets.
+	 * * NOTE: This should only be used on first time setup when there is no deviceList yet.
+	 */
+	private void handleActionSuperUpdateWidget() {
+		WidgetContentManager.updateDeviceListAndAllWidgets(getApplicationContext());
+	}
+
+	/**
 	 * Handle action SwitchDevice in the provided background threat.
 	 */
 	private void handleActionSwitchDevice(int appWidgetId, String switchDirection) {
@@ -271,7 +283,7 @@ public class WidgetService extends JobIntentService {
 
 		//TODO: Do we want this?
 		// Show mode selection screen by default after switching device
-		widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
+		widgetObject.setShowModeSelectionOverlay(false);
 
 		// Save and update the widgetObject
 		widgetObject.saveToFile(getApplicationContext());
@@ -348,7 +360,7 @@ public class WidgetService extends JobIntentService {
 
 		if (newMode.equals("modeSelection")){
 			// Show mode selection overlay.
-			widgetObject.showModeSelectionOverlay(getApplicationContext(), true);
+			widgetObject.setShowModeSelectionOverlay(true);
 			widgetObject.saveAndUpdate(getApplicationContext());
 
 		} else if (newMode.equals("comfort") || newMode.equals("temperature")){
@@ -468,7 +480,7 @@ public class WidgetService extends JobIntentService {
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
 				//Update loading animation state of pressed mode button
-				widgetObject.showModeSelectionOverlay(getApplicationContext(), false);
+				widgetObject.setShowModeSelectionOverlay(false);
 				widgetObject.setModeButtonIsLoading(false, mode);
 				widgetObject.saveAndUpdate(context);
 

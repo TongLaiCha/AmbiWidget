@@ -34,6 +34,7 @@ public class WidgetObject implements Serializable {
 	private Boolean tooColdBtnIsLoading = false;
 	private Boolean comfortModeBtnIsLoading = false;
 	private Boolean temperatureModeBtnIsLoading = false;
+	private Boolean desiredTemperatureIsLoading = false;
 	private Boolean powerBtnIsLoading = false;
 	private Boolean showModeSelectionOverlay = false;
 	private Boolean showAuthOverlay = false;
@@ -186,6 +187,10 @@ public class WidgetObject implements Serializable {
 		this.refreshBtnIsLoading = value;
 	}
 
+	public void setDesiredTemperatureIsLoading(Boolean value) {
+		this.desiredTemperatureIsLoading = value;
+	}
+
 	public void setFeedbackBtnLoadingState(String feedbackTag, Boolean enabled) {
 		switch(feedbackTag) {
 			case "too_warm":
@@ -275,13 +280,20 @@ public class WidgetObject implements Serializable {
 			remoteViews.setViewVisibility(R.id.progress_mode_comfort, View.GONE);
 		}
 
-		// Update comfort mode button animation.
+		// Update temperature mode button animation.
 		if(temperatureModeBtnIsLoading) {
 			remoteViews.setViewVisibility(R.id.button_temperature_mode, View.GONE);
 			remoteViews.setViewVisibility(R.id.progress_mode_temperature, View.VISIBLE);
 		} else {
 			remoteViews.setViewVisibility(R.id.button_temperature_mode, View.VISIBLE);
 			remoteViews.setViewVisibility(R.id.progress_mode_temperature, View.GONE);
+		}
+
+		// Update temperature display button animation.
+		if(desiredTemperatureIsLoading) {
+			remoteViews.setViewVisibility(R.id.progress_desired_temperature, View.VISIBLE);
+		} else {
+			remoteViews.setViewVisibility(R.id.progress_desired_temperature, View.GONE);
 		}
 
 		//TODO: This should be in mode selection screen

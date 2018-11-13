@@ -49,15 +49,16 @@
                 android:background="@drawable/button_selector"
                 android:contentDescription="@string/too_warm"
                 android:fontFamily="@font/avenir_next_medium"
-                android:padding="12dp"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_sad"
                 android:textStyle="bold" />
 
             <ProgressBar
                 android:id="@+id/progress_too_warm"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
                 android:indeterminateTint="@color/white"
                 android:visibility="gone" />
 
@@ -82,15 +83,16 @@
                 android:background="@drawable/button_selector"
                 android:contentDescription="@string/bit_warm"
                 android:fontFamily="@font/avenir"
-                android:padding="12dp"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_indifferent"
                 android:textStyle="bold" />
 
             <ProgressBar
                 android:id="@+id/progress_bit_warm"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
                 android:indeterminateTint="@color/white"
                 android:visibility="gone" />
 
@@ -115,15 +117,16 @@
                 android:background="@drawable/button_selector"
                 android:contentDescription="@string/comfy"
                 android:fontFamily="@font/avenir"
-                android:padding="12dp"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_happiness"
                 android:textStyle="bold" />
 
             <ProgressBar
                 android:id="@+id/progress_comfy"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
                 android:indeterminateTint="@color/white"
                 android:visibility="gone" />
 
@@ -148,15 +151,16 @@
                 android:background="@drawable/button_selector"
                 android:contentDescription="@string/bit_cold"
                 android:fontFamily="@font/avenir"
-                android:padding="12dp"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_indifferent"
                 android:textStyle="bold" />
 
             <ProgressBar
                 android:id="@+id/progress_bit_cold"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
                 android:indeterminateTint="@color/white"
                 android:visibility="gone" />
 
@@ -181,15 +185,16 @@
                 android:background="@drawable/button_selector"
                 android:contentDescription="@string/too_cold"
                 android:fontFamily="@font/avenir"
-                android:padding="12dp"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_sad"
                 android:textStyle="bold" />
 
             <ProgressBar
                 android:id="@+id/progress_too_cold"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
                 android:indeterminateTint="@color/white"
                 android:visibility="gone" />
 
@@ -216,8 +221,9 @@
 
             <ProgressBar
                 android:id="@+id/progress_mode"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
                 android:indeterminateTint="@color/white"
                 android:visibility="gone" />
 

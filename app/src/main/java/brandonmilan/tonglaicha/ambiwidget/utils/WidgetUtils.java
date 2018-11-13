@@ -60,6 +60,19 @@ public final class WidgetUtils {
     }
 
     /**
+     * Helper function for creating a super update pendingIntent.
+     * The broadcast pendingIntent is send to the {@link WidgetProvider onReceive} method.
+     *
+     * @return PendingIntent
+     */
+    public static PendingIntent getSuperUpdatePendingIntent(Context context) {
+        Intent intent = new Intent(context, WidgetProvider.class);
+        intent.setAction(WidgetService.ACTION_SUPER_UPDATE_WIDGET);
+
+        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    /**
      * Helper function for creating a pendingIntent to switch to the previous or next device.
      * The broadcast pendingIntent is send to the {@link WidgetProvider onReceive} method.
      *

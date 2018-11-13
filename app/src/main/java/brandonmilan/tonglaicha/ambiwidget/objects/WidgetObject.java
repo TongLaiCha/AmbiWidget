@@ -11,8 +11,10 @@ import android.widget.RemoteViews;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
 import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
+import brandonmilan.tonglaicha.ambiwidget.activities.AuthActivity;
 import brandonmilan.tonglaicha.ambiwidget.activities.SettingsActivity;
 import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
@@ -35,20 +37,34 @@ public class WidgetObject implements Serializable {
 	private Boolean desiredTemperatureIsLoading = false;
 	private Boolean powerBtnIsLoading = false;
 	private Boolean showModeSelectionOverlay = false;
-	private int preferredTemperature = 20;
+	private Boolean showAuthOverlay = false;
+	private Boolean showNoConnectionOverlay = false;
+	public static final Double defaultTemperatureForTemperatureMode = 20.0;
+	private int preferredTemperature = (int) Math.round(defaultTemperatureForTemperatureMode);
 
 	public void setDeviceStatus(DeviceStatusObject deviceStatus) {
 		this.deviceStatus = deviceStatus;
-		this.preferredTemperature = (int) Math.round(Double.parseDouble(deviceStatus.getMode().getValue()));
+
+		// Update the preferred shown temperature
+		this.preferredTemperature = (int) Math.round(deviceStatus.getMode().getValue());
 	}
 
 	public DeviceStatusObject getDeviceStatus() {
 		return deviceStatus;
 	}
-
-	public void showModeSelectionOverlay(Context context, Boolean state) {
-		Log.d(TAG, "showModeSelectionOverlay: " + state);
+	public void setShowModeSelectionOverlay(Boolean state) {
+		Log.d(TAG, "setShowModeSelectionOverlay: " + state);
 		this.showModeSelectionOverlay = state;
+	}
+
+	public void setShowAuthOverlay(Boolean state) {
+		Log.d(TAG, "setShowAuthOverlay: " + state);
+		this.showAuthOverlay = state;
+	}
+
+	public void setShowNoConnectionOverlay(Boolean state) {
+		Log.d(TAG, "setShowNoConnectionOverlay: " + state);
+		this.showNoConnectionOverlay = state;
 	}
 
 	public WidgetObject(int widgetId, DeviceObject deviceObject, DeviceStatusObject deviceStatusObject) {
@@ -73,6 +89,26 @@ public class WidgetObject implements Serializable {
 	public RemoteViews getRemoteViews(Context context) {
 		// Set loading overlay as default layout
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_loading_overlay);
+
+		if (this.showNoConnectionOverlay) {
+			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_no_connection_overlay);
+
+			// Set onClickPendingIntent for the refresh button.
+			remoteViews.setOnClickPendingIntent(R.id.button_retry, WidgetUtils.getSuperUpdatePendingIntent(context));
+		}
+
+		// Check if the user has authorized the widget to access his Ambi account.
+		if (this.showAuthOverlay) {
+			// Construct the RemoteViews object
+			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_auth_overlay);
+
+			Intent authIntent = new Intent(context, AuthActivity.class);
+			authIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widgetId);
+			PendingIntent configPendingIntent = PendingIntent.getActivity(context, this.widgetId, authIntent, 0);
+			remoteViews.setOnClickPendingIntent(R.id.button_authorize, configPendingIntent);
+
+			return remoteViews;
+		}
 
 		// If this widgetObject does not contain a device and / or devicestatus object yet, return loading overlay remoteview.
 		if (this.device == null || this.deviceStatus == null) {
@@ -451,4 +487,5 @@ public class WidgetObject implements Serializable {
 	public void setPreferredTemperature(int preferredTemperature) {
 		this.preferredTemperature = preferredTemperature;
 	}
+
 }

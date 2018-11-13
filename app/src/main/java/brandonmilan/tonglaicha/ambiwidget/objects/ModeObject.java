@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class ModeObject implements Serializable {
 	private String modeName;
-	private String value;
+	private double value;
 
 	public String getModeName() {
 		return modeName;
@@ -14,15 +14,15 @@ public class ModeObject implements Serializable {
 		this.modeName = modeName;
 	}
 
-	public String getValue() {
+	public double getValue() {
 		return value;
 	}
 
-	public void setValue(String value) {
+	public void setValue(double value) {
 		this.value = value;
 	}
 
-	public ModeObject (String mode, String value) {
+	public ModeObject (String mode, double value) {
 		this.modeName = mode;
 		this.value = value;
 	}

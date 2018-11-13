@@ -1,18 +1,15 @@
 package brandonmilan.tonglaicha.ambiwidget;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import java.util.HashMap;
 
 import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
-import brandonmilan.tonglaicha.ambiwidget.activities.AuthActivity;
 import brandonmilan.tonglaicha.ambiwidget.activities.WidgetConfigureActivity;
 import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
@@ -39,21 +36,10 @@ public class  WidgetProvider extends AppWidgetProvider {
 			WidgetContentManager.updateWidgetContent(context, appWidgetId);
 
 		} else {
-			createWidgetAuthOverlay(context, appWidgetManager, appWidgetId);
+			WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+			widgetObject.setShowAuthOverlay(true);
+			widgetObject.saveAndUpdate(context);
 		}
-	}
-
-	private static void createWidgetAuthOverlay(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-		// Construct the RemoteViews object
-		RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_auth_overlay);
-
-		Intent authIntent = new Intent(context, AuthActivity.class);
-		authIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-		PendingIntent configPendingIntent = PendingIntent.getActivity(context, appWidgetId, authIntent, 0);
-		views.setOnClickPendingIntent(R.id.button_authorize, configPendingIntent);
-
-		// Instruct the widget manager to update the widget
-		appWidgetManager.updateAppWidget(appWidgetId, views);
 	}
 
 	//TODO: Make onUpdate only execute after the configuration is done.

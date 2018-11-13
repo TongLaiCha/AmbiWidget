@@ -23,6 +23,7 @@ import brandonmilan.tonglaicha.ambiwidget.objects.ModeObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.SensorDataObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.TokenObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.LogUtil;
 import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
 
@@ -212,7 +213,12 @@ public class Requests {
 				JSONObject applianceControlTarget = jsonObject.getJSONObject("appliance_control_target");
 				String mode = applianceControlTarget.getString("quantity").toLowerCase();
 				if (mode.equals("climate")) mode = "comfort";
-				String value = applianceControlTarget.getString("value");
+				String valueAsString = applianceControlTarget.getString("value");
+				Double value = WidgetObject.defaultTemperatureForTemperatureMode;
+
+				if (valueAsString != "null") {
+					value = Double.parseDouble(valueAsString);
+				}
 
 				// Create modeObject
 				ModeObject modeObject = new ModeObject(mode.toLowerCase(), value);
@@ -292,7 +298,7 @@ public class Requests {
 				String mode = jsonObject.getString("mode");
 
 				// Retrieve value
-				String value = jsonObject.getString("value");
+				double value = jsonObject.getDouble("value");
 
 				// Create mode object
 				modeObject = new ModeObject(mode.toLowerCase(), value);

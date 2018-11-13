@@ -125,8 +125,6 @@ public class WidgetStorageManager {
 		// Get widgetObjectArray
 		HashMap<Integer, WidgetObject> widgetObjectsArray = loadWidgetObjectsHashMap(context);
 //		Log.i(TAG, "------------Loading Widget with ID: "+widgetId);
-		WidgetObject widgetObject = getWidgetObjectFromHashMap(context, widgetObjectsArray, widgetId);
-		Log.i(TAG, "------------Loaded Widget with ID: "+widgetObject.widgetId);
 		return getWidgetObjectFromHashMap(context, widgetObjectsArray, widgetId);
 	}
 

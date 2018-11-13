@@ -77,6 +77,11 @@
     <!--Loading overlay-->
     <string name="loading_text">Loading…</string>
 
+    <!--No connection overlay-->
+    <string name="no_connection_text">No connection</string>
+    <string name="retry_text">Retry</string>
+
+
     <!-- defaultSharedPreferences keys -->
     <string name="saved_refresh_token_key">RefreshToken</string>
     <string name="saved_access_token_key">AccessToken</string>

@@ -1,5 +1,7 @@
 package brandonmilan.tonglaicha.ambiwidget.activities;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ import brandonmilan.tonglaicha.ambiwidget.WidgetContentManager;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 
 /**
  * A login screen that offers login via email/password.
@@ -113,8 +116,19 @@ public class AuthActivity extends AppCompatActivity {
 			public void onSuccess(ReturnObject result) {
 				Toast.makeText(getApplicationContext(), "Authentication successful!", Toast.LENGTH_LONG).show();
 
+				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+				int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), WidgetProvider.class));
+
+				// There may be multiple widgets active, so update all of them
+				for (int appWidgetId : appWidgetIds) {
+					WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
+					widgetObject.setShowAuthOverlay(false);
+					widgetObject.saveAndUpdate(getApplicationContext());
+				}
+
 				// Get new device list and update all widgets
 				WidgetContentManager.updateDeviceListAndAllWidgets(getApplicationContext());
+
 
 				// Go to settings activity
 				Intent i = new Intent(AuthActivity.this, SettingsActivity.class);

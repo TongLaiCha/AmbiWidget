@@ -156,6 +156,8 @@ public class WidgetContentManager {
 			public void onFailure(ReturnObject result) {
 				Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+
+				//TODO: Show Overlay with failed widget loading message & reload button.
 			}
 
 			@Override

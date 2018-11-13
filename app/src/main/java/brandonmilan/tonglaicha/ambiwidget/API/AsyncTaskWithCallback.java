@@ -5,9 +5,12 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
+import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
@@ -51,6 +54,19 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Return
 			// If error / exception
 			else {
 				Log.e(TAG, result.errorMessage, result.exception);
+
+				// Filter internet connection errors and create better exception
+				if (result.exception.toString().contains("java.net.UnknownHostException")) {
+					if (Utils.isNetworkAvailable(mContext.get())) {
+						result.exception = new UnknownHostException("UNKNOWN_HOST");
+						result.errorMessage = "Could not connect to server.";
+					} else {
+						result.exception = new ConnectException("NO_CONNECTION");
+						result.errorMessage = "No internet connection.";
+					}
+				}
+
+				Log.e(TAG, result.exception.getMessage());
 
 				// Error / Exception handling for different scenarios
 				switch (result.exception.getMessage()) {

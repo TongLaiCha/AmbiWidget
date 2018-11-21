@@ -25,7 +25,6 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
  * Then can be used anywhere like this:
  * (Example usage): {@link brandonmilan.tonglaicha.ambiwidget.activities.AuthActivity#onAuthCodeReceive(String)}
  *
- * @author Brandon Yuen
  */
 
 public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, ReturnObject> {

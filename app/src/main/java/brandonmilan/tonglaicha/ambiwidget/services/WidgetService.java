@@ -25,7 +25,6 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
  * Class for handling tasks in a background thread.
- * @author Milan Sosef
  */
 public class WidgetService extends JobIntentService {
 	private static final String TAG = "WidgetService";

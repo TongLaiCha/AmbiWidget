@@ -18,7 +18,6 @@ import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
 /**
  * (CONTROLLER)
  * Manager for all token / authentication related communication with the Ambi Climate Open API.
- * @author Brandon Yuen
  */
 public class TokenManager {
 	private TokenManager() {} // Deny instantiation

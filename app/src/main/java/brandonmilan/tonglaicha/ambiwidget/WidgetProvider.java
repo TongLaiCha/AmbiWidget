@@ -17,7 +17,6 @@ import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
 /**
  * Implementation of App Widget functionality.
  * App Widget Configuration implemented in {@link WidgetConfigureActivity WidgetConfigureActivity}
- * @author Milan Sosef
  */
 public class  WidgetProvider extends AppWidgetProvider {
 	private static final String TAG = WidgetProvider.class.getSimpleName();

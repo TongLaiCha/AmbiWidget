@@ -39,6 +39,8 @@ public class WidgetObject implements Serializable {
 	private Boolean showModeSelectionOverlay = false;
 	private Boolean showAuthOverlay = false;
 	private Boolean showNoConnectionOverlay = false;
+	private Boolean showLoadingOverlay = false;
+
 	public static final Double defaultTemperatureForTemperatureMode = 20.0;
 	private int preferredTemperature = (int) Math.round(defaultTemperatureForTemperatureMode);
 
@@ -67,6 +69,10 @@ public class WidgetObject implements Serializable {
 		this.showNoConnectionOverlay = state;
 	}
 
+	public void setShowLoadingOverlay(Boolean loading) {
+		this.showLoadingOverlay = loading;
+	}
+
 	public WidgetObject(int widgetId, DeviceObject deviceObject, DeviceStatusObject deviceStatusObject) {
 		this.widgetId = widgetId;
 		this.device = deviceObject;
@@ -75,29 +81,26 @@ public class WidgetObject implements Serializable {
 
 	public void saveToFile(Context context) {
 		WidgetStorageManager.setWidgetObjectByWidgetId(context, widgetId, this);
-
 	}
 
 	public void saveAndUpdate(Context context) {
 		this.saveToFile(context);
 
-		//Partially update the widget.
+		// Update the widget with a fresh remoteViews object
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 		appWidgetManager.updateAppWidget(widgetId, this.getRemoteViews(context));
 	}
 
+	/*
+	 * Creates and returns a new remoteViews object based on the current properties of the widgetObject
+	 */
 	public RemoteViews getRemoteViews(Context context) {
-		// Set loading overlay as default layout
-		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_loading_overlay);
 
-		if (this.showNoConnectionOverlay) {
-			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_no_connection_overlay);
+		// Set default remoteView to error overlay (should only ever show up as last resort when something really bad happened)
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_error_overlay);
+		remoteViews.setOnClickPendingIntent(R.id.button_retry, WidgetUtils.getSuperUpdatePendingIntent(context));
 
-			// Set onClickPendingIntent for the refresh button.
-			remoteViews.setOnClickPendingIntent(R.id.button_retry, WidgetUtils.getSuperUpdatePendingIntent(context));
-		}
-
-		// Check if the user has authorized the widget to access his Ambi account.
+		// If the user has not authorized the widget, show authorize overlay.
 		if (this.showAuthOverlay) {
 			// Construct the RemoteViews object
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_auth_overlay);
@@ -110,8 +113,23 @@ public class WidgetObject implements Serializable {
 			return remoteViews;
 		}
 
-		// If this widgetObject does not contain a device and / or devicestatus object yet, return loading overlay remoteview.
+		// If the widget is loading, show loading overlay
+		if (this.showLoadingOverlay) {
+			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_loading_overlay);
+			return remoteViews;
+		}
+
+		// If this widgetObject does not contain a device or deviceStatus object
+		// This check prevents the code below this statement from being executed, because it needs a deviceData object and device object.
 		if (this.device == null || this.deviceStatus == null) {
+
+			// Check if the no_connection_overlay should be shown to the user.
+			// This overlay will only be shown if the showNoConnectionOverlay property is set to true & when the widgetObject has no old data
+			if (this.showNoConnectionOverlay) {
+				remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_no_connection_overlay);
+				remoteViews.setOnClickPendingIntent(R.id.button_retry, WidgetUtils.getSuperUpdatePendingIntent(context));
+			}
+
 			return remoteViews;
 		}
 

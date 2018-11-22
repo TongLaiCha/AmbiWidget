@@ -11,7 +11,6 @@ import android.widget.RemoteViews;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
 import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
 import brandonmilan.tonglaicha.ambiwidget.activities.AuthActivity;
@@ -22,7 +21,7 @@ import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 public class WidgetObject implements Serializable {
 
 	private static final String TAG = WidgetObject.class.getSimpleName();
-	public int widgetId;
+	private int widgetId;
 	public DeviceObject device;
 	public int deviceIndex = 0;
 	private DeviceStatusObject deviceStatus;
@@ -40,13 +39,12 @@ public class WidgetObject implements Serializable {
 	private Boolean showAuthOverlay = false;
 	private Boolean showNoConnectionOverlay = false;
 	public static final Double defaultTemperatureForTemperatureMode = 20.0;
-	private int preferredTemperature = (int) Math.round(defaultTemperatureForTemperatureMode);
+
+	private double preferredTemperature = defaultTemperatureForTemperatureMode;
 
 	public void setDeviceStatus(DeviceStatusObject deviceStatus) {
 		this.deviceStatus = deviceStatus;
-
-		// Update the preferred shown temperature
-		this.preferredTemperature = (int) Math.round(deviceStatus.getMode().getValue());
+		this.preferredTemperature = deviceStatus.getMode().getValue();
 	}
 
 	public DeviceStatusObject getDeviceStatus() {
@@ -86,7 +84,7 @@ public class WidgetObject implements Serializable {
 		appWidgetManager.updateAppWidget(widgetId, this.getRemoteViews(context));
 	}
 
-	public RemoteViews getRemoteViews(Context context) {
+	private RemoteViews getRemoteViews(Context context) {
 		// Set loading overlay as default layout
 		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_loading_overlay);
 
@@ -125,8 +123,18 @@ public class WidgetObject implements Serializable {
 		} else if (modeName.equals("temperature")) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_temperature_mode);
 
+			// Get the preferred tempScale
+			String prefTempScale = WidgetUtils.getTempScalePreference(context);
+
 			// Set preferred temperature when in temperature mode
-			remoteViews.setTextViewText(R.id.desired_temperature_text, String.valueOf(preferredTemperature));
+			if(prefTempScale.equals(context.getString(R.string.pref_tempScale_value_celsius))){
+				String tempCelsius = String.valueOf(Utils.roundOneDecimal(preferredTemperature));
+				remoteViews.setTextViewText(R.id.desired_temperature_text, tempCelsius);
+			}
+			else if (prefTempScale.equals(context.getString(R.string.pref_tempScale_value_fahrenheit))){
+				Double tempFahrenheit = Utils.roundOneDecimal(Utils.convertToFahrenheit(preferredTemperature));
+				remoteViews.setTextViewText(R.id.desired_temperature_text, String.valueOf(tempFahrenheit));
+			}
 		}
 
 		// Add listeners to buttons
@@ -480,11 +488,11 @@ public class WidgetObject implements Serializable {
 		}
 	}
 
-	public int getPreferredTemperature() {
+	public double getPreferredTemperature() {
 		return preferredTemperature;
 	}
 
-	public void setPreferredTemperature(int preferredTemperature) {
+	public void setPreferredTemperature(double preferredTemperature) {
 		this.preferredTemperature = preferredTemperature;
 	}
 

@@ -21,6 +21,7 @@ import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
+import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
 import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
@@ -59,7 +60,7 @@ public class WidgetService extends JobIntentService {
 	private static int timeRemaining = 0;
 	Timer timer = new Timer();
 	private static Boolean timerHasStarted = false;
-	private static int finalNewTemp;
+	private static double finalNewTemp;
 
 	/**
 	 * Starts this service to perform UpdateWidget action with the given parameters.
@@ -381,32 +382,33 @@ public class WidgetService extends JobIntentService {
 		// Get widget object.
 		final WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
+		// Get the preferred tempScale
+//		String prefTempScale = WidgetUtils.getTempScalePreference(getApplicationContext());
+
 		// Get current preferred device temp
-//		int preferredTemperature = Integer.parseInt(widgetObject.deviceStatus.getMode().getValue());
-		int preferredTemperature = widgetObject.getPreferredTemperature();
-		int newTemp = preferredTemperature;
+		double preferredTemperature = widgetObject.getPreferredTemperature();
+		double newTemp = preferredTemperature;
+
+		double maxTemp = 32;
+		double minTemp = 18;
 
 		if (adjustType.equals("add")) {
 			// Check if temp exceeds maximum
-			if (preferredTemperature + 1 > 32) {
-//				Looper.prepare();
-//				Toast.makeText(getApplicationContext(), "Maximum temperature is 32 degrees", Toast.LENGTH_LONG).show();
+			if (preferredTemperature + 0.5 > maxTemp) {
 				WidgetService.busy = false;
 				return;
 			} else {
 				// Add temp
-				newTemp = preferredTemperature + 1;
+				newTemp = preferredTemperature + 0.5;
 			}
 		} else if (adjustType.equals("decrease")) {
 			// Check if temp exceeds minimum
-			if (preferredTemperature - 1 < 18) {
-//				Looper.prepare();
-//				Toast.makeText(getApplicationContext(), "Minimum temperature is 18 degrees", Toast.LENGTH_LONG).show();
+			if (preferredTemperature - 0.5 < minTemp) {
 				WidgetService.busy = false;
 				return;
 			} else {
 				// Decrease temp
-				newTemp = preferredTemperature - 1;
+				newTemp = preferredTemperature - 0.5;
 			}
 		}
 
@@ -454,8 +456,9 @@ public class WidgetService extends JobIntentService {
 	 */
 	private void updateDeviceMode(final Context context, final int appWidgetId, final DeviceObject preferredDevice, final String mode) {
 
-		// preferredTemperature is 0 when it's set to temperature mode for the first time,
-		final int preferredTemperature = (int) Math.round(WidgetObject.defaultTemperatureForTemperatureMode);
+		// preferredTemperature is 20 when it's set to temperature mode for the first time,
+		final double preferredTemperature = WidgetObject.defaultTemperatureForTemperatureMode;
+
 		WidgetService.busy = true;
 
 		new DataManager.UpdateModeTask(context, new OnProcessFinish<ReturnObject>() {
@@ -502,7 +505,9 @@ public class WidgetService extends JobIntentService {
 	 * Update the device mode.
 	 * @param preferredDevice
 	 */
-	private void updatePreferredTemperature(final Context context, final int appWidgetId, final DeviceObject preferredDevice, final int preferredTemperature) {
+	private void updatePreferredTemperature(final Context context, final int appWidgetId,
+											final DeviceObject preferredDevice, final double preferredTemperature) {
+
 		WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 		// Show loading animation around desired temperature number when updating temperature
 		widgetObject.setDesiredTemperatureIsLoading(true);
@@ -513,15 +518,23 @@ public class WidgetService extends JobIntentService {
 
 			@Override
 			public void onSuccess(ReturnObject result) {
-				String confirmToast = "Desired temperature set to " + preferredTemperature;
-
-				Log.d(TAG, confirmToast);
-
 				// Change mode icon
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
 				widgetObject.setPreferredTemperature(preferredTemperature);
 				widgetObject.saveAndUpdate(context);
 
+				String confirmToast = "Desired temperature set to " + preferredTemperature;
+
+				// Get the preferred tempScale
+				String prefTempScale = WidgetUtils.getTempScalePreference(context);
+
+				// Set the confirmToast to display temperature in fahrenheit if this is the preferred tempScale
+				if(prefTempScale.equals(context.getString(R.string.pref_tempScale_value_fahrenheit))) {
+					Double tempFahrenheit = Utils.roundOneDecimal(Utils.convertToFahrenheit(preferredTemperature));
+					confirmToast = "Desired temperature set to " + tempFahrenheit;
+				}
+
+				Log.d(TAG, confirmToast);
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
 			}
 

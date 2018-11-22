@@ -561,7 +561,7 @@ public class Requests {
 		}
 	}
 
-	public static ReturnObject updateMode(String accessToken, DeviceObject deviceObject, String mode, int value, Boolean multiple) {
+	public static ReturnObject updateMode(String accessToken, DeviceObject deviceObject, String mode, double value, Boolean multiple) {
 		JSONObject jsonObject = null;
 		if (multiple == null) multiple = false;
 

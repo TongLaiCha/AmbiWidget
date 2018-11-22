@@ -10,16 +10,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 
 public class Utils {
 
@@ -72,6 +66,10 @@ public class Utils {
 
 	public static double convertToFahrenheit(double temperatureCelsius) {
 		return (temperatureCelsius * 1.8) + 32;
+	}
+
+	public static double convertToCelsius(double temperatureFahrenheit) {
+		return (temperatureFahrenheit - 32) / 1.8;
 	}
 
 	public static double roundOneDecimal(double number) {

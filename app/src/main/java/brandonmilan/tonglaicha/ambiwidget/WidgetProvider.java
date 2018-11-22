@@ -52,7 +52,6 @@ public class  WidgetProvider extends AppWidgetProvider {
 
 		// Update the device list
 		WidgetContentManager.updateDeviceList(context);
-
 	}
 
 	/**

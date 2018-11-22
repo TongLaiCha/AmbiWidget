@@ -345,7 +345,7 @@ public class DataManager {
 	 * Can ONLY be used inside async tasks. Create an instance of the Task version below for a custom AsyncTask with callbacks for sync-code.ho
 	 * @return getTemperature
 	 */
-	public static ReturnObject updateMode(Context context, DeviceObject deviceObject, String mode, int value, Boolean multiple) {
+	public static ReturnObject updateMode(Context context, DeviceObject deviceObject, String mode, double value, Boolean multiple) {
 
 		// Check if feedback string is allowed
 		if (!(mode.equals("comfort") ||
@@ -375,10 +375,10 @@ public class DataManager {
 	public static class UpdateModeTask extends AsyncTaskWithCallback {
 		private DeviceObject deviceObject;
 		private String mode;
-		private int value;
+		private double value;
 		private Boolean multiple;
 
-		public UpdateModeTask(Context context, OnProcessFinish callback, DeviceObject deviceObject, String mode, int value, Boolean multiple){
+		public UpdateModeTask(Context context, OnProcessFinish callback, DeviceObject deviceObject, String mode, double value, Boolean multiple){
 			super(context, callback);
 			this.deviceObject = deviceObject;
 			this.mode = mode;

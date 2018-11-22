@@ -93,6 +93,7 @@ public class WidgetContentManager {
 
                 // Disable refresh button loading
                 widgetObject.setRefreshBtnIsLoading(false);
+                widgetObject.setShowLoadingOverlay(false);
 
                 // Save new widgetObject
                 widgetObject.saveAndUpdate(context);
@@ -140,10 +141,17 @@ public class WidgetContentManager {
      * NOTE: This should only be used on first time setup when there is no deviceList yet.
      */
     public static void updateDeviceListAndAllWidgets(final Context context) {
-
-        Log.d(TAG, "updateDeviceList: Updating device list..");
+        Log.d(TAG, "updateDeviceListAndAllWidgets: Updating device list & all widgets");
         final AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         final int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
+
+        // Show loading overlay on all widgets
+        for (int appWidgetId : appWidgetIds) {
+            WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+            widgetObject.setShowLoadingOverlay(true);
+            widgetObject.saveAndUpdate(context);
+        }
+
         // Get the device list.
         new DataManager.GetDeviceListTask(context, new OnProcessFinish<ReturnObject>() {
 
@@ -158,7 +166,7 @@ public class WidgetContentManager {
                 for (int appWidgetId : appWidgetIds) {
                     WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
                     widgetObject.setShowNoConnectionOverlay(false);
-                    widgetObject.saveAndUpdate(context);
+                    widgetObject.saveToFile(context);
                 }
 
                 WidgetProvider.updateAllWidgets(context);
@@ -173,6 +181,7 @@ public class WidgetContentManager {
                 for (int appWidgetId : appWidgetIds) {
                     WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
                     widgetObject.setShowNoConnectionOverlay(true);
+                    widgetObject.setShowLoadingOverlay(false);
                     widgetObject.saveAndUpdate(context);
                 }
             }

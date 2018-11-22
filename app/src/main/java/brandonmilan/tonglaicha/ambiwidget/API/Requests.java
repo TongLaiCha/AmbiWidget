@@ -31,7 +31,6 @@ import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
  * (MODEL)
  * Class containing all API requests to the Ambi Climate Open API.
  * @version API v1
- * @author Brandon Yuen
  */
 
 public class Requests {

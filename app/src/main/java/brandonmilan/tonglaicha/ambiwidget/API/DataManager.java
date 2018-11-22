@@ -8,7 +8,6 @@ import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 /**
  * (CONTROLLER)
  * Manager for all user data related communication with the Ambi Climate Open API.
- * @author Brandon Yuen
  */
 public class DataManager {
 	private DataManager() {} // Deny instantiation

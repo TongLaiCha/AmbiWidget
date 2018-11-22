@@ -81,6 +81,10 @@
     <string name="no_connection_text">No connection</string>
     <string name="retry_text">Retry</string>
 
+    <!--Error overlay-->
+    <string name="overlay_error_text">Oops, something went wrong…</string>
+    <string name="reload_text">Reload</string>
+
 
     <!-- defaultSharedPreferences keys -->
     <string name="saved_refresh_token_key">RefreshToken</string>

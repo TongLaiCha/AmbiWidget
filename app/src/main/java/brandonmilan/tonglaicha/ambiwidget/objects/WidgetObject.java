@@ -132,9 +132,10 @@ public class WidgetObject implements Serializable {
 		}
 
 		String modeName = deviceStatus.getMode().getModeName();
+		Log.d(TAG, "ModeName: " + modeName);
 
 		// Create new remoteViews from widget layout
-		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus)) {
+		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus) || modeName.equals("disconnected")) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_mode_selection);
 		} else if (modeName.equals("comfort")) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_comfort_mode);
@@ -502,6 +503,10 @@ public class WidgetObject implements Serializable {
 				// Show AWAY Icon
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_away);
 				// TODO: Read result.modeObject.value and update corresponding textview
+				break;
+			case "disconnected":
+				// Show DISCONNECTED Icon
+				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_cloud_disconnected_v2);
 				break;
 		}
 	}

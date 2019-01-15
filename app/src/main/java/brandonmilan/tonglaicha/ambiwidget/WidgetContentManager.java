@@ -14,6 +14,7 @@ import brandonmilan.tonglaicha.ambiwidget.objects.DeviceObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
+import brandonmilan.tonglaicha.ambiwidget.utils.WidgetUtils;
 
 /**
  * (CONTROLLER)
@@ -69,6 +70,7 @@ public class WidgetContentManager {
             @Override
             public void onSuccess(ReturnObject result) {
                 Log.d(TAG, "GetDeviceStatusTask success: " + result.deviceStatusObject);
+
             }
 
             @Override
@@ -89,6 +91,11 @@ public class WidgetContentManager {
                 // Device status
                 if (result.deviceStatusObject != null) {
                     widgetObject.setDeviceStatus(result.deviceStatusObject);
+
+                    // Check if device is offline.
+                    if (!result.deviceStatusObject.getDeviceOnline()) {
+                        widgetObject.getDeviceStatus().getMode().setModeName("disconnected");
+                    }
                 }
 
                 // Disable refresh button loading

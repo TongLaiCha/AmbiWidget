@@ -22,8 +22,8 @@ public class Utils {
 
 		HttpURLConnection conn = (HttpURLConnection) new URL(urlString).openConnection();
 		conn.setRequestMethod("GET");
-		conn.setReadTimeout(10000 /* milliseconds */ );
-		conn.setConnectTimeout(15000 /* milliseconds */ );
+		conn.setReadTimeout(20000 /* milliseconds */ );
+		conn.setConnectTimeout(20000 /* milliseconds */ );
 		conn.setRequestProperty("Content-Type", "application/json");
 		conn.setRequestProperty("Accept", "application/json");
 		conn.connect();
@@ -31,6 +31,8 @@ public class Utils {
 		BufferedReader br;
 		if (200 <= conn.getResponseCode() && conn.getResponseCode() <= 299) {
 			br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		} else if (503 == conn.getResponseCode()) {
+			return "{\"error_code\": 503}";
 		} else {
 			br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
 		}
@@ -81,6 +83,8 @@ public class Utils {
 		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
+
+
 }
 
 

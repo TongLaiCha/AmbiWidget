@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crash.FirebaseCrash;
+
 import java.lang.ref.WeakReference;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
@@ -79,6 +82,9 @@ public abstract class AsyncTaskWithCallback extends AsyncTask<Void, Void, Return
 						WidgetProvider.updateAllWidgets(mContext.get());
 						break;
 				}
+
+				// Report error to firebase
+				Crashlytics.logException(result.exception);
 
 				mCallBack.onFailure(result);
 			}

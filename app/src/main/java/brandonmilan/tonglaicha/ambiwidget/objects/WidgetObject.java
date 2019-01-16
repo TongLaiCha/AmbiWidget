@@ -134,7 +134,12 @@ public class WidgetObject implements Serializable {
 		String modeName = deviceStatus.getMode().getModeName();
 
 		// Create new remoteViews from widget layout
-		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus)) {
+		if (this.showModeSelectionOverlay ||
+				WidgetUtils.checkIsModeOff(this.deviceStatus) ||
+				modeName.equals("manual") ||
+				modeName.equals("away_temperature_lower") ||
+				modeName.equals("away_temperature_upper") ||
+				modeName.equals("away_humidity_upper")) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_mode_selection);
 		} else if (modeName.equals("comfort")) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_comfort_mode);
@@ -486,19 +491,19 @@ public class WidgetObject implements Serializable {
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_temperature);
 				break;
 
-			case "away_Humidity_Upper":
+			case "away_humidity_upper":
 				// Show AWAY Icon
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_away);
 				// TODO: Read result.modeObject.value and update corresponding textview
 				break;
 
-			case "away_Temperature_Lower":
+			case "away_temperature_lower":
 				// Show AWAY Icon
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_away);
 				// TODO: Read result.modeObject.value and update corresponding textview
 				break;
 
-			case "away_Temperature_Upper":
+			case "away_temperature_upper":
 				// Show AWAY Icon
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_away);
 				// TODO: Read result.modeObject.value and update corresponding textview

@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
 	//public static String APPNAME = null;//TODO: Static string for APPNAME redirect uri
 
+
 	protected static final String TAG = MainActivity.class.getSimpleName();
 
     @Override

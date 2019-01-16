@@ -68,15 +68,14 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                tools:text="20"/>
+                tools:text="20.5"/>
 
             <ProgressBar
                 android:id="@+id/progress_desired_temperature"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="2dp"
                 android:indeterminateTint="@color/white"
-                android:visibility="gone" />
+                android:visibility="visible" />
         </RelativeLayout>
 
         <!--Increase desired temperature-->

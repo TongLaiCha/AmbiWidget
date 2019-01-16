@@ -37,13 +37,8 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data
-                    android:host="httpbin.org"
-                    android:pathPrefix="/get"
-                    android:scheme="https" />
-                <data
-                    android:host="wwww.httpbin.org"
-                    android:pathPrefix="/get"
-                    android:scheme="https" />
+                    android:host="authorise.widget"
+                    android:scheme="ambiwidgetandroid" />
             </intent-filter>
 
         </activity>

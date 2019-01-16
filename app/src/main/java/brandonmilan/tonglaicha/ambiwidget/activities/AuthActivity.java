@@ -17,6 +17,7 @@ import net.smartam.leeloo.common.exception.OAuthSystemException;
 
 import brandonmilan.tonglaicha.ambiwidget.API.DataManager;
 import brandonmilan.tonglaicha.ambiwidget.API.OnProcessFinish;
+import brandonmilan.tonglaicha.ambiwidget.API.Requests;
 import brandonmilan.tonglaicha.ambiwidget.API.TokenManager;
 import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetContentManager;
@@ -24,6 +25,10 @@ import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.WidgetStorageManager;
 import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
+
+import static brandonmilan.tonglaicha.ambiwidget.API.Settings.AUTH_URL;
+import static brandonmilan.tonglaicha.ambiwidget.API.Settings.CLIENT_ID;
+import static brandonmilan.tonglaicha.ambiwidget.API.Settings.REDIRECT_URI;
 
 /**
  * A login screen that offers login via email/password.
@@ -83,9 +88,9 @@ public class AuthActivity extends AppCompatActivity {
      */
 
     private void redirectToAuthPage() {
-    	String authUrl = 		"https://api.ambiclimate.com/oauth2/authorize";
-        String clientId = 		"a7a70f39-df19-4c11-89bb-f8f74e07e231";
-        String redirectUri = 	"https://httpbin.org/get"; // TODO: APPNAME + "://oauthresponse"; // Use custom redirect uri instead
+    	String authUrl = 		AUTH_URL;
+        String clientId = 		CLIENT_ID;
+        String redirectUri = 	REDIRECT_URI;
 
         OAuthClientRequest request = null;
 		try {

@@ -27,6 +27,10 @@ import brandonmilan.tonglaicha.ambiwidget.objects.WidgetObject;
 import brandonmilan.tonglaicha.ambiwidget.utils.LogUtil;
 import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
 
+import static brandonmilan.tonglaicha.ambiwidget.API.Settings.CLIENT_ID;
+import static brandonmilan.tonglaicha.ambiwidget.API.Settings.CLIENT_SECRET;
+import static brandonmilan.tonglaicha.ambiwidget.API.Settings.REDIRECT_URI;
+
 /**
  * (MODEL)
  * Class containing all API requests to the Ambi Climate Open API.
@@ -35,15 +39,12 @@ import brandonmilan.tonglaicha.ambiwidget.utils.Utils;
 
 public class Requests {
 
-	private static final String CLIENT_ID = "a7a70f39-df19-4c11-89bb-f8f74e07e231";
-	private static final String CLIENT_SECRET = "68a78747-1cd1-4303-9f1e-ac5f1a0f7aba";
 	private static final String TAG = Requests.class.getSimpleName();
 
 	public static ReturnObject getNewAccessToken(String refreshToken) {
 
 		// Create URL for Access Token Request
 		String refreshTokenUrl = 	"https://api.ambiclimate.com/oauth2/token";
-		String redirectUri = 		"https://httpbin.org/get"; // TODO: APPNAME + "://oauthresponse"; // Use custom redirect uri instead
 
 		OAuthClientRequest request = null;
 		try {
@@ -52,7 +53,7 @@ public class Requests {
 					.setGrantType(GrantType.REFRESH_TOKEN)
 					.setClientId(CLIENT_ID)
 					.setClientSecret(CLIENT_SECRET)
-					.setRedirectURI(redirectUri)
+					.setRedirectURI(REDIRECT_URI)
 					.setRefreshToken(refreshToken)
 					.buildQueryMessage();
 		} catch (OAuthSystemException e) {
@@ -94,7 +95,6 @@ public class Requests {
 
 		// Create URL for Refresh Token Request
 		String accessTokenUrl = 	"https://api.ambiclimate.com/oauth2/token";
-		String redirectUri = 		"https://httpbin.org/get"; // TODO: APPNAME + "://oauthresponse"; // Use custom redirect uri instead
 
 		OAuthClientRequest request = null;
 		try {
@@ -103,7 +103,7 @@ public class Requests {
 					.setGrantType(GrantType.AUTHORIZATION_CODE)
 					.setClientId(CLIENT_ID)
 					.setClientSecret(CLIENT_SECRET)
-					.setRedirectURI(redirectUri)
+					.setRedirectURI(REDIRECT_URI)
 					.setCode(authCode)
 					.buildQueryMessage();
 		} catch (OAuthSystemException e) {
@@ -251,7 +251,7 @@ public class Requests {
 			}
 
 		} catch (Exception e) {
-			return new ReturnObject(e, "Could not get current mode info.");
+			return new ReturnObject(e, "Could not get new device status.");
 		}
 
 		return new ReturnObject(deviceStatusObject);
@@ -366,7 +366,7 @@ public class Requests {
 			lastApplianceState = new ApplianceStateObject(fan, acMode, power, swing, temperature);
 
 		} catch (Exception e) {
-			return new ReturnObject(e, "Could not get device list");
+			return new ReturnObject(e, "Could not get last appliance state");
 		}
 
 		return new ReturnObject(result, lastApplianceState);

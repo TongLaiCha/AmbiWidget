@@ -8,6 +8,8 @@ import android.support.v4.app.JobIntentService;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -188,13 +190,20 @@ public class WidgetService extends JobIntentService {
 			public void onSuccess(ReturnObject result) {
 				String feedbackMsg = feedbackTag.replace("_", " ");
 				String confirmToast = "Feedback given: " + feedbackMsg + ".";
-				Toast.makeText(getApplicationContext(), confirmToast, Toast.LENGTH_LONG).show();
 
 				// Get the widget object from file storage
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
-				// Update the mode in the widgetObject to Comfort mode
-				widgetObject.getDeviceStatus().getMode().setModeName("comfort");
+				// Show the disconnected icon if the device is disconnected.
+				if (WidgetUtils.checkDeviceIsOnline(result)){
+					// Update the mode in the widgetObject to Comfort mode
+					widgetObject.getDeviceStatus().getMode().setModeName("comfort");
+				} else {
+					widgetObject.getDeviceStatus().getMode().setModeName("disconnected");
+					confirmToast = "The device is currently offline.";
+				}
+
+				Toast.makeText(getApplicationContext(), confirmToast, Toast.LENGTH_LONG).show();
 
 				// Update the prediction object in the widgetObject to Comfort level (for border update)
 				widgetObject.getDeviceStatus().getComfortPrediction().setLevelByTag(feedbackTag);
@@ -222,7 +231,6 @@ public class WidgetService extends JobIntentService {
 
 		}, widgetObject.device, feedbackTag).execute();
 	}
-
 
 	/**
 	 * Handle action UpdateWidget in the provided background threat.
@@ -286,7 +294,6 @@ public class WidgetService extends JobIntentService {
 			}
 		}
 
-		//TODO: Do we want this?
 		// Show mode selection screen by default after switching device
 		widgetObject.setShowModeSelectionOverlay(false);
 
@@ -328,7 +335,16 @@ public class WidgetService extends JobIntentService {
 
 				// Change mode icon
 				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
-				widgetObject.getDeviceStatus().getMode().setModeName("off");
+
+				// Show the disconnected icon if the device is disconnected.
+				if (WidgetUtils.checkDeviceIsOnline(result)){
+					// Update the mode in the widgetObject to Off mode
+					widgetObject.getDeviceStatus().getMode().setModeName("off");
+				} else {
+					widgetObject.getDeviceStatus().getMode().setModeName("disconnected");
+					confirmToast = "The device is currently offline.";
+				}
+
 				widgetObject.saveAndUpdate(context);
 
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
@@ -338,6 +354,17 @@ public class WidgetService extends JobIntentService {
 			public void onFailure(ReturnObject result) {
                 Toast.makeText(getApplicationContext(), "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
 				Log.d(TAG, result.errorMessage + ": " + result.exception);
+				if (result.exception.getMessage().equals("ERROR_SERVICE_UNAVAILABLE")) {
+
+					// Change mode icon
+					WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
+					widgetObject.getDeviceStatus().getMode().setModeName("disconnected");
+					String confirmToast = "The device is currently offline.";
+
+					widgetObject.saveAndUpdate(context);
+
+					Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
+				}
 			}
 
 			@Override
@@ -466,13 +493,19 @@ public class WidgetService extends JobIntentService {
 			public void onSuccess(ReturnObject result) {
 				String confirmToast = "Device is now in " + mode + " mode.";
 
-				Log.d(TAG, confirmToast);
+				// Get the widget object from file storage
+				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(getApplicationContext(), appWidgetId);
 
-				// Change mode icon
-				WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
-				widgetObject.getDeviceStatus().getMode().setModeName(mode);
+				// Set the mode icon.
+				if (WidgetUtils.checkDeviceIsOnline(result)){
+					// Update the mode in the widgetObject to Comfort mode
+					widgetObject.getDeviceStatus().getMode().setModeName(mode);
+				} else {
+					widgetObject.getDeviceStatus().getMode().setModeName("disconnected");
+					confirmToast = "The device is currently offline.";
+				}
+
 				widgetObject.saveAndUpdate(context);
-
 				Toast.makeText(context, confirmToast, Toast.LENGTH_LONG).show();
 			}
 
@@ -559,4 +592,5 @@ public class WidgetService extends JobIntentService {
 		}, preferredDevice, "temperature", preferredTemperature, false).execute();
 
 	}
+
 }

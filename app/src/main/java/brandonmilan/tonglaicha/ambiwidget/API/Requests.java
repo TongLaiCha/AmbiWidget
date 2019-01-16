@@ -237,6 +237,9 @@ public class Requests {
 				// Create comfortPredictionObject
 				ComfortPredictionObject comfortPredictionObject = new ComfortPredictionObject(level);
 
+				// Retrieve deviceOnline data
+				Boolean deviceOnline = jsonObject.getBoolean("device_online");
+
 				// Retrieve sensor data
 				JSONObject sensorData = jsonObject.getJSONObject("sensor_data");
 				double humidity = sensorData.getDouble("humidity_refined");
@@ -246,7 +249,7 @@ public class Requests {
 				SensorDataObject sensorDataObject = new SensorDataObject(temperature, humidity);
 
 				// Create final deviceStatusObject
-				deviceStatusObject = new DeviceStatusObject(modeObject, applianceStateObject, comfortPredictionObject, sensorDataObject);
+				deviceStatusObject = new DeviceStatusObject(modeObject, applianceStateObject, comfortPredictionObject, deviceOnline, sensorDataObject);
 
 			}
 
@@ -501,6 +504,8 @@ public class Requests {
 					switch (errorCode) {
 						case 401:
 							return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
+						case 503:
+							return new ReturnObject(new Exception("ERROR_SERVICE_UNAVAILABLE"), "The service is temporarily unavailable.");
 					}
 				}
 
@@ -535,22 +540,30 @@ public class Requests {
 
 			// If json is an jsonObject
 			if (result instanceof JSONObject){
-				jsonObject= new JSONObject(json);
+				jsonObject = new JSONObject(json);
+			}
 
-				// Get status code and handle specific cases if an status code is set
-				if (jsonObject.has("error_code")) {
-					Integer errorCode = jsonObject.getInt("error_code");
-					switch (errorCode) {
-						case 401:
-							return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
-					}
-				}
+			// If json is an jsonArray, it's probably a good response.
+			else if (result instanceof JSONArray) {
+				JSONArray jsonArray = new JSONArray(json);
+				jsonObject = jsonArray.getJSONObject(0);
+			}
 
-				// If there is any error in the result
-				if (jsonObject.has("errors")) {
-					Log.d(TAG, "Errors: "+jsonObject.get("errors"));
-					return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending power off signal failed.");
+			// Get status code and handle specific cases if an status code is set
+			if (jsonObject.has("error_code")) {
+				Integer errorCode = jsonObject.getInt("error_code");
+				switch (errorCode) {
+					case 401:
+						return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
+					case 503:
+						return new ReturnObject(new Exception("ERROR_SERVICE_UNAVAILABLE"), "The service is temporarily unavailable.");
 				}
+			}
+
+			// If there is any error in the result
+			if (jsonObject.has("errors")) {
+				Log.d(TAG, "Errors: "+jsonObject.get("errors"));
+				return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending mode update failed.");
 			}
 
 			return new ReturnObject(jsonObject, "OK");
@@ -581,24 +594,33 @@ public class Requests {
 
 			// If json is an jsonObject
 			if (result instanceof JSONObject){
-				jsonObject= new JSONObject(json);
+				jsonObject = new JSONObject(json);
+			}
 
-				// Get status code and handle specific cases if an status code is set
-				if (jsonObject.has("error_code")) {
-					Integer errorCode = jsonObject.getInt("error_code");
-					switch (errorCode) {
-						case 401:
-							return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
-					}
-				}
+			// If json is an jsonArray, it's probably a good response.
+			else if (result instanceof JSONArray) {
+				JSONArray jsonArray = new JSONArray(json);
+				jsonObject = jsonArray.getJSONObject(0);
+			}
 
-				// If there is any error in the result
-				if (jsonObject.has("errors")) {
-					Log.d(TAG, "Errors: "+jsonObject.get("errors"));
-					return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending mode update failed.");
+			// Get status code and handle specific cases if an status code is set
+			if (jsonObject.has("error_code")) {
+				Integer errorCode = jsonObject.getInt("error_code");
+				switch (errorCode) {
+					case 401:
+						return new ReturnObject(new Exception("ERROR_INVALID_ACCESS_TOKEN"), "Invalid access token.");
+					case 503:
+						return new ReturnObject(new Exception("ERROR_SERVICE_UNAVAILABLE"), "The service is temporarily unavailable.");
 				}
 			}
 
+			// If there is any error in the result
+			if (jsonObject.has("errors")) {
+				Log.d(TAG, "Errors: "+jsonObject.get("errors"));
+				return new ReturnObject(new Exception("UNKNOWN_ERROR"), "Sending mode update failed.");
+			}
+
+			Log.i(TAG, "updateMode: "+jsonObject);
 			return new ReturnObject(jsonObject, "OK");
 
 		} catch (Exception e) {

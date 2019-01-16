@@ -5,10 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import org.json.JSONException;
 
 import brandonmilan.tonglaicha.ambiwidget.R;
 import brandonmilan.tonglaicha.ambiwidget.WidgetProvider;
 import brandonmilan.tonglaicha.ambiwidget.objects.DeviceStatusObject;
+import brandonmilan.tonglaicha.ambiwidget.objects.ReturnObject;
 import brandonmilan.tonglaicha.ambiwidget.services.WidgetService;
 
 public final class WidgetUtils {
@@ -146,5 +150,22 @@ public final class WidgetUtils {
         String power = deviceStatusObject.getApplianceState().getPower();
 
         return modeName.equals("off") || (modeName.equals("manual")) && power.equals("off");
+    }
+
+
+    /**
+     * Checks if the device is online or disconnected.
+     */
+    public static Boolean checkDeviceIsOnline(ReturnObject result) {
+        Boolean deviceOnline;
+        try {
+            Log.i(TAG, "checkDeviceIsOnline: " + result);
+            deviceOnline = result.jsonObject.getBoolean("device_online");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            deviceOnline = false;
+        }
+
+        return deviceOnline;
     }
 }

@@ -18,9 +18,6 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Do check if user needs to authorize the app
-		authPageCheck();
-
 		// Load content
 		setContentView(R.layout.activity_settings);
 
@@ -29,22 +26,6 @@ public class SettingsActivity extends AppCompatActivity {
 		Toolbar myToolbar = findViewById(R.id.toolbar_settings);
 		setSupportActionBar(myToolbar);
     }
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		authPageCheck();
-	}
-
-	private void authPageCheck() {
-		String refreshToken = TokenManager.getRefreshToken(SettingsActivity.this).value();
-		// Redirect to auth activity if refresh token is not set. (Authentication needed)
-		if (refreshToken == null) {
-			Intent i = new Intent(SettingsActivity.this, AuthActivity.class);
-			SettingsActivity.this.startActivity(i);
-			finish();
-		}
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

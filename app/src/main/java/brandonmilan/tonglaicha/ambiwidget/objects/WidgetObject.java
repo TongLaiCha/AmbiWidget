@@ -510,6 +510,7 @@ public class WidgetObject implements Serializable {
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_dashboard_mode_away);
 				// TODO: Read result.modeObject.value and update corresponding textview
 				break;
+
 			case "disconnected":
 				// Show DISCONNECTED Icon
 				remoteViews.setImageViewResource(R.id.mode_svg, R.drawable.ic_icn_cloud_disconnected_v2);

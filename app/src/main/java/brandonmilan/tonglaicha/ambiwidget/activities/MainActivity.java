@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+		// Do check if user needs to authorize the app
+		authPageCheck();
+
 		// Load layout
 		setContentView(R.layout.activity_main);
 
@@ -44,6 +47,22 @@ public class MainActivity extends AppCompatActivity {
 		Toolbar myToolbar = findViewById(R.id.toolbar_main);
 		setSupportActionBar(myToolbar);
     }
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		authPageCheck();
+	}
+
+	private void authPageCheck() {
+		String refreshToken = TokenManager.getRefreshToken(MainActivity.this).value();
+		// Redirect to auth activity if refresh token is not set. (Authentication needed)
+		if (refreshToken == null) {
+			Intent i = new Intent(MainActivity.this, AuthActivity.class);
+			MainActivity.this.startActivity(i);
+			finish();
+		}
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

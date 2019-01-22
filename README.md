@@ -10,7 +10,7 @@ Ambi Widget is available on the Google Play Store.
 
 ## Features
 * Give comfort feedback to your AC with a single click on the widget.
-* Supports Comfort Mode, Temperature Mode and Off.
+* Supports Comfort Mode, Temperature Mode and turining off the AC.
 * The widget displays the device name, location, temperature, humidity and current mode of the device.
 * Switching between devices instantly with the arrow buttons.
 * Supports both celsius and fahrenheit (setting).

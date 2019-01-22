@@ -18,3 +18,5 @@ Ambi Widget is available on the Google Play Store.
 
 ## Open API
 This application uses the [Open Api from Ambi](https://api.ambiclimate.com). Users can authenticate the app using oAuth2 by logging into the ambi labs open api and giving permission for reading device status and sending actions.
+
+*Ambi Labs, Ambi Climate, and their respective logos are trademarks of Ambi Labs Ltd.*

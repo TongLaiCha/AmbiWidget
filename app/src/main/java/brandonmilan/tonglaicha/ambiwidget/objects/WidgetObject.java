@@ -268,7 +268,13 @@ public class WidgetObject implements Serializable {
 	 * Set all click handlers for the widgets buttons.
 	 */
 	private void setButtonClickHandlers(Context context, RemoteViews remoteViews, String mode) {
-		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus) || mode.equals("disconnected")) {
+		if (this.showModeSelectionOverlay ||
+				WidgetUtils.checkIsModeOff(this.deviceStatus) ||
+				mode.equals("disconnected") ||
+				mode.equals("manual") ||
+				mode.equals("away_temperature_lower") ||
+				mode.equals("away_temperature_upper") ||
+				mode.equals("away_humidity_upper")) {
 			// Set onClickPendingIntent for mode buttons.
 			remoteViews.setOnClickPendingIntent(R.id.button_comfort_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "comfort"));
 			remoteViews.setOnClickPendingIntent(R.id.button_temperature_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "temperature"));

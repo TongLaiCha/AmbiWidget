@@ -29,7 +29,7 @@ public class WidgetContentManager {
     /**
      * Updates the the widget remoteView object with NEW data.
      */
-    public static void updateWidgetContent(final Context context, final int appWidgetId) {
+    public static void updateWidgetContent(final Context context, final int appWidgetId, final boolean updateByUser) {
         List<DeviceObject> deviceObjectsList = WidgetStorageManager.getDeviceObjectsList(context);
 
         // Get widget object
@@ -75,7 +75,12 @@ public class WidgetContentManager {
 
             @Override
             public void onFailure(ReturnObject result) {
-                Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+                // Only show the error message if the update was initiated by the user.
+                // Otherwise if an automatic update fails while a user is not using the widget, maybe because a user has no internet,
+                // the user will still get error's.
+                if (updateByUser) {
+                    Toast.makeText(context, "ERROR: " + result.errorMessage, Toast.LENGTH_LONG).show();
+                }
                 Log.d(TAG, result.errorMessage + ": " + result.exception);
             }
 

@@ -25,14 +25,14 @@ public class  WidgetProvider extends AppWidgetProvider {
 	/**
 	 * Instruct the appWidgetManager to load the widgets view and its components.
 	 */
-	public static void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+	public static void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean updateByUser) {
 		Log.d(TAG, "UPDATING WIDGET WITH ID = "+appWidgetId);
 		String refreshToken = TokenManager.getRefreshToken(context).value();
 
 		// Check if the user has authorized the widget to access his Ambi account.
 		if(refreshToken != null) {
 			// ASYNC > Request new data from the API and update the widget
-			WidgetContentManager.updateWidgetContent(context, appWidgetId);
+			WidgetContentManager.updateWidgetContent(context, appWidgetId, updateByUser);
 
 		} else {
 			WidgetObject widgetObject = WidgetStorageManager.getWidgetObjectByWidgetId(context, appWidgetId);
@@ -46,7 +46,7 @@ public class  WidgetProvider extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		Log.d(TAG, "onUpdate: Executed...");
 		for (int appWidgetId : appWidgetIds) {
-			WidgetService.startActionUpdateWidget(context, appWidgetId);
+			WidgetService.startActionUpdateWidget(context, appWidgetId,false);
 		}
 
 		// Update the device list
@@ -63,7 +63,7 @@ public class  WidgetProvider extends AppWidgetProvider {
 		// There may be multiple widgets active, so update all of them
 		for (int appWidgetId : appWidgetIds) {
 			Log.d(TAG, "updateAllWidgets: with id's: " + appWidgetId);
-			updateWidget(context, appWidgetManager, appWidgetId);
+			updateWidget(context, appWidgetManager, appWidgetId, false);
 		}
 	}
 

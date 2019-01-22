@@ -268,7 +268,7 @@ public class WidgetObject implements Serializable {
 	 * Set all click handlers for the widgets buttons.
 	 */
 	private void setButtonClickHandlers(Context context, RemoteViews remoteViews, String mode) {
-		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus)) {
+		if (this.showModeSelectionOverlay || WidgetUtils.checkIsModeOff(this.deviceStatus) || mode.equals("disconnected")) {
 			// Set onClickPendingIntent for mode buttons.
 			remoteViews.setOnClickPendingIntent(R.id.button_comfort_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "comfort"));
 			remoteViews.setOnClickPendingIntent(R.id.button_temperature_mode, WidgetUtils.getSwitchModePendingIntent(context, widgetId, "temperature"));
@@ -301,7 +301,7 @@ public class WidgetObject implements Serializable {
 		remoteViews.setOnClickPendingIntent(R.id.button_settings, configPendingIntent);
 
 		// Set onClickPendingIntent for the refresh button.
-		remoteViews.setOnClickPendingIntent(R.id.button_refresh, WidgetUtils.getUpdatePendingIntent(context, widgetId));
+		remoteViews.setOnClickPendingIntent(R.id.button_refresh, WidgetUtils.getUpdatePendingIntent(context, widgetId, true));
 	}
 
 	/**

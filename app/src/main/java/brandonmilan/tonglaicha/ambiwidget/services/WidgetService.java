@@ -8,8 +8,6 @@ import android.support.v4.app.JobIntentService;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.json.JSONException;
-
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -40,6 +38,8 @@ public class WidgetService extends JobIntentService {
 			"brandonmilan.tonglaicha.ambiwidget.action.update_widget";
 	public static final String ACTION_SUPER_UPDATE_WIDGET =
 			"brandonmilan.tonglaicha.ambiwidget.action.super_update_widget";
+	public static final String EXTRA_UPDATE_BY_USER =
+			"brandonmilan.tonglaicha.ambiwidget.action.super_update_widget";
 	public static final String ACTION_SWITCH_OFF =
 			"brandonmilan.tonglaicha.ambiwidget.action.switch_off";
 	public static final String EXTRA_WIDGET_ID =
@@ -67,8 +67,8 @@ public class WidgetService extends JobIntentService {
 	 * Starts this service to perform UpdateWidget action with the given parameters.
 	 * If the service is already performing a task, this action will be queued.
 	 */
-	public static void startActionUpdateWidget(Context context, int appWidgetId) {
-		PendingIntent pendingIntent = WidgetUtils.getUpdatePendingIntent(context, appWidgetId);
+	public static void startActionUpdateWidget(Context context, int appWidgetId, Boolean updateByUser) {
+		PendingIntent pendingIntent = WidgetUtils.getUpdatePendingIntent(context, appWidgetId, updateByUser);
 		try {
 			pendingIntent.send();
 		} catch (PendingIntent.CanceledException e) {
@@ -150,7 +150,8 @@ public class WidgetService extends JobIntentService {
 				handleActionGiveFeedback(appWidgetId, feedbackTag);
 			} else if(ACTION_UPDATE_WIDGET.equals(action)) {
 				final int appWidgetId = intent.getIntExtra(EXTRA_WIDGET_ID, 0);
-				handleActionUpdateWidget(appWidgetId);
+				boolean updateByUser = intent.getBooleanExtra(EXTRA_UPDATE_BY_USER, false);
+				handleActionUpdateWidget(appWidgetId, updateByUser);
 			} else if (ACTION_SUPER_UPDATE_WIDGET.equals(action)) {
 				handleActionSuperUpdateWidget();
 			} else if(ACTION_SWITCH_OFF.equals(action)) {
@@ -235,9 +236,9 @@ public class WidgetService extends JobIntentService {
 	/**
 	 * Handle action UpdateWidget in the provided background threat.
 	 */
-	private void handleActionUpdateWidget(int appWidgetId) {
+	private void handleActionUpdateWidget(int appWidgetId, boolean updateByUser) {
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-		WidgetProvider.updateWidget(this, appWidgetManager, appWidgetId);
+		WidgetProvider.updateWidget(this, appWidgetManager, appWidgetId, updateByUser);
 	}
 
 	/**
@@ -300,7 +301,7 @@ public class WidgetService extends JobIntentService {
 		// Save and update the widgetObject
 		widgetObject.saveToFile(getApplicationContext());
 
-		WidgetContentManager.updateWidgetContent(getApplicationContext(), appWidgetId);
+		WidgetContentManager.updateWidgetContent(getApplicationContext(), appWidgetId, true);
 	}
 
 	/**

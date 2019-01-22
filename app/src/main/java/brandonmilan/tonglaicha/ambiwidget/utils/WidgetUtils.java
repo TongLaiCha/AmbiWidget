@@ -55,10 +55,11 @@ public final class WidgetUtils {
      *
      * @return PendingIntent
      */
-    public static PendingIntent getUpdatePendingIntent(Context context, int appWidgetId) {
+    public static PendingIntent getUpdatePendingIntent(Context context, int appWidgetId, boolean updateByUser) {
         Intent intent = new Intent(context, WidgetProvider.class);
         intent.setAction(WidgetService.ACTION_UPDATE_WIDGET);
         intent.putExtra(WidgetService.EXTRA_WIDGET_ID, appWidgetId);
+        intent.putExtra(WidgetService.EXTRA_UPDATE_BY_USER, updateByUser);
 
         return PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
